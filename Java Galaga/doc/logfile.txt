@@ -1,0 +1,36 @@
+Class documentation
+<---- javadoc command: ---->
+/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/JDK/Home/bin/javadoc
+-author
+-version
+-nodeprecated
+-package
+-Xdoclint:none
+-noindex
+-notree
+-nohelp
+-nonavbar
+-source
+11
+-classpath
+/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/bluejcore.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/junit-4.11.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/hamcrest-core-1.3.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/lang-stride.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.base.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.controls.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.fxml.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.graphics.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.media.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.properties.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.swing.jar:/private/var/folders/fh/tngqxm9d1m3g9v07n84zj2qw0000gn/T/AppTranslocation/B060F5A0-DB13-4265-A54C-A610AA7D6032/d/BlueJ.app/Contents/Resources/Java/javafx/lib/javafx.web.jar:/Users/zacharynewton/Downloads/Final Project
+-d
+/Users/zacharynewton/Downloads/Final Project/doc
+-encoding
+UTF-8
+-charset
+UTF-8
+/Users/zacharynewton/Downloads/Final Project/Player.java
+<---- end of javadoc command ---->
+Loading source file /Users/zacharynewton/Downloads/Final Project/Player.java...
+Constructing Javadoc information...
+Standard Doclet version 11.0.2
+Building tree for all the packages and classes...
+Generating /Users/zacharynewton/Downloads/Final Project/doc/Player.html...
+Generating /Users/zacharynewton/Downloads/Final Project/doc/package-summary.html...
+Generating /Users/zacharynewton/Downloads/Final Project/doc/constant-values.html...
+Building index for all the packages and classes...
+Building index for all classes...
+Generating /Users/zacharynewton/Downloads/Final Project/doc/allclasses.html...
+Generating /Users/zacharynewton/Downloads/Final Project/doc/allclasses.html...
+Generating /Users/zacharynewton/Downloads/Final Project/doc/index.html...

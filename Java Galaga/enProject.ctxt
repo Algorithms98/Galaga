@@ -1,0 +1,23 @@
+#BlueJ class context
+comment0.target=enProject
+comment1.params=img\ xLoc\ yLoc
+comment1.target=enProject(java.awt.Image,\ int,\ int)
+comment10.params=
+comment10.target=java.awt.Image\ getImage()
+comment2.params=path\ xLoc\ yLoc
+comment2.target=enProject(java.lang.String,\ int,\ int)
+comment3.params=page
+comment3.target=void\ draw(java.awt.Graphics)
+comment4.params=
+comment4.target=void\ move()
+comment5.params=
+comment5.target=int\ getX()
+comment6.params=
+comment6.target=int\ getY()
+comment7.params=p
+comment7.target=boolean\ isInsideP(Player)
+comment8.params=val
+comment8.target=void\ setX(int)
+comment9.params=val
+comment9.target=void\ setY(int)
+numComments=11
