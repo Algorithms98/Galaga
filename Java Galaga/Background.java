@@ -1,9 +1,9 @@
-import java.awt.*;
 import javax.swing.*;
 
 public class Background extends JLabel
 {
-    private ImageIcon image;
+	private static final long serialVersionUID = 1376221642883404767L;
+	private ImageIcon image;
     
     public Background()
     {

@@ -1,11 +1,10 @@
 import java.applet.*;
-import java.net.URL;
 
 public class Sound
 {
-    private AudioClip clip;
-    
-    public Sound(String file)
+    private final AudioClip clip;
+
+    public Sound(final String file)
     {
         clip = Applet.newAudioClip(getClass().getResource(file));
     }

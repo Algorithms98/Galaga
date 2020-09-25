@@ -1,12 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Scanner;
-import java.util.*;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
 {
-    private Player player;
+	private static final long serialVersionUID = -4999101245149671618L;
+	private Player player;
     private Enemy[][] enemy;
     private Projectile bullet;
     private enProject enBullet;
@@ -17,38 +16,35 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int lives;
     private int roundNum;
     private int sleep;
-    private boolean hasStarted;
     private boolean canShoot;
-    private Sound pExplosion;
-    private Sound eExplosion;
-    private Background background;
-    private Explosion eExplosionImg;
-    private Explosion pExplosionImg;
+	private Sound pExplosion;
+	private Sound eExplosion;
+	private Background background;
+	private Explosion eExplosionImg;
+	private Explosion pExplosionImg;
 
-    //constructor - sets the initial conditions for this Game object
-    public Game(int width, int height)
-    {
-        //make a panel with dimensions width by height with a black background
-        this.setLayout( null );//Don't change
-        this.setBackground( Color.BLACK );
-        this.setPreferredSize( new Dimension( width, height ) );//Don't change
+	// constructor - sets the initial conditions for this Game object
+	public Game(int width, int height) {
+		// make a panel with dimensions width by height with a black background
+		this.setLayout(null);// Don't change
+		this.setBackground(Color.BLACK);
+		this.setPreferredSize(new Dimension(width, height));// Don't change
 
-        enemy = new Enemy[5][7];
-        bullet = new Projectile("Images//rocket.gif", 1000, 0);
-        enBullet = new enProject("Images//alienRocket.gif", 490, 50);
-        pShot = new Sound("Sounds//pShot.wav");
-        eShot = new Sound("Sounds//eShot.wav");
-        loseLife = new Sound("Sounds//loseLife.wav");
-        pExplosion = new Sound("Sounds//pExplosion.wav");
-        eExplosion = new Sound("Sounds//eExplosion.wav");
-        eExplosionImg = new Explosion("Images//eExplosion.gif", 100, 20);
-        eExplosionImg = new Explosion("Images//pExplosion.gif", 10000, 20);
-        score = 0;
-        lives = 3;
-        roundNum = 1;
-        sleep = 20;
-        hasStarted = false;
-        canShoot = true;
+		enemy = new Enemy[5][7];
+		bullet = new Projectile("Images//rocket.gif", 1000, 0);
+		enBullet = new enProject("Images//alienRocket.gif", 490, 50);
+		pShot = new Sound("Sounds//pShot.wav");
+		eShot = new Sound("Sounds//eShot.wav");
+		loseLife = new Sound("Sounds//loseLife.wav");
+		pExplosion = new Sound("Sounds//pExplosion.wav");
+		eExplosion = new Sound("Sounds//eExplosion.wav");
+		eExplosionImg = new Explosion("Images//eExplosion.gif", 100, 20);
+		eExplosionImg = new Explosion("Images//pExplosion.gif", 10000, 20);
+		score = 0;
+		lives = 3;
+		roundNum = 1;
+		sleep = 20;
+		canShoot = true;
 
         background = new Background();
 
@@ -241,7 +237,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     }
 
     //Precondition: executed when repaint() or paintImmediately is called
-    //Postcondition: the screen has been updated with current player location
+	//Postcondition: the screen has been updated with current player location
+	@Override
     public void paintComponent( Graphics page )
     {
         super.paintComponent( page );//I'll tell you later.
@@ -291,7 +288,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     public void mouseMoved(MouseEvent event)
     {
         int mouseX = event.getX();
-        if(mouseX <= Driver.WIDTH - 90) // mouse movement
+        if(mouseX <= Main.WIDTH - 90) // mouse movement
         {
             player.movePlayer(mouseX);
         }
