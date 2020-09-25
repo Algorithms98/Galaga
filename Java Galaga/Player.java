@@ -22,11 +22,17 @@ public class Player
     public void moveRight() //moves player right
     {
         x += 5;
+        if (x>Main.WIDTH - 90) {
+          x = Main.WIDTH - 90;
+        }
     }
     
     public void moveLeft() // moves player left
     {
         x -= 5;
+        if (x<0) {
+          x = 0;
+        }
     }
     
     public void movePlayer(int mouseLocation) // moves player's position to hte mouse's position

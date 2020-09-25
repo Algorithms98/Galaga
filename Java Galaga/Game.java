@@ -6,22 +6,24 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 {
 	private static final long serialVersionUID = -4999101245149671618L;
 	private Player player;
-    private Enemy[][] enemy;
-    private Projectile bullet;
-    private enProject enBullet;
-    private Sound pShot;
-    private Sound eShot;
-    private Sound loseLife;
-    private int score;
-    private int lives;
-    private int roundNum;
-    private int sleep;
-    private boolean canShoot;
+	private Enemy[][] enemy;
+	private Projectile bullet;
+	private enProject enBullet;
+	private Sound pShot;
+	private Sound eShot;
+	private Sound loseLife;
+	private int score;
+	private int lives;
+	private int roundNum;
+	private int sleep;
+	private boolean canShoot;
 	private Sound pExplosion;
 	private Sound eExplosion;
 	private Background background;
 	private Explosion eExplosionImg;
 	private Explosion pExplosionImg;
+	private boolean leftArrowDown = false;
+	private boolean rightArrowDown = false;
 
 	// constructor - sets the initial conditions for this Game object
 	public Game(int width, int height) {
@@ -116,6 +118,13 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         boolean over = false;
         while( !over )
         {
+			if (leftArrowDown) {
+				player.moveLeft();
+			}
+			if (rightArrowDown) {
+				player.moveRight();
+			}
+
             for(int r = 0; r < enemy.length; r++)
             {
                 for(int c = 0; c < enemy[0].length; c++)
@@ -263,7 +272,12 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
     //not used but must be present
     public void keyReleased( KeyEvent event )
-    {  
+    {
+		if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+			rightArrowDown = false;
+		} else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+			leftArrowDown = false;
+		}
     }
 
     //tells the program what to do when keys are pressed
@@ -271,11 +285,11 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     {
         if( event.getKeyCode() == KeyEvent.VK_RIGHT )
         {
-            player.moveRight();
+            rightArrowDown = true;
         }
         else if( event.getKeyCode() == KeyEvent.VK_LEFT )
         {
-            player.moveLeft();
+            leftArrowDown = true;
         }
         else if(event.getKeyCode() == KeyEvent.VK_SPACE && canShoot)
         {
@@ -290,7 +304,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         int mouseX = event.getX();
         if(mouseX <= Main.WIDTH - 90) // mouse movement
         {
-            player.movePlayer(mouseX);
+            //player.movePlayer(mouseX);
         }
     }
 
