@@ -1,14 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
 {
 	private static final long serialVersionUID = -4999101245149671618L;
 	private Player player;
-	private Enemy[][] enemy;
+//	private Enemy[][] enemy;
+	private ArrayList<Enemy> enemies;
 	private Projectile bullet;
 	private enProject enBullet;
+	private boolean enCanShoot;
 	private Sound pShot;
 	private Sound eShot;
 	private Sound loseLife;
@@ -24,6 +27,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 	private Explosion pExplosionImg;
 	private boolean leftArrowDown = false;
 	private boolean rightArrowDown = false;
+	private boolean over = true;
 
 	// constructor - sets the initial conditions for this Game object
 	public Game(int width, int height) {
@@ -32,7 +36,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		this.setBackground(Color.BLACK);
 		this.setPreferredSize(new Dimension(width, height));// Don't change
 
-		enemy = new Enemy[5][7];
+//		enemy = new Enemy[5][7];
+		enemies = new ArrayList<Enemy>();
 		bullet = new Projectile("Images//rocket.gif", 1000, 0);
 		enBullet = new enProject("Images//alienRocket.gif", 490, 50);
 		pShot = new Sound("Sounds//pShot.wav");
@@ -50,26 +55,20 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
         background = new Background();
 
-        //initialize the instance variables
-        player = new Player("images//pShip.gif", 450, 650 );//450, 750
-        for(int r = 0; r < enemy.length; r++)
-        {
-            for(int c = 0; c < enemy[0].length; c++)
-            {
-                if(r == 0)
-                    enemy[r][c] = new Enemy("Images//eShip3.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else if(r > 0 && r < 3)
-                    enemy[r][c] = new Enemy("Images//eShip2.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else
-                     enemy[r][c] = new Enemy("Images//eShip.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-            }
-        }
+		//initialize the instance variables
+		initialize();
+	}
+	
+	public void initialize()
+	{
+		player = new Player("images//pShip.gif", 450, 650 );//450, 750
+		reset();
 
         this.addKeyListener(this);//allows the program to respond to key presses - Don't change
 
         this.setFocusable(true);//I'll tell you later - Don't change
 
-    }
+	}
     
     //This is the method that runs the game
     public void playGame()
@@ -111,11 +110,11 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
         this.addMouseMotionListener(this);
 
-        boolean allDead = true;;
+        boolean allDead = true;
 
-        boolean enCanShoot = true;;
+        enCanShoot = true;
 
-        boolean over = false;
+        over = false;
         while( !over )
         {
 			if (leftArrowDown) {
@@ -125,64 +124,49 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 				player.moveRight();
 			}
 
-            for(int r = 0; r < enemy.length; r++)
-            {
-                for(int c = 0; c < enemy[0].length; c++)
-                {
-                    int randRow = (int)(Math.random() * 5);
-                    int randCol = (int)(Math.random() * 7);
-
-                    if(enCanShoot && !enemy[randRow][randCol].isDead())
-                    {
-                        enBullet = new enProject("images//alienRocket.gif", enemy[randRow][randCol].getX() + 10, enemy[randRow][randCol].getY());
-                        eShot.play();
-                        enCanShoot = false;
-                    }
-                    if(!enemy[r][c].isDead())
-                    {
-                        enemy[r][c].move();
-                        allDead = false;
-                    }
-                    if(!enemy[r][c].isDead() && enemy[r][c].getY() > 680)
-                        over = true;
-                    if(!enemy[r][c].isDead() && bullet.isInside(enemy[r][c]))
-                    {
-                        enemy[r][c].setIsDead(true);
-                        eExplosionImg = new Explosion("Images//eExplosion.gif", enemy[r][c].getX(), enemy[r][c].getY());
-                        enemy[r][c].setX(10000);
-                        enemy[r][c].setY(0);
-                        bullet.setX(10000);
-                        score += 10;
-                        scoreText.setText("Score: " + this.score);
-                        canShoot = true;
-                        eExplosion.play();
-                    }
-                    if(enBullet.isInsideP(this.player))
-                    {
-                        if(lives == 1)
-                            over = true;
-                        enBullet.setX(10000);
-                        lives--;
-                        livesText.setText("Lives: " + this.lives);
-                        if(lives != 0)
-                            loseLife.play();
-                        else
-                            pExplosion.play();
-                    }
-                    if(enBullet.getY() > 780)
-                    {
-                        enBullet.setX(10000);
-                        enCanShoot = true;
-                        eExplosionImg = new Explosion("Images//eExplosion.gif", 10000, 0);
-                    }
-                    if(this.bullet.getY() <= 2)
-                    {
-                        bullet.setX(10000);
-                        canShoot = true;
-                    }
-                }
-            }
-            if(allDead)
+			int turnToShoot = (int) (Math.random() * enemies.size());
+			ArrayList<Enemy> toRemove = new ArrayList<Enemy>();
+			for (Enemy enemy: enemies) {
+				// Returns true if enemy gets blown up
+				if (enemy.update(turnToShoot == 0, enCanShoot, bullet, this)) {
+					toRemove.add(enemy);
+					eExplosionImg = new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY());
+					bullet.setX(10000);
+					score += 10;
+					scoreText.setText("Score: " + this.score);
+					canShoot = true;
+					eExplosion.play();
+				}
+				turnToShoot--;
+			}
+			for (Enemy enemy: toRemove)
+			{
+				enemies.remove(enemy);
+			}
+			if (enBullet.isInsideP(this.player))
+			{
+				if (lives == 1)
+					over = true;
+				enBullet.setX(10000);
+				lives--;
+				livesText.setText("Lives: " + this.lives);
+				if (lives != 0)
+					loseLife.play();
+				else
+					pExplosion.play();
+			}
+			if (enBullet.getY() > 780)
+			{
+				enBullet.setX(10000);
+				enCanShoot = true;
+				eExplosionImg = new Explosion("Images//eExplosion.gif", 10000, 0);
+			}
+			if (this.bullet.getY() <= 2)
+			{
+				bullet.setX(10000);
+				canShoot = true;
+			}
+            if(enemies.size() == 0)
             {
                 if(roundNum == 3)
                 {
@@ -232,9 +216,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
             allDead = true;
         }
 
-        for(int r = 0; r < enemy.length; r++)
-            for(int c = 0; c < enemy[0].length; c++)
-                enemy[r][c].setX(10000);
+		for (Enemy enemy: enemies) {
+			enemy.setX(10000);
+		}
                 
         player.setX(10000);
         enBullet.setX(10000);
@@ -243,7 +227,17 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         this.add(overText);
         overText.setFont(new Font("Lava", Font.BOLD, 50));
         overText.setVisible(true);
-    }
+	}
+	
+	public void enemyShoot(int x, int y) {
+		enBullet = new enProject("images//alienRocket.gif", x, y);
+		eShot.play();
+		enCanShoot = false;
+	}
+
+	public void gameOver() {
+		over = true;
+	}
 
     //Precondition: executed when repaint() or paintImmediately is called
 	//Postcondition: the screen has been updated with current player location
@@ -255,19 +249,17 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         page.drawImage(bullet.getImage(), bullet.getX() + 43, bullet.getY() - 10, null);
         page.drawImage(enBullet.getImage(), enBullet.getX(), enBullet.getY() + 10, null);
         page.drawImage(player.getImage(), player.getX(), player.getY() - 60, null);
-        page.drawImage(eExplosionImg.getImage(), eExplosionImg.getX() - 15, eExplosionImg.getY() - 10, null);
-        for(int r = 0; r < enemy.length; r++)
-        {
-            for(int c = 0; c < enemy[0].length; c++)
-            {
-                page.drawImage(enemy[r][c].getImage(), enemy[r][c].getX() - 5, enemy[r][c].getY(), null);
-            }
-        }
+		page.drawImage(eExplosionImg.getImage(), eExplosionImg.getX() - 15, eExplosionImg.getY() - 10, null);
+		for (Enemy enemy: enemies) {
+			page.drawImage(enemy.getImage(), enemy.getX() - 5, enemy.getY(), null);
+		}
         bullet.draw(page);
-        enBullet.draw(page);
+		enBullet.draw(page);
+		/*
         for(Enemy[] e: enemy)
             for(Enemy en: e)
-                en.draw( page );//calls the draw method in the Square class
+				en.draw( page );//calls the draw method in the Square class
+				*/
     }
 
     //not used but must be present
@@ -310,18 +302,20 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
     public void reset()
     {
-        for(int r = 0; r < enemy.length; r++)
-        {
-            for(int c = 0; c < enemy[0].length; c++)
-            {
-                if(r == 0)
-                    enemy[r][c] = new Enemy("Images//eShip3.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else if(r > 0 && r < 3)
-                    enemy[r][c] = new Enemy("Images//eShip2.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else
-                     enemy[r][c] = new Enemy("Images//eShip.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-            }
-        }
+		for (int row=0; row<5; row++)
+		{
+			for (int col=0; col<7; col++)
+			{
+				int posX = (col+1) * 100 + 70;
+				int posY = (row+1) * 100 - 70;
+				if (row == 0)
+					enemies.add(new Enemy("Images//eShip3.gif", posX, posY));
+				else if (row < 3)
+					enemies.add(new Enemy("Images//eShip2.gif", posX, posY));
+				else
+					enemies.add(new Enemy("Images//eShip.gif", posX, posY));
+			}
+		}
         sleep -= 5;
     }
 

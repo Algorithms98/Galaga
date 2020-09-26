@@ -33,6 +33,20 @@ public class Enemy
         maxMoves = 150;
         isDead = false;
     }
+	
+	public boolean update(boolean turnToShoot, boolean enCanShoot, Projectile bullet, Game game)
+	{
+		if (turnToShoot && enCanShoot) {
+			game.enemyShoot(x + 10, y);
+		}
+		move();
+		if (y > 680)
+			game.gameOver();
+		if (bullet.isInside(this)) {
+			return true;
+		}
+		return false;
+	}
 
     public void move()
     {
