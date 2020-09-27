@@ -17,9 +17,4 @@ public class Background extends JLabel {
 	{
 		page.drawImage(image, 0, 0, null);
 	}
-
-	public Image getImage()
-	{
-		return image.getImage();
-	}
 }

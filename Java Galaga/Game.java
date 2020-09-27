@@ -7,16 +7,18 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 {
 	private static final long serialVersionUID = -4999101245149671618L;
 	private static final SoundManager SOUND_MANAGER = new SoundManager();
+	private final Background background;
 	private Player player;
 	private final ArrayList<Enemy> enemies;
 	private final ArrayList<enProject> enemyBullets;
 	private final ArrayList<Projectile> playerBullets;
 	private final ArrayList<Explosion> enemyExplosions;
+
 	private int score;
 	private int lives;
 	private int roundNum;
 	private int sleep;
-	private final Background background;
+
 	private boolean leftArrowDown = false;
 	private boolean rightArrowDown = false;
 	private boolean over = true;
@@ -32,37 +34,33 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
 	// constructor - sets the initial conditions for this Game object
 	public Game(final int width, final int height) {
-		// make a panel with dimensions width by height with a black background
 		this.setLayout(null);// Don't change
 		this.setBackground(Color.BLACK);
-		this.setPreferredSize(new Dimension(width, height));// Don't change
+		this.setPreferredSize(new Dimension(width, height));
 
-//		enemy = new Enemy[5][7];
 		enemies = new ArrayList<Enemy>();
 		playerBullets = new ArrayList<Projectile>();
 		enemyBullets = new ArrayList<enProject>();
 		enemyExplosions = new ArrayList<Explosion>();
+		background = new Background();
+
 		score = 0;
 		lives = 3;
 		roundNum = 1;
 		sleep = 20;
 
-		background = new Background();
-
-		//initialize the instance variables
 		initialize();
 	}
-	
+
 	public void initialize()
 	{
 		player = new Player("Images//pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 450, 650 );//450, 750
-
 		scoreText.setBounds(885, 5, 850, 20);
 		scoreText.setForeground(Color.WHITE);
 		scoreText.setFont(new Font("Lava", Font.BOLD, 20));
 		scoreText.setVisible(true);
 		this.add(scoreText);
-		
+
 		levelText.setForeground(Color.WHITE);
 		levelText.setVisible(false);
 		levelText.setFont(new Font("Lava", Font.BOLD, 49));
@@ -86,19 +84,15 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		roundsText.setVisible(true);
 		this.add(roundsText);
 
-		this.addMouseMotionListener(this);
 		reset();
-
+		this.addMouseMotionListener(this);
 		this.addKeyListener(this);//allows the program to respond to key presses - Don't change
-
 		this.setFocusable(true);//I'll tell you later - Don't change
-
 	}
-	
+
 	//This is the method that runs the game
 	public void playGame()
 	{
-
 		over = false;
 		while( !over )
 		{
@@ -114,7 +108,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			int turnToShoot = (int) (Math.random() * enemies.size());
 			ArrayList<Enemy> enemiesToRemove = new ArrayList<Enemy>();
 			for (final Enemy enemy: enemies) {
-				// Returns true if enemy gets blown up
+				// Returns colliding bullet if enemy gets blown up
 				final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, playerBullets, this);
 				if (collidingBullet != null) {
 					enemiesToRemove.add(enemy);
@@ -126,6 +120,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 				}
 				turnToShoot--;
 			}
+
 			for (final Enemy enemy: enemiesToRemove)
 			{
 				enemies.remove(enemy);
@@ -144,7 +139,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			{
 				enemyExplosions.remove(enemyExplosion);
 			}
-			
+
 			// Enemy Bullets
 			final ArrayList<enProject> enemyBulletsToRemove = new ArrayList<enProject>();
 			for (enProject enBullet: enemyBullets)
@@ -154,6 +149,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 					enemyBulletsToRemove.add(enBullet);
 				}
 			}
+
 			for (final enProject enBullet: enemyBulletsToRemove)
 			{
 				enemyBullets.remove(enBullet);
@@ -171,7 +167,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			{
 				playerBullets.remove(playerBullet);
 			} 
-			
+
 			// Next Level
 			if(enemies.size() == 0)
 			{
@@ -185,34 +181,34 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 				{
 					levelText.setText("Round " + roundNum + " passed.");
 					levelText.setVisible(true);
-
 					try
-					{Thread.sleep(1000);}
+						{Thread.sleep(1000);}
 					catch(final InterruptedException ex){}
 
 					levelText.setVisible(false);
-
 					reset();
+
 					lives++;
 					livesText.setText("Lives: " + this.lives);                    
 					roundNum++;
 					roundsText.setText("Round " + roundNum + "/3");
-					
 					player.updateSprite(lives);
 				}
 				else
 					over = true;
 			}
+
 			try
 			{
 				Thread.sleep( sleep );
 			}
 			catch( final InterruptedException ex ){}
+
 			this.repaint();//redraw the screen with the updated locations; calls paintComponent below
 		}
 
 		enemies.clear();
-		player.setX(10000);
+		player = null;
 		playerBullets.clear();
 		enemyBullets.clear();
 		enemyExplosions.clear();
@@ -220,11 +216,11 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		overText.setFont(new Font("Lava", Font.BOLD, 50));
 		this.add(overText);
 	}
-	
+
 	public void hitPlayer()
 	{
 		if (lives == 1)
-			over = true;
+			gameOver();
 		lives--;
 		livesText.setText("Lives: " + this.lives);
 		player.updateSprite(lives);
@@ -242,8 +238,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 	public void gameOver() {
 		over = true;
 	}
-
-	//Precondition: executed when repaint() or paintImmediately is called
+		//Precondition: executed when repaint() or paintImmediately is called
 	//Postcondition: the screen has been updated with current player location
 	@Override
 	public void paintComponent( final Graphics page )
@@ -268,16 +263,6 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		}
 	}
 
-	//not used but must be present
-	public void keyReleased( final KeyEvent event )
-	{
-		if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-			rightArrowDown = false;
-		} else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-			leftArrowDown = false;
-		}
-	}
-
 	//tells the program what to do when keys are pressed
 	public void keyPressed( final KeyEvent event )
 	{
@@ -296,12 +281,13 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		}
 	}
 
-	public void mouseMoved(final MouseEvent event)
+	//not used but must be present
+	public void keyReleased( final KeyEvent event )
 	{
-		final int mouseX = event.getX();
-		if(mouseX <= Main.WIDTH - 90) // mouse movement
-		{
-			//player.movePlayer(mouseX);
+		if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+			rightArrowDown = false;
+		} else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+			leftArrowDown = false;
 		}
 	}
 
@@ -324,19 +310,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		sleep -= 5;
 	}
 
-	public void actionPerformed(final ActionEvent event)
-	{
-
-	}
-
-	//not used but must be present
-	public void keyTyped( final KeyEvent event )
-	{
-
-	}
-
-	public void mouseDragged(final MouseEvent event)
-	{
-
-	}
+	public void actionPerformed(final ActionEvent event) {}
+	public void keyTyped( final KeyEvent event ) {}
+	public void mouseMoved(final MouseEvent event) {}
+	public void mouseDragged(final MouseEvent event) {}
 }
