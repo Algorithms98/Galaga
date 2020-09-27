@@ -146,11 +146,10 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			{
 				if (enBullet.update(player, this))
 				{
-          enemyBulletsToRemove.add(enBullet);
-          System.out.println("Removing bullet...");
+					enemyBulletsToRemove.add(enBullet);
 				}
-      }
-      
+			}
+
 			for (final enProject enBullet: enemyBulletsToRemove)
 			{
 				enemyBullets.remove(enBullet);
@@ -195,11 +194,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 					roundsText.setText("Round " + roundNum + "/3");
 					player.updateSprite(lives);
 				}
-        else
-        {
-          over = true;
-          break;
-        }
+				else
+					over = true;
 			}
 
 			try
@@ -209,17 +205,22 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			catch( final InterruptedException ex ){}
 
 			this.repaint();//redraw the screen with the updated locations; calls paintComponent below
-    }
-    
-    gameOver();
+		}
+
+		enemies.clear();
+		player = null;
+		playerBullets.clear();
+		enemyBullets.clear();
+		enemyExplosions.clear();
+		overText.setVisible(true);
+		overText.setFont(new Font("Lava", Font.BOLD, 50));
+		this.add(overText);
 	}
 
 	public void hitPlayer()
 	{
-    if (lives == 1)
-    {
-      over = true;
-    }
+		if (lives == 1)
+			gameOver();
 		lives--;
 		livesText.setText("Lives: " + this.lives);
 		player.updateSprite(lives);
@@ -235,19 +236,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 	}
 
 	public void gameOver() {
-    System.out.println("Game over!");
-
-		enemies.clear();
-		player = null;
-		playerBullets.clear();
-		enemyBullets.clear();
-		enemyExplosions.clear();
-		overText.setVisible(true);
-		overText.setFont(new Font("Lava", Font.BOLD, 50));
-		this.add(overText);
-  }
-
-  //Precondition: executed when repaint() or paintImmediately is called
+		over = true;
+	}
+		//Precondition: executed when repaint() or paintImmediately is called
 	//Postcondition: the screen has been updated with current player location
 	@Override
 	public void paintComponent( final Graphics page )
