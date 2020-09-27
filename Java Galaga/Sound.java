@@ -6,14 +6,14 @@ public class Sound
 
     public Sound(final String file)
     {
-        clip = Applet.newAudioClip(getClass().getResource(file));
+		clip = Applet.newAudioClip(getClass().getResource(file));
     }
     
     // pre: none
     // post: plays the sound 
     public void play()
     {
-        //clip.play();
+        clip.play();
     }
     
     // pre: none
