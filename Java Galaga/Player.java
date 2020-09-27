@@ -64,8 +64,7 @@ public class Player
     
     public void draw( Graphics page ) // draws player paddle
     {
-        page.setColor( Color.WHITE );
-        //page.fillRect( x, y, 100, 10 );//change the last two numbers and see what happens
+        page.drawImage(image, x, y - 60, null);
     }
     
     public int getX() // returns x value

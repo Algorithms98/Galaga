@@ -68,8 +68,7 @@ public class Enemy
 
     public void draw( Graphics page )
     {
-        page.setColor( new Color( 255, 255, 255 ) ); //color defined using rgb values (0-255 each)
-        //page.fillRect( x, y, 55, 55 ); //change the last two numbers and see what happens
+		page.drawImage(image, x - 5, y, null);
     }
     
     public void setIsDead(boolean set)

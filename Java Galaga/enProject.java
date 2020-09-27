@@ -36,8 +36,7 @@ public class enProject
 
     public void draw(Graphics page)
     {
-        page.setColor( Color.WHITE );
-        //page.fillRect( this.x + 50, this.y - 20, 4, 20 );
+		page.drawImage(image, x, y + 10, null);
     }
 
     public void move()

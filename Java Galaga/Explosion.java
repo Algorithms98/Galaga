@@ -20,7 +20,12 @@ public class Explosion
     {
         this(new ImageIcon(path).getImage(), xLoc, yLoc);
     }
-    
+	
+	public void draw(Graphics page)
+	{
+		page.drawImage(image, x - 15, y - 10, null);
+	}
+
 	public boolean update()
 	{
 		lifetime--;

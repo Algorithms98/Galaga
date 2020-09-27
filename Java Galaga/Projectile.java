@@ -21,8 +21,7 @@ public class Projectile
 
     public void draw(Graphics page)
     {
-        page.setColor( Color.WHITE );
-        //page.fillRect( this.x + 50, this.y - 20, 4, 20 );
+		page.drawImage(image, x + 43, y - 10, null);
     }
 
     public boolean update()
