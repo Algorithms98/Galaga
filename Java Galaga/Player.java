@@ -6,19 +6,41 @@ public class Player
     private int x; // x and y location
     private int y;
     private Image image;
+    private Image healthy;
+    private Image dmg1;
+    private Image dmg2;
     
-    public Player(Image img, int xLoc, int yLoc)
+    public Player(Image healthy, Image dmg1, Image dmg2, int xLoc, int yLoc)
     {
         x = xLoc;
         y = yLoc;
-        image = img;
+        this.healthy = healthy;
+        this.dmg1 = dmg1;
+        this.dmg2 = dmg2;
+        image = this.healthy;
     }
     
-    public Player(String path, int xLoc, int yLoc)
+    public Player(String path1, String path2, String path3, int xLoc, int yLoc)
     {
-        this(new ImageIcon(path).getImage(), xLoc, yLoc);
+        this(new ImageIcon(path1).getImage(), new ImageIcon(path2).getImage(), new ImageIcon(path3).getImage(), xLoc, yLoc);
     }
     
+    public void updateSprite(int lives)
+    {
+		if (lives > 2)
+		{
+			image = healthy;
+		}
+		else if (lives == 2)
+		{
+			image = dmg1;
+		}
+		else
+		{
+			image = dmg2;
+		}
+    }
+
     public void moveRight() //moves player right
     {
         x += 5;

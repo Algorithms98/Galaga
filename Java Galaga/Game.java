@@ -11,13 +11,12 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 	private final ArrayList<Enemy> enemies;
 	private final ArrayList<enProject> enemyBullets;
 	private final ArrayList<Projectile> playerBullets;
+	private final ArrayList<Explosion> enemyExplosions;
 	private int score;
 	private int lives;
 	private int roundNum;
 	private int sleep;
 	private final Background background;
-	private Explosion eExplosionImg;
-	private final Explosion pExplosionImg;
 	private boolean leftArrowDown = false;
 	private boolean rightArrowDown = false;
 	private boolean over = true;
@@ -42,8 +41,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		enemies = new ArrayList<Enemy>();
 		playerBullets = new ArrayList<Projectile>();
 		enemyBullets = new ArrayList<enProject>();
-		eExplosionImg = new Explosion("Images//eExplosion.gif", 100, 20);
-		pExplosionImg = new Explosion("Images//pExplosion.gif", 10000, 20);
+		enemyExplosions = new ArrayList<Explosion>();
 		score = 0;
 		lives = 3;
 		roundNum = 1;
@@ -57,7 +55,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 	
 	public void initialize()
 	{
-		player = new Player("images//pShip.gif", 450, 650 );//450, 750
+		player = new Player("Images//pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 450, 650 );//450, 750
 
         scoreText.setBounds(885, 5, 850, 20);
         scoreText.setForeground(Color.WHITE);
@@ -114,13 +112,13 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
 			// Enemies
 			int turnToShoot = (int) (Math.random() * enemies.size());
-			final ArrayList<Enemy> enemiesToRemove = new ArrayList<Enemy>();
+			ArrayList<Enemy> enemiesToRemove = new ArrayList<Enemy>();
 			for (final Enemy enemy: enemies) {
 				// Returns true if enemy gets blown up
 				final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, playerBullets, this);
 				if (collidingBullet != null) {
 					enemiesToRemove.add(enemy);
-					eExplosionImg = new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY());
+					enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
 					playerBullets.remove(collidingBullet);
 					score += 10;
 					scoreText.setText("Score: " + this.score);
@@ -132,10 +130,24 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			{
 				enemies.remove(enemy);
 			}
+
+			// Enemy Explosions
+			ArrayList<Explosion> enemyExplosionsToRemove = new ArrayList<Explosion>();
+			for (Explosion enemyExplosion: enemyExplosions)
+			{
+				if (enemyExplosion.update()) {
+					enemyExplosionsToRemove.add(enemyExplosion);
+				}
+			}
+
+			for (Explosion enemyExplosion: enemyExplosionsToRemove)
+			{
+				enemyExplosions.remove(enemyExplosion);
+			}
 			
 			// Enemy Bullets
 			final ArrayList<enProject> enemyBulletsToRemove = new ArrayList<enProject>();
-			for (final enProject enBullet: enemyBullets)
+			for (enProject enBullet: enemyBullets)
 			{
 				if (enBullet.update(player, this))
 				{
@@ -159,6 +171,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			{
 				playerBullets.remove(playerBullet);
 			} 
+			
+			// Next Level
             if(enemies.size() == 0)
             {
                 if(roundNum == 3)
@@ -169,18 +183,22 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
                 }
                 if(roundNum < 3)
                 {
-                    eExplosionImg = new Explosion("Images//eExplosion.gif", 10000, 0);
                     levelText.setText("Round " + roundNum + " passed.");
-                    levelText.setVisible(true);
+					levelText.setVisible(true);
+
                     try
                     {Thread.sleep(1000);}
-                    catch(final InterruptedException ex){}
-                    levelText.setVisible(false);
+					catch(final InterruptedException ex){}
+
+					levelText.setVisible(false);
+
                     reset();
                     lives++;
                     livesText.setText("Lives: " + this.lives);                    
                     roundNum++;
-                    roundsText.setText("Round " + roundNum + "/3");
+					roundsText.setText("Round " + roundNum + "/3");
+					
+					player.updateSprite(lives);
                 }
                 else
                     over = true;
@@ -190,32 +208,19 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
                 Thread.sleep( sleep );
             }
             catch( final InterruptedException ex ){}
-            if(lives > 2)
-            {
-                player = new Player("images//pShip.gif", player.getX(), player.getY());
-            }
-            else if(lives == 2)
-            {
-                player = new Player("images//pShip2.gif", player.getX(), player.getY());
-            }
-            else if(lives == 1)
-            {
-                player = new Player("images//pShip3.gif", player.getX(), player.getY());
-			}
             this.repaint();//redraw the screen with the updated locations; calls paintComponent below
         }
 
-		for (final Enemy enemy: enemies) {
+		for (Enemy enemy: enemies) {
 			enemy.setX(10000);
 		}
                 
 		player.setX(10000);
 		playerBullets.clear();
 		enemyBullets.clear();
-        eExplosionImg.setX(10000);
-        this.add(overText);
-        overText.setFont(new Font("Lava", Font.BOLD, 50));
         overText.setVisible(true);
+        overText.setFont(new Font("Lava", Font.BOLD, 50));
+        this.add(overText);
 	}
 	
 	public void hitPlayer()
@@ -224,6 +229,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 			over = true;
 		lives--;
 		livesText.setText("Lives: " + this.lives);
+		player.updateSprite(lives);
 		if (lives != 0)
 			SOUND_MANAGER.loseLife.play();
 		else
@@ -246,7 +252,6 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     {
 		super.paintComponent( page );//I'll tell you later.
 		page.drawImage(background.getImage(), 0, 0, null);
-		player.draw( page );
 		for (final Projectile playerBullet: playerBullets)
 		{
 			page.drawImage(playerBullet.getImage(), playerBullet.getX() + 43, playerBullet.getY() - 10, null);
@@ -255,8 +260,11 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		{
 			page.drawImage(enemyBullet.getImage(), enemyBullet.getX(), enemyBullet.getY() + 10, null);
 		}
-        page.drawImage(player.getImage(), player.getX(), player.getY() - 60, null);
-		page.drawImage(eExplosionImg.getImage(), eExplosionImg.getX() - 15, eExplosionImg.getY() - 10, null);
+		page.drawImage(player.getImage(), player.getX(), player.getY() - 60, null);
+		for (Explosion enemyExplosion: enemyExplosions)
+		{
+			page.drawImage(enemyExplosion.getImage(), enemyExplosion.getX() - 15, enemyExplosion.getY() - 10, null);
+		}
 		for (final Enemy enemy: enemies) {
 			page.drawImage(enemy.getImage(), enemy.getX() - 5, enemy.getY(), null);
 		}
