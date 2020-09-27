@@ -1,4 +1,6 @@
 import java.awt.*;//must be imported to use Graphics and Color
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 public class Enemy
@@ -34,18 +36,21 @@ public class Enemy
         isDead = false;
     }
 	
-	public boolean update(boolean turnToShoot, boolean enCanShoot, Projectile bullet, Game game)
+	public Projectile update(boolean turnToShoot, boolean enCanShoot, ArrayList<Projectile> playerBullets, Game game)
 	{
+		for (Projectile bullet: playerBullets)
+		{
+			if (bullet.isInside(this)) {
+				return bullet;
+			}
+		}
 		if (turnToShoot && enCanShoot) {
 			game.enemyShoot(x + 10, y);
 		}
 		move();
 		if (y > 680)
 			game.gameOver();
-		if (bullet.isInside(this)) {
-			return true;
-		}
-		return false;
+		return null;
 	}
 
     public void move()

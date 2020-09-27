@@ -19,6 +19,21 @@ public class enProject
         this(new ImageIcon(path).getImage(), xLoc, yLoc);
     }
 
+	public boolean update(Player player, Game game)
+	{
+		move();
+		if (isInsideP(player))
+		{
+			game.hitPlayer();
+			return true;
+		}
+		if (y > 780)
+		{
+			return true;
+		}
+		return false;
+	}
+
     public void draw(Graphics page)
     {
         page.setColor( Color.WHITE );

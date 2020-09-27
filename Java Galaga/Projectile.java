@@ -25,15 +25,10 @@ public class Projectile
         //page.fillRect( this.x + 50, this.y - 20, 4, 20 );
     }
 
-    public void move()
+    public boolean update()
     {
-        for(int i = 0; i < 1000; i++)
-        {
-            if(y > 0 && i % 100 == 0)
-            {
-                this.y -= 1;
-            }
-        }
+        y -= 10;
+        return y < 0;
     }
     
     public int getX() // returns x value
