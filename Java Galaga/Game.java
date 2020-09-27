@@ -237,8 +237,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
 	public void gameOver() {
 		over = true;
-	}
-		//Precondition: executed when repaint() or paintImmediately is called
+  }
+
+  //Precondition: executed when repaint() or paintImmediately is called
 	//Postcondition: the screen has been updated with current player location
 	@Override
 	public void paintComponent( final Graphics page )
