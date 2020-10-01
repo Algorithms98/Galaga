@@ -54,7 +54,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
 	public void initialize()
 	{
-		player = new Player("Images//pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 450, 650 );//450, 750
+		player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 450, 650 );//450, 750
 		scoreText.setBounds(885, 5, 850, 20);
 		scoreText.setForeground(Color.WHITE);
 		scoreText.setFont(new Font("Lava", Font.BOLD, 20));
@@ -208,7 +208,6 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		}
 
 		enemies.clear();
-		player = null;
 		playerBullets.clear();
 		enemyBullets.clear();
 		enemyExplosions.clear();
@@ -237,9 +236,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
 	public void gameOver() {
 		over = true;
-  }
+	}
 
-  //Precondition: executed when repaint() or paintImmediately is called
+	//Precondition: executed when repaint() or paintImmediately is called
 	//Postcondition: the screen has been updated with current player location
 	@Override
 	public void paintComponent( final Graphics page )
@@ -253,8 +252,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		for (final enProject enemyBullet: enemyBullets)
 		{
 			enemyBullet.draw(page);
-		}
-		player.draw(page);
+    }
+    if (!over)
+      player.draw(page);
 		for (final Enemy enemy: enemies) {
 			enemy.draw(page);
 		}
