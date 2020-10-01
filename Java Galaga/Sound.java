@@ -13,7 +13,7 @@ public class Sound
 	// post: plays the sound 
 	public void play()
 	{
-		clip.play();
+//		clip.play();
 	}
 
 	// pre: none

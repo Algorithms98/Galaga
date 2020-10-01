@@ -252,9 +252,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		for (final enProject enemyBullet: enemyBullets)
 		{
 			enemyBullet.draw(page);
-    }
-    if (!over)
-      player.draw(page);
+		}
+		if (!over)
+			player.draw(page);
 		for (final Enemy enemy: enemies) {
 			enemy.draw(page);
 		}
