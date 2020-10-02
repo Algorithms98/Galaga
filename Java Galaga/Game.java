@@ -42,7 +42,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 		playerBullets = new ArrayList<Projectile>();
 		enemyBullets = new ArrayList<enProject>();
 		enemyExplosions = new ArrayList<Explosion>();
-		background = new Background();
+		background = new Background(this);
 
 		score = 0;
 		lives = 3;
@@ -54,7 +54,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
 	public void initialize()
 	{
-		player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 450, 650 );//450, 750
+		player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 450, 950 );//450, 750
 		scoreText.setBounds(885, 5, 850, 20);
 		scoreText.setForeground(Color.WHITE);
 		scoreText.setFont(new Font("Lava", Font.BOLD, 20));
@@ -296,10 +296,12 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 	{
 		for (int row=0; row<5; row++)
 		{
+			
 			for (int col=0; col<7; col++)
 			{
 				final int posX = (col+1) * 100 + 70;
 				final int posY = (row+1) * 100 - 70;
+				//enemies.add(new FlyingEnemy("Images//eShip.gif", posX, posY,player));
 				if (row == 0)
 					enemies.add(new Enemy("Images//eShip3.gif", posX, posY));
 				else if (row < 3)

@@ -5,13 +5,13 @@ import javax.swing.*;
 
 public class Enemy
 {
-	private int x;                  // x position
-	private int y;                  // y position
+	protected int x;                  // x position
+	protected int y;                  // y position
 	private int vx;                 // x velocity
 	private int vy;    
 	private int numMoves;   
 	private int maxMoves;
-	private Image image;
+	protected Image image;
 
 	public Enemy(Image img, int xLoc, int yLoc )
 	{
