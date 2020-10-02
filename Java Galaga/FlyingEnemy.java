@@ -30,7 +30,7 @@ public class FlyingEnemy extends Enemy{
 			if(friction >= frictionMax)
 			{
 				double p = (double)player.getX()/1000.0;
-				//System.out.println(p);
+				
 				if(player.getX() >450)
 				dx +=.1;
 				else dx-=.1;
@@ -39,7 +39,7 @@ public class FlyingEnemy extends Enemy{
 				x += dx; 
 				y += dy;
 				friction = 0;
-				//System.out.println(x);
+				
 			}
 		}else 
 			{

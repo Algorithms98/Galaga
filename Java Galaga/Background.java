@@ -20,7 +20,6 @@ public class Background extends JLabel {
 		
 		dots = new BackgroundDot[numOfDots]; //array of our background dots
 		Random rand = new Random(); 
-		System.out.println(game.getPreferredSize().width);
 		for(int i = 0; i <numOfDots; i++)
 		{
 			dots[i] = new BackgroundDot(rand.nextInt(width),rand.nextInt(height)); // put the dots in random locations based on the width and height
