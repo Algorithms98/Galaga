@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=FlyingEnemy
+comment1.params=img\ xLoc\ yLoc\ player
+comment1.target=FlyingEnemy(java.awt.Image,\ int,\ int,\ Player)
+comment2.params=path\ xLoc\ yLoc\ player
+comment2.target=FlyingEnemy(java.lang.String,\ int,\ int,\ Player)
+comment3.params=
+comment3.target=void\ move()
+comment4.params=page
+comment4.target=void\ draw(java.awt.Graphics)
+numComments=5

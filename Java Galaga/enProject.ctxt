@@ -1,0 +1,15 @@
+#BlueJ class context
+comment0.target=enProject
+comment1.params=img\ xLoc\ yLoc
+comment1.target=enProject(java.awt.Image,\ int,\ int)
+comment2.params=path\ xLoc\ yLoc
+comment2.target=enProject(java.lang.String,\ int,\ int)
+comment3.params=player\ game
+comment3.target=boolean\ update(Player,\ Game)
+comment4.params=page
+comment4.target=void\ draw(java.awt.Graphics)
+comment5.params=
+comment5.target=void\ move()
+comment6.params=p
+comment6.target=boolean\ isInsideP(Player)
+numComments=7

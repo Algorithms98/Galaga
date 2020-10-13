@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=Projectile
+comment1.params=img\ xLoc\ yLoc
+comment1.target=Projectile(java.awt.Image,\ int,\ int)
+comment2.params=path\ xLoc\ yLoc
+comment2.target=Projectile(java.lang.String,\ int,\ int)
+comment3.params=page
+comment3.target=void\ draw(java.awt.Graphics)
+comment4.params=
+comment4.target=boolean\ update()
+comment5.params=en
+comment5.target=boolean\ isInside(Enemy)
+numComments=6
