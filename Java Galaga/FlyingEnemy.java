@@ -5,11 +5,15 @@ import java.awt.geom.AffineTransform;
 
 public class FlyingEnemy extends Enemy{
 
+	private int actionState = 0;
 	private int friction = 0;
-	private float rotation;
-	private float dx = 0;
-	private float dy = 0;
+	private int radius = 0;
+	private double angleDelta;
+	private double angle = 0;
+	private float rotation;	
 	private Player player;
+	private int currentCenterY;
+	private int currentCenterX;
 	public FlyingEnemy(Image img, int xLoc, int yLoc, Player player) {
 		super(img, xLoc, yLoc);
 		this.player = player;
@@ -18,36 +22,34 @@ public class FlyingEnemy extends Enemy{
 	public FlyingEnemy(String path, int xLoc, int yLoc, Player player) {
 		super(path, xLoc, yLoc);
 		this.player = player;
-		
 	}
 	public void move()
 	{
-		final int frictionMax = 5;
-		friction ++;
-		if(y<400)
-		{
+		switch(actionState) {
+		case 0: x++;
+				if(x>=350 && x <=650)
+				{
+					actionState ++;
+					setCircle(x,y+100,true);
+				}
+				break;
+		case 1:
 			
-			if(friction >= frictionMax)
-			{
-				double p = (double)player.getX()/1000.0;
-				
-				if(player.getX() >450)
-				dx +=.1;
-				else dx-=.1;
-				
-				dy = (int) (dx*dx/(p*2));
-				x += dx; 
-				y += dy;
-				friction = 0;
-				
-			}
-		}else 
-			{
-				y=0;
-				dy=0;
-				dx =0;
-			}
+			moveAroundSetCircle();
+			break;
+		case 2: final int frictionMax = 0;
+				friction ++;
+	
+				if(friction >= frictionMax)
+				{
+					
+					moveAroundSetCircle();
+					friction = 0;
+					
+				}
+				break;
 		
+		}
 	}
 
 	public void draw( Graphics page )
@@ -56,13 +58,61 @@ public class FlyingEnemy extends Enemy{
 		
 		Graphics2D g2d=(Graphics2D)page;       // Create a Java2D version of g.
 		AffineTransform a = AffineTransform.getRotateInstance(rotation, x+image.getHeight(null)/2, y + image.getWidth(null)/2);
-		rotation+=0;
+		//rotation= (float) angle;
 		
 	    //Set our Graphics2D object to the transform
 	    g2d.setTransform(a);
 	    //Draw our image like normal
 	    g2d.drawImage(image, x, y, null);
+	    g2d.drawRect(currentCenterX, currentCenterY, 20, 20);
 		//page.drawImage(image, x - 5, y, null);
+	}
+	
+	private void moveAroundSetCircle()
+	{
+		
+		
+		x = (int) (currentCenterX + Math.cos(Math.toRadians(angle))*radius);
+		y = (int) (currentCenterY + Math.sin(Math.toRadians(angle))*radius);
+		
+			if(angle >360)
+			{
+				angle = 0+angle%360;
+			}
+		
+			
+			if(angle <0)
+			{
+				angle = 360 - Math.abs(angle);
+			}
+			angle+= angleDelta;
+			
+		
+	}
+	// supports only a center that has a difference of only one component (centerX must = X || centerY must == y)
+	private void setCircle(int centerX, int centerY, boolean clockwise)
+	{
+		
+		if(clockwise)
+		{
+			angleDelta = 2;
+		} else angleDelta = -2;
+
+		this.currentCenterX = centerX;
+		this.currentCenterY = centerY;
+		if(centerX==x)
+		{
+			radius = Math.abs(centerY-y);
+			angle = Math.toDegrees(Math.asin((double)((y - centerY)/radius))); // calculate the degree corresponding to our location on the circular path
+		}
+		else 
+			{
+			radius = Math.abs(centerX-x);
+			angle = Math.toDegrees(Math.acos((double)((x - centerX)/radius)));// calculate the degree corresponding to our location on the circular path
+			}
+		
+		
+		
 	}
 
 }
