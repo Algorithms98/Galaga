@@ -3,29 +3,29 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.util.Random;
-import java.util.Random;
 public class FlyingEnemy extends Enemy{
-
+	
+	private Random random = new Random();
 	private int actionState = 0;
 	private int radius = 0;
-	private double angleDelta;
-	private double angle = 270;
-	private float drawAngle = 270;	
-	private Player player;
+	private int linearStepsTaken=0;
+	private int gridDestinationX = 100 + random.nextInt(800);
+	private int gridDestinationY = 100 + random.nextInt(300);
 	private int currentCenterY;
 	private int currentCenterX;
-	private Random random = new Random();
-	int gridDestinationX = 100 + random.nextInt(800);
-	int gridDestinationY = 100 + random.nextInt(300);
-	double initialXLinear;
-	double initialYLinear;
-	double slope = 0;
-	int linearSpeedX=5;
-	double linearSteps;
-	int linearStepsTaken=0;
-	double linearY;
-	double deltaX;
-	double deltaY;
+	private double angle = 270;
+	private double angleDelta;
+	private double initialXLinear;
+	private double initialYLinear;
+	private double linearSteps;
+	private double linearDeltaX;
+	private double linearDeltaY;
+	private float drawAngle = 270;	
+	private Player player;
+	
+	
+	
+	
 	
 	public FlyingEnemy(Image img, int xLoc, int yLoc, Player player) {
 		super(img, xLoc, yLoc);
@@ -42,41 +42,44 @@ public class FlyingEnemy extends Enemy{
 		
 		
 		switch(actionState) {
-		case 0: x+=10;					// moving onto the screen from offscreen spawn point
+		
+		// moving onto the screen from off screen spawn point
+		case 0: 
+				x+=10;					
 				if(x>=0 && x <=1000)
 				{
 					actionState ++;
 					setCircle(x,y-500,false);
 					angleDelta=-2;
 				}
-				break;
-		case 1:                  // initial flying up screen along the path of a circle for 90 degrees
-			moveAroundSetCircle();
-			if(angle==0)
-			{
-				actionState++;
-				x++;
-				y-=2;
-
-				setCircle(x-120, y, false);
-			}
+			break;
 			
+		// initial flying up screen along the path of a circle for 90 degrees
+		case 1:                
+				moveAroundSetCircle();
+				if(angle==0)
+				{
+					actionState++;
+					x++;
+					y-=2;
+	
+					setCircle(x-120, y, false);
+				}
 			break;
-		case 2: 			// fly in a circle at some y before heading toward position on grid
+			
+		// fly in a circle at some y before heading toward position on grid
+		case 2: 			
 				angleDelta=-8;
-			moveAroundSetCircle();
-			if(angle==0)
-			{
-				actionState++;
-				
-			setLinearTarget(gridDestinationX, gridDestinationY,60);
-			}
-				
-				
+				moveAroundSetCircle();
+				if(angle==0)
+				{
+					actionState++;
+					setLinearTarget(gridDestinationX, gridDestinationY,60);
+				}
 			break;
-		case 3: 					// flying toward position on grid
-				
-		
+			
+		// flying toward position on grid
+		case 3: 					
 				if(moveTowardLinearTarget())
 					;
 				else 
@@ -84,10 +87,13 @@ public class FlyingEnemy extends Enemy{
 						actionState++;
 						drawAngle=(int) (drawAngle%360); // covert from float angle of linear movement to ordinary discrete integer from 0-360
 					}
-				
-				
 			break;
-		case 4:					// situate to correct draw angle
+			
+		// situate to correct draw angle
+		case 4:					
+			
+				//TODO make the speed of angle change adjustable through steps
+				// improve fluidity
 				if(drawAngle>=180)
 					drawAngle++;
 				else 
@@ -96,9 +102,13 @@ public class FlyingEnemy extends Enemy{
 				if(drawAngle==0 || drawAngle==360)
 					actionState++;
 			break;
-		case 5: 
+			
+		// waiting for flydown
+		case 5: 			
 			break;
-		case 6:				// general fly down screen
+			
+		// general fly down screen
+		case 6:				
 			moveAroundSetCircle();
 			if(angle ==90)
 				setCircle(x,y+35,false);
@@ -107,7 +117,9 @@ public class FlyingEnemy extends Enemy{
 					actionState++;
 				}
 			break;
-		case 7: 			// near the player Y
+			
+		// near the player Y
+		case 7: 			
 			
 			y++;
 			if(y>1030)
@@ -121,7 +133,6 @@ public class FlyingEnemy extends Enemy{
 				setCircle(x,y+50,true);
 			}
 			break;
-		
 		}
 	}
 
@@ -137,6 +148,7 @@ public class FlyingEnemy extends Enemy{
 	    g2d.setTransform(a);
 	    //Draw our image like normal
 	    g2d.drawImage(image, x, y, null);
+	    
 	    a = AffineTransform.getRotateInstance(0, 0, 0);
 	    g2d.setTransform(a);
 	    g2d.drawRect(currentCenterX, currentCenterY, 20, 20);
@@ -145,8 +157,6 @@ public class FlyingEnemy extends Enemy{
 	
 	private void moveAroundSetCircle()
 	{
-		
-		
 		x = (int) (currentCenterX + Math.cos(Math.toRadians(angle))*radius);
 		y = (int) (currentCenterY + Math.sin(Math.toRadians(angle))*radius);
 		
@@ -154,16 +164,14 @@ public class FlyingEnemy extends Enemy{
 			{
 				angle = 0+angle%360;
 			}
-		
-			
+
 			if(angle <0)
 			{
 				angle = 360 - Math.abs(angle);
 			}
+			
 			angle+= angleDelta;
 			drawAngle += angleDelta;
-			
-		
 	}
 	// supports only a center that has a difference of only one component (centerX must = X || centerY must == y)
 	private void setCircle(int centerX, int centerY, boolean clockwise)
@@ -211,8 +219,8 @@ public class FlyingEnemy extends Enemy{
 		 linearSteps = steps;
 		 double xDistanceToTravel = xTarget-x;
 		 double yDistanceToTravel = yTarget-y;
-		 deltaX = xDistanceToTravel / steps;
-		 deltaY = yDistanceToTravel / steps;
+		 linearDeltaX = xDistanceToTravel / steps;
+		 linearDeltaY = yDistanceToTravel / steps;
 		 initialXLinear = x;
 		 initialYLinear = y; 
 		 
@@ -226,12 +234,9 @@ public class FlyingEnemy extends Enemy{
 	{
 		
 			
-			x= (int)(initialXLinear + deltaX*linearStepsTaken);
-			y= (int)(initialYLinear + deltaY*linearStepsTaken);
+			x= (int)(initialXLinear + linearDeltaX*linearStepsTaken);
+			y= (int)(initialYLinear + linearDeltaY*linearStepsTaken);
 			linearStepsTaken++;
-			
-	
-		
 			
 			if(linearStepsTaken == linearSteps+1)
 			{
