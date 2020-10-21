@@ -176,12 +176,12 @@ private void removeMenuText()
 	this.remove(options);
 	this.remove(quit);
 	this.remove(title);
-	//this.revalidate();
+	this.revalidate();
 }
 
 	public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 690 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 970 );//450, 750
         
         scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
         scoreText.setForeground(Color.WHITE);
@@ -336,6 +336,7 @@ private void removeMenuText()
         
         enemies.clear();
         playerBullets.clear();
+        playerBullets.clear();
         enemyBullets.clear();
         enemyExplosions.clear();
         overText.setVisible(true);
@@ -485,24 +486,10 @@ private void removeMenuText()
 
 	public void reset()
 	{
-		
-				
-		for (int row=0; row<5; row++)
-        {
-
-            for (int col=0; col<5; col++)
-            {
-                final int posX = (col+1) * 75 + 70;
-                final int posY = (row+1) * 75 - 70;
-                //enemies.add(new FlyingEnemy("Images//eShip.gif", posX, posY,player));
-                if (row == 0)
-                    enemies.add(new Enemy("Images//eShip3.gif", posX, posY));
-                else if (row < 3)
-                    enemies.add(new Enemy("Images//eShip2.gif", posX, posY));
-                else
-                    enemies.add(new Enemy("Images//eShip.gif", posX, posY));
-            }
-        }
+	
+			for(int i = 0; i <100; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", -50-(60*i), 800,player));
+             
 				
 		
 		

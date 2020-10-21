@@ -46,8 +46,8 @@ public class Enemy
 			game.enemyShoot(x + 10, y);
 		}
 
-		if (y > 680)
-			game.gameOver();
+		//if (y > 680)
+			//game.gameOver();
 		return null;
 	}
 
