@@ -16,12 +16,17 @@ public class FlyingEnemy extends Enemy{
 	private double angle = 270;
 	private double angleDelta;
 	private double initialXLinear;
+	
 	private double initialYLinear;
 	private double linearSteps;
 	private double linearDeltaX;
 	private double linearDeltaY;
+	private double currentTurnSteps;
+	private double currentTargetAngle;
 	private float drawAngle = 270;	
 	private Player player;
+	private int currentTurnStepsTaken;
+	private double currentTurnDeltaAngle;
 	
 	
 	
@@ -39,8 +44,6 @@ public class FlyingEnemy extends Enemy{
 	public void move()
 	{
 
-		
-		
 		switch(actionState) {
 		
 		// moving onto the screen from off screen spawn point
@@ -74,7 +77,7 @@ public class FlyingEnemy extends Enemy{
 				if(angle==0)
 				{
 					actionState++;
-					setLinearTarget(gridDestinationX, gridDestinationY,60);
+					setLinearTarget(gridDestinationX, gridDestinationY,20);
 				}
 			break;
 			
@@ -85,6 +88,7 @@ public class FlyingEnemy extends Enemy{
 				else 
 					{
 						actionState++;
+						setTurnTargetAngle(0,30);
 						drawAngle=(int) (drawAngle%360); // covert from float angle of linear movement to ordinary discrete integer from 0-360
 					}
 			break;
@@ -94,17 +98,21 @@ public class FlyingEnemy extends Enemy{
 			
 				//TODO make the speed of angle change adjustable through steps
 				// improve fluidity
-				if(drawAngle>=180)
-					drawAngle++;
-				else 
-					drawAngle--;
+				
+				turnToTargetAngle();
 				
 				if(drawAngle==0 || drawAngle==360)
+					
+				{
 					actionState++;
+					
+				}
 			break;
 			
-		// waiting for flydown
+		// waiting for fly down, moves with grid if not all waves spawn,  breathing if all enemies have spawned
 		case 5: 			
+			
+			
 			break;
 			
 		// general fly down screen
@@ -214,8 +222,10 @@ public class FlyingEnemy extends Enemy{
 	}
 	
 	// sets the target to move in a straight line toward, steps are the number of frames it will take to complete, less steps = faster movement;
+	// must be used only once per movement
 	private void setLinearTarget(int xTarget, int yTarget, double steps)
 	{
+		linearStepsTaken =0;
 		 linearSteps = steps;
 		 double xDistanceToTravel = xTarget-x;
 		 double yDistanceToTravel = yTarget-y;
@@ -229,23 +239,53 @@ public class FlyingEnemy extends Enemy{
 		 
 		
 	}
-	//moves toward current target location in a straight line
+	//moves toward current target location in a straight line, return true if it is currently go toward a target and false if otherwise
 	private boolean moveTowardLinearTarget()
 	{
 		
 			
-			x= (int)(initialXLinear + linearDeltaX*linearStepsTaken);
-			y= (int)(initialYLinear + linearDeltaY*linearStepsTaken);
-			linearStepsTaken++;
+			
 			
 			if(linearStepsTaken == linearSteps+1)
 			{
 				
-				linearStepsTaken =0;
+				
 				return false;
 			}
 			else
-			return true;
+			{
+				x= (int)(initialXLinear + linearDeltaX*linearStepsTaken);
+				y= (int)(initialYLinear + linearDeltaY*linearStepsTaken);
+				linearStepsTaken++;
+				return true;
+			}
+	}
+	
+	// set the target angle for which turnToTargetAngle will turn to, steps are the number of frames it will take to complete, less steps = faster movement;
+	// must be used only once per movement
+	private void setTurnTargetAngle(int targetAngle, double steps)
+	{
+		currentTurnStepsTaken =0;
+		currentTurnSteps = steps;
+		currentTargetAngle = targetAngle%360;
+		currentTurnDeltaAngle = (currentTargetAngle-drawAngle)/currentTurnSteps;
+	}
+	private void turnToTargetAngle()
+	{
+		
+		if(currentTurnSteps != currentTurnStepsTaken)
+		{
+			drawAngle += currentTurnDeltaAngle;
+			currentTurnStepsTaken++;
+		}
+		else
+		{
+			drawAngle = (int)drawAngle;
+			drawAngle = Math.abs(drawAngle);
+			drawAngle = drawAngle%360;
+		}
+		
+	
 	}
 
 }

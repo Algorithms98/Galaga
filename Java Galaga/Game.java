@@ -487,7 +487,7 @@ private void removeMenuText()
 	public void reset()
 	{
 	
-			for(int i = 0; i <20; i++)
+			for(int i = 0; i <8; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", -50-(60*i), 800,player));
              
 				
