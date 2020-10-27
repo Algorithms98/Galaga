@@ -541,19 +541,19 @@ private void removeMenuText()
 	
 			breathing = false;
 		
-			for(int i = 0; i <4; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", 500, -200-(60*i), 4, player, //spawn location
-                		 // grid location
-                		0,3+i)); // row and column num
+			for(int i = 0; i <8; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
+                		0,i)); // row and column num
+			for(int i = 0; i <8; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
+                		3,i)); // row and column num
 			
 			for(int i = 0; i <10; i++)
 				enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
-						// grid location
 						1,i)); // row and column num
              
 			for(int i = 0; i <10; i++)
-				enemies.add(new FlyingEnemy("Images//eShip.gif", 1050+(60*i), 800 , 2, player, //spawn location
-						// grid location
+				enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
 						2,i)); // row and column num
 		
 		

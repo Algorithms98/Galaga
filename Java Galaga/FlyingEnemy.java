@@ -139,18 +139,18 @@ public class FlyingEnemy extends Enemy{
 				   {
 					   if (spawnLocation == 3)
 					   {
-						   setLinearTarget(200,800,80);
+						   setLinearTarget(100,500,90);
 					   }
 					   else
 						   if (spawnLocation == 4)
 						   {
-							   setLinearTarget(800,500,80);
+							   setLinearTarget(900,500,90);
 						   }
 					   actionState ++;
 				   }
 			break;
 			
-		// initial flying up screen along the path of a circle for 90 degrees
+		// first coming on screen
 		case 1:                
 				if(spawnLocation == 1 || spawnLocation == 2)
 				moveAroundSetCircle();
@@ -182,12 +182,12 @@ public class FlyingEnemy extends Enemy{
 					{
 						   if (spawnLocation == 3)
 						   {
-							   setCircle(x+120,y,false,10);
+							   setCircle(x+150,y,false,6);
 						   }
 						   else
 							   if (spawnLocation == 4)
 							   {
-								   setCircle(x-120,y,true,10);
+								   setCircle(x-150,y,true,6);
 							   }
 						actionState++;
 					}
@@ -368,8 +368,24 @@ public class FlyingEnemy extends Enemy{
 		}
 		else 
 			{
+			
 				radius = Math.abs(centerX-x);
 				angle = Math.toDegrees(Math.acos((double)((x - centerX)/radius)));// calculate the degree corresponding to our location on the circular path
+				
+				if(centerX > x)
+				{
+					if(clockwise)
+					drawAngle = 180;
+					else
+						drawAngle = 0;
+				}
+				else 
+				{
+					if(clockwise)
+						drawAngle = 0;
+						else
+							drawAngle = 180;
+				}
 			}
 		
 		
