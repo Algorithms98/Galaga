@@ -9,11 +9,11 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private static final SoundManager SOUND_MANAGER = new SoundManager();
     private final Background background;
     private Player player;
-    private final ArrayList<Enemy> enemies;
+    private final ArrayList<FlyingEnemy> enemies;
     private final ArrayList<enProject> enemyBullets;
     private final ArrayList<Projectile> playerBullets;
     private final ArrayList<Explosion> enemyExplosions;
-
+    
     private int score;
     private int lives;
     private int roundNum;
@@ -22,6 +22,12 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int maxHeight;
     private int menuChoice;
     private int tempChoice;
+    private int gridLeftBound = 100;
+    private int gridRightBound = 800;
+    
+    private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound);
+    
+    private boolean initialized = false;
     private boolean leftArrowDown = false;
     private boolean rightArrowDown = false;
     private boolean EnterDown = false;
@@ -30,9 +36,11 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean pressCounted = false;
     private boolean over = true;
     private boolean onMenu = true;
+    private boolean allEnemiesAddedToGrid = false;
+    private boolean breathing = false;
 
     private final int MAX_ENEMY_BULLETS = 1;
-    private final int MAX_PLAYER_BULLETS = 2;
+    private final int MAX_PLAYER_BULLETS = 200;
     private final int numOfMenus = 4;
     
     JLabel title = new JLabel("Inspire AI ");
@@ -54,7 +62,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(width, height));
 
-        enemies = new ArrayList<Enemy>();
+        enemies = new ArrayList<FlyingEnemy>();
         playerBullets = new ArrayList<Projectile>();
         enemyBullets = new ArrayList<enProject>();
         enemyExplosions = new ArrayList<Explosion>();
@@ -114,9 +122,13 @@ void menu() {
 				{
 				case 1:
 					onMenu = false;
-					lives = 3;
-					score = 0;menuChoice=0;
+					menuChoice=0;
 					removeMenuText();
+					
+					lives = 3;
+					score = 0;
+					
+					
 					initialize();
 					
 					
@@ -181,37 +193,44 @@ private void removeMenuText()
 
 	public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 970 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 840 );//450, 750
+
+        if(!initialized)
+        {
+	        scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
+	        scoreText.setForeground(Color.WHITE);
+	        scoreText.setFont(new Font("Lava", Font.BOLD, 20));
+	        this.add(scoreText);
+	
+	        levelText.setForeground(Color.WHITE);//Round Passed
+	        levelText.setFont(new Font("Lava", Font.BOLD, 49));
+	        levelText.setBounds(340, 50, 400, 240);
+	        this.add(levelText);
+	
+	        overText.setForeground(Color.WHITE);//Game Over
+	        overText.setBounds(maxWidth - 400, 50,maxHeight - 300, 240);
+	        overText.setForeground(Color.RED);
+	
+	        livesText.setBounds(10, 5, 850, 20);//Lives:
+	        livesText.setForeground(Color.WHITE);
+	        livesText.setFont(new Font("Lava", Font.BOLD, 20));
+	        this.add(livesText);
+	
+	        roundsText.setBounds(maxWidth - 100, 5, maxHeight - 50, 20);//Rounds:
+	        roundsText.setForeground(Color.WHITE);
+	        roundsText.setFont(new Font("Lava", Font.BOLD, 20)); 
+	        this.add(roundsText);
+	        
+	        initialized = true;
+        }
         
-        scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
-        scoreText.setForeground(Color.WHITE);
-        scoreText.setFont(new Font("Lava", Font.BOLD, 20));
-        scoreText.setVisible(true);
-        this.add(scoreText);
-
-        levelText.setForeground(Color.WHITE);//Round Passed
-        levelText.setVisible(false);
-        levelText.setFont(new Font("Lava", Font.BOLD, 49));
-        levelText.setBounds(340, 50, 400, 240);
-        this.add(levelText);
-
-        overText.setForeground(Color.WHITE);//Game Over
-        overText.setVisible(false);
-        overText.setBounds(maxWidth - 400, 50,maxHeight - 300, 240);
-        overText.setForeground(Color.RED);
-
-        livesText.setBounds(10, 5, 850, 20);//Lives:
-        livesText.setForeground(Color.WHITE);
-        livesText.setFont(new Font("Lava", Font.BOLD, 20));
+        livesText.setText("Lives: " + lives);
+        scoreText.setText("Score: " + score);
         livesText.setVisible(true);
-        this.add(livesText);
-
-        roundsText.setBounds(maxWidth - 100, 5, maxHeight - 50, 20);//Rounds:
-        roundsText.setForeground(Color.WHITE);
-        roundsText.setFont(new Font("Lava", Font.BOLD, 20));
+        overText.setVisible(false);
+        levelText.setVisible(false);
+        scoreText.setVisible(true);
         roundsText.setVisible(true);
-        this.add(roundsText);
-        
         reset();
         playGame();
         
@@ -223,6 +242,7 @@ private void removeMenuText()
         over = false;
         while( !over )
         {
+        	grid.update();
             // Player
             if (leftArrowDown) {
                 player.moveLeft();
@@ -233,22 +253,45 @@ private void removeMenuText()
 
             // Enemies
             int turnToShoot = (int) (Math.random() * enemies.size());
-            ArrayList<Enemy> enemiesToRemove = new ArrayList<Enemy>();
-            for (final Enemy enemy: enemies) {
+            ArrayList<FlyingEnemy> enemiesToRemove = new ArrayList<FlyingEnemy>();
+            
+            boolean tempCheck = true;
+            for (final FlyingEnemy enemy: enemies)
+            {
+            	if(!enemy.getOnGrid())
+            	{
+            		tempCheck = false;
+            	}
+            }
+            
+            for (final FlyingEnemy enemy: enemies) {
+            	
+            	// in charge of keeping the grid between the grid left and right bounds
+            	
+            	if(!breathing&&tempCheck&&enemy.getX()==enemy.getInitialXGrid())
+            		breathing = true;
+            	
                 // Returns colliding bullet if enemy gets blown up
-                final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, playerBullets, this);
+                final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, breathing, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
+                		, grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
+                
                 if (collidingBullet != null) {
                     enemiesToRemove.add(enemy);
                     enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
                     playerBullets.remove(collidingBullet);
                     score += 10;
-                    scoreText.setText("Score: " + this.score);
+                    
+                    // keeps label from flickering
+                    SwingUtilities.invokeLater(() -> {
+                    	scoreText.setText("Score: " + this.score);});
+                    
+                    
                     SOUND_MANAGER.enemyExplosion.play();
                 }
                 turnToShoot--;
             }
 
-            for (final Enemy enemy: enemiesToRemove)
+            for (final FlyingEnemy enemy: enemiesToRemove)
             {
                 enemies.remove(enemy);
             }
@@ -316,7 +359,11 @@ private void removeMenuText()
                     reset();
 
                     lives++;
-                    livesText.setText("Lives: " + this.lives);                    
+                    
+                    // keeps label from flickering
+                    SwingUtilities.invokeLater(() -> {
+                    	livesText.setText("Lives: " + this.lives);});
+                    
                     roundNum++;
                     roundsText.setText("Round " + roundNum + "/3");
                     player.updateSprite(lives);
@@ -349,11 +396,12 @@ private void removeMenuText()
 			Thread.sleep(1500);
 		}
 		catch( final InterruptedException ex ){}
-        this.remove(overText);
-        this.remove(scoreText);
-        this.remove(roundsText);
-        this.remove(livesText);
-        //this.revalidate();
+        
+        scoreText.setVisible(false);
+        overText.setVisible(false);
+        roundsText.setVisible(false);
+        livesText.setVisible(false);
+        this.revalidate();
         
         onMenu =true;
         addMenuText();
@@ -365,6 +413,8 @@ private void removeMenuText()
             gameOver();
         lives--;
         livesText.setText("Lives: " + this.lives);
+        
+        this.updateUI();
         player.updateSprite(lives);
         if (lives != 0)
             SOUND_MANAGER.loseLife.play();
@@ -386,6 +436,7 @@ private void removeMenuText()
     @Override
     public void paintComponent( final Graphics page )
     {
+    	this.setDoubleBuffered(true);
         super.paintComponent(page);
         background.draw(page);
         
@@ -422,6 +473,7 @@ private void removeMenuText()
         for (final Enemy enemy: enemies) {
             enemy.draw(page);
         }
+        
         for (Explosion enemyExplosion: enemyExplosions)
         {
             enemyExplosion.draw(page);
@@ -487,10 +539,22 @@ private void removeMenuText()
 	public void reset()
 	{
 	
-			for(int i = 0; i <8; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", -50-(60*i), 800,player));
+			breathing = false;
+		
+			for(int i = 0; i <4; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 500, -200-(60*i), 4, player, //spawn location
+                		 // grid location
+                		0,3+i)); // row and column num
+			
+			for(int i = 0; i <10; i++)
+				enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
+						// grid location
+						1,i)); // row and column num
              
-				
+			for(int i = 0; i <10; i++)
+				enemies.add(new FlyingEnemy("Images//eShip.gif", 1050+(60*i), 800 , 2, player, //spawn location
+						// grid location
+						2,i)); // row and column num
 		
 		
 	}

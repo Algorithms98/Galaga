@@ -33,7 +33,7 @@ public class Enemy
 		maxMoves = 150;
 	}
 
-	public Projectile update(boolean turnToShoot, boolean enCanShoot, ArrayList<Projectile> playerBullets, Game game)
+	public Projectile update(boolean turnToShoot, boolean enCanShoot, boolean gridMovingRight, ArrayList<Projectile> playerBullets, Game game)
 	{
 		for (Projectile bullet: playerBullets)
 		{

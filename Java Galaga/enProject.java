@@ -22,6 +22,7 @@ public class enProject
 	public boolean update(Player player, Game game)
 	{
 		move();
+		
 		if (isInsideP(player))
 		{
 			game.hitPlayer();
