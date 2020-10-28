@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
 {
@@ -36,8 +37,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean pressCounted = false;
     private boolean over = true;
     private boolean onMenu = true;
-    private boolean allEnemiesAddedToGrid = false;
-    private boolean breathing = false;
+    private int enemiesInFlight = 0;
+    private int enemiesInFlightMax = 5;
 
     private final int MAX_ENEMY_BULLETS = 1;
     private final int MAX_PLAYER_BULLETS = 200;
@@ -257,20 +258,62 @@ private void removeMenuText()
             ArrayList<FlyingEnemy> enemiesToRemove = new ArrayList<FlyingEnemy>();
             
             // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
-            boolean tempCheck = true;
-            for (final FlyingEnemy enemy: enemies)
+            if(!grid.isBreathing())
             {
-            	if(!enemy.getOnGrid())
-            	{
-            		tempCheck = false;
-            	}
+	            boolean tempCheck = true;
+	            for (final FlyingEnemy enemy: enemies)
+	            {
+	            	if(!enemy.isOnGrid())
+	            	{
+	            		tempCheck = false;
+	            	}
+	            }
+	            if(tempCheck)
+	            		grid.setToBreathe();
             }
-            if(tempCheck)
-            		grid.setToBreathe();
             
+            
+            if(grid.isBreathing())  	
+            if(enemiesInFlight <enemiesInFlightMax)
+            	{
+	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
+	            	 for (final FlyingEnemy enemy: enemies) 
+	            	 {
+	            		 if(enemy.isOnGrid())	
+	            		 {
+	            			 enemiesEligible.add(enemies.indexOf(enemy));
+	            		 }
+	            	 }
+	            	 
+	            	 Collections.shuffle(enemiesEligible);
+	            	 
+	            	 if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
+	            	 {
+	            		 for (final Integer enemyFly: enemiesEligible) 
+		            	 {
+	            			 enemiesInFlight++;
+	            			 enemies.get(enemyFly).setOnGrid(false);
+	            			 
+	            			 enemies.get(enemyFly).advanceAction();
+	            			 enemies.get(enemyFly).setCircle(enemies.get(enemyFly).getX()+150,enemies.get(enemyFly).getY(),false,6);
+	            			 
+		            	 }
+	            	 }
+	            	 
+	            	 else
+	            		for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
+	            		{
+	            			enemiesInFlight++;
+	            			enemies.get(enemiesEligible.get(i)).setOnGrid(false);
+	            			enemies.get(enemiesEligible.get(i)).advanceAction();
+	            			enemies.get(enemiesEligible.get(i)).setCircle(enemies.get(enemiesEligible.get(i)).getX()+150,
+	            												enemies.get(enemiesEligible.get(i)).getY(),false,6);
+	            		}
+            	}
             
             for (final FlyingEnemy enemy: enemies) {
-
+            	
+            	
                 // Returns colliding bullet if enemy gets blown up
                 final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
                 		, grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
@@ -294,6 +337,9 @@ private void removeMenuText()
             for (final FlyingEnemy enemy: enemiesToRemove)
             {
                 enemies.remove(enemy);
+                
+                if(grid.isBreathing()&&!enemy.isOnGrid())
+                	enemiesInFlight--;
             }
 
             // Enemy Explosions
@@ -541,7 +587,7 @@ private void removeMenuText()
 	
 			
 			grid.reset();
-			
+			enemiesInFlight = 0;
 			for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
                 		0,3+i)); // row and column numb

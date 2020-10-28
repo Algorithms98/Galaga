@@ -269,6 +269,7 @@ public class FlyingEnemy extends Enemy{
 			
 		// general fly down screen until death 
 		case 6:				
+			
 			moveAroundSetCircle();
 			if(angle ==90)
 				setCircle(x,y+35,false,2);
@@ -334,7 +335,7 @@ public class FlyingEnemy extends Enemy{
 			drawAngle += angleDelta;
 	}
 	// supports only a center that has a difference of only one component (centerX must = X || centerY must == y)
-	private void setCircle(int centerX, int centerY, boolean clockwise,int speed)
+	public void setCircle(int centerX, int centerY, boolean clockwise,int speed)
 	{
 		
 		if(clockwise)
@@ -458,11 +459,14 @@ public class FlyingEnemy extends Enemy{
 	
 	}
 	
-	public boolean getOnGrid()
+	public boolean isOnGrid()
 	{
 		return onGrid;
 	}
-	
+	public void setOnGrid(boolean onGrid)
+	{
+		this.onGrid = onGrid;
+	}
 	public int getInitialXGrid()
 	{
 		return initialXGrid;
@@ -475,5 +479,9 @@ public class FlyingEnemy extends Enemy{
 	public int getGridCol()
 	{
 		return gridCol;
+	}
+	public void advanceAction()
+	{
+		actionState++;
 	}
 }
