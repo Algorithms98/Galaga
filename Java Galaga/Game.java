@@ -87,142 +87,142 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     }
 
 void menu() {
-	
-	addMenuText();
+    
+    addMenuText();
 
-		while(menuChoice !=4)
-		{
-			try
-			{
-				Thread.sleep( sleep);
-			}
-			catch( final InterruptedException ex ){}
+        while(menuChoice !=4)
+        {
+            try
+            {
+                Thread.sleep( sleep);
+            }
+            catch( final InterruptedException ex ){}
 
-			
-			if(upArrowDown && !pressCounted)
-			{
-				tempChoice--;
-				pressCounted = true;
-				if(tempChoice < 1 ) tempChoice = 1;
-			}
-			if(downArrowDown && !pressCounted)
-			{
-				tempChoice++;
-				pressCounted = true;
-				if(tempChoice > numOfMenus ) tempChoice = 4;
-			}
-			
-			
-			
-			
-			if(EnterDown)
-			{
-				menuChoice = tempChoice;
-				
-				switch(menuChoice)
-				{
-				case 1:
-					onMenu = false;
-					menuChoice=0;
-					removeMenuText();
-					
-					lives = 3;
-					score = 0;
-					
-					
-					initialize();
-					
-					
-					break;
-					
-				case 2:
-					//startPlayerGame();
-					menuChoice=0;
-					break;
-				case 3:
-					//openOptions();
-					menuChoice=0;
-					break;
-				}
-			}this.repaint();//redraw the screen with the updated locations; calls paintComponent below
-		}
-		System.exit(0);
-	}
+            
+            if(upArrowDown && !pressCounted)
+            {
+                tempChoice--;
+                pressCounted = true;
+                if(tempChoice < 1 ) tempChoice = 1;
+            }
+            if(downArrowDown && !pressCounted)
+            {
+                tempChoice++;
+                pressCounted = true;
+                if(tempChoice > numOfMenus ) tempChoice = 4;
+            }
+            
+            
+            
+            
+            if(EnterDown)
+            {
+                menuChoice = tempChoice;
+                
+                switch(menuChoice)
+                {
+                case 1:
+                    onMenu = false;
+                    menuChoice=0;
+                    removeMenuText();
+                    
+                    lives = 3;
+                    score = 0;
+                    
+                    
+                    initialize();
+                    
+                    
+                    break;
+                    
+                case 2:
+                    //startPlayerGame();
+                    menuChoice=0;
+                    break;
+                case 3:
+                    //openOptions();
+                    menuChoice=0;
+                    break;
+                }
+            }this.repaint();//redraw the screen with the updated locations; calls paintComponent below
+        }
+        System.exit(0);
+    }
 
 private void addMenuText() {
-	
-		title.setBounds(maxWidth/2 -161, 100, 400, 300);//title
-		title.setForeground(Color.WHITE);
-		title.setFont(new Font("Lava", Font.BOLD, 80));
-		title.setVisible(true);
-	    this.add(title);
     
-    	game1.setBounds(maxWidth/2 -35, maxHeight/2-52, 200, 50);//Menu1
-    	game1.setForeground(Color.WHITE);
-    	game1.setFont(new Font("Lava", Font.BOLD, 20));
-    	game1.setVisible(true);
+        title.setBounds(maxWidth/2 -167, 50, 500, 300);//title
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Lava", Font.BOLD, 80));
+        title.setVisible(true);
+        this.add(title);
+    
+        game1.setBounds(maxWidth/2 -35, maxHeight/2-102, 200, 50);//Menu1
+        game1.setForeground(Color.WHITE);
+        game1.setFont(new Font("Lava", Font.BOLD, 20));
+        game1.setVisible(true);
         this.add(game1);
         
-        game2.setBounds(maxWidth/2 - 35 +3, maxHeight/2-52+100, 200, 50);//Menu2
+        game2.setBounds(maxWidth/2 - 35 +3, maxHeight/2-52+50, 200, 50);//Menu2
         game2.setForeground(Color.WHITE);
         game2.setFont(new Font("Lava", Font.BOLD, 20));
         game2.setVisible(true);
         this.add(game2);
         
-        options.setBounds(maxWidth/2 -35 +22, maxHeight/2-52+200, 200, 50);//Menu3
+        options.setBounds(maxWidth/2 -35 +22, maxHeight/2-52+150, 200, 50);//Menu3
         options.setForeground(Color.WHITE);
         options.setFont(new Font("Lava", Font.BOLD, 20));
         options.setVisible(true);
         this.add(options);
         
-        quit.setBounds(maxWidth/2 -35 + 38, maxHeight/2-52+300, 200, 50);//Menu4
+        quit.setBounds(maxWidth/2 -35 + 38, maxHeight/2-52+250, 200, 50);//Menu4
         quit.setForeground(Color.WHITE);
         quit.setFont(new Font("Lava", Font.BOLD, 20));
-    	quit.setVisible(true);
+        quit.setVisible(true);
         this.add(quit);
-	
+    
 }
 private void removeMenuText()
 {
-	this.remove(game1);
-	this.remove(game2);
-	this.remove(options);
-	this.remove(quit);
-	this.remove(title);
-	this.revalidate();
+    this.remove(game1);
+    this.remove(game2);
+    this.remove(options);
+    this.remove(quit);
+    this.remove(title);
+    this.revalidate();
 }
 
-	public void initialize()
+    public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 840 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 670 );//450, 750
 
         if(!initialized)
         {
-	        scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
-	        scoreText.setForeground(Color.WHITE);
-	        scoreText.setFont(new Font("Lava", Font.BOLD, 20));
-	        this.add(scoreText);
-	
-	        levelText.setForeground(Color.WHITE);//Round Passed
-	        levelText.setFont(new Font("Lava", Font.BOLD, 49));
-	        levelText.setBounds(340, 50, 400, 240);
-	        this.add(levelText);
-	
-	        overText.setForeground(Color.WHITE);//Game Over
-	        overText.setBounds(maxWidth/2-150,maxHeight/2-175,maxHeight - 300, 240);
-	        overText.setForeground(Color.RED);
-	
-	        livesText.setBounds(10, 5, 850, 20);//Lives:
-	        livesText.setForeground(Color.WHITE);
-	        livesText.setFont(new Font("Lava", Font.BOLD, 20));
-	        this.add(livesText);
-	
-	        roundsText.setBounds(maxWidth - 100, 5, maxHeight - 50, 20);//Rounds:
-	        roundsText.setForeground(Color.WHITE);
-	        roundsText.setFont(new Font("Lava", Font.BOLD, 20)); 
-	        this.add(roundsText);
-	        
-	        initialized = true;
+            scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
+            scoreText.setForeground(Color.WHITE);
+            scoreText.setFont(new Font("Lava", Font.BOLD, 20));
+            this.add(scoreText);
+    
+            levelText.setForeground(Color.WHITE);//Round Passed
+            levelText.setFont(new Font("Lava", Font.BOLD, 49));
+            levelText.setBounds(340, 50, 400, 240);
+            this.add(levelText);
+    
+            overText.setForeground(Color.WHITE);//Game Over
+            overText.setBounds(maxWidth/2-150,maxHeight/2-175,maxHeight - 300, 240);
+            overText.setForeground(Color.RED);
+    
+            livesText.setBounds(10, 5, 850, 20);//Lives:
+            livesText.setForeground(Color.WHITE);
+            livesText.setFont(new Font("Lava", Font.BOLD, 20));
+            this.add(livesText);
+    
+            roundsText.setBounds(maxWidth - 100, 5, maxHeight - 50, 20);//Rounds:
+            roundsText.setForeground(Color.WHITE);
+            roundsText.setFont(new Font("Lava", Font.BOLD, 20)); 
+            this.add(roundsText);
+            
+            initialized = true;
         }
         
         livesText.setText("Lives: " + lives);
@@ -234,7 +234,6 @@ private void removeMenuText()
         roundsText.setVisible(true);
         reset();
         playGame();
-        
     }
 
     //This is the method that runs the game
@@ -243,8 +242,8 @@ private void removeMenuText()
         over = false;
         while( !over )
         {
-        	grid.update();
-        	
+            grid.update();
+            
             // Player
             if (leftArrowDown) {
                 player.moveLeft();
@@ -260,63 +259,63 @@ private void removeMenuText()
             // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
             if(!grid.isBreathing())
             {
-	            boolean tempCheck = true;
-	            for (final FlyingEnemy enemy: enemies)
-	            {
-	            	if(!enemy.isOnGrid())
-	            	{
-	            		tempCheck = false;
-	            	}
-	            }
-	            if(tempCheck)
-	            		grid.setToBreathe();
+                boolean tempCheck = true;
+                for (final FlyingEnemy enemy: enemies)
+                {
+                    if(!enemy.isOnGrid())
+                    {
+                        tempCheck = false;
+                    }
+                }
+                if(tempCheck)
+                        grid.setToBreathe();
             }
             
             
-            if(grid.isBreathing())  	
+            if(grid.isBreathing())      
             if(enemiesInFlight <enemiesInFlightMax)
-            	{
-	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
-	            	 for (final FlyingEnemy enemy: enemies) 
-	            	 {
-	            		 if(enemy.isOnGrid())	
-	            		 {
-	            			 enemiesEligible.add(enemies.indexOf(enemy));
-	            		 }
-	            	 }
-	            	 
-	            	 Collections.shuffle(enemiesEligible);
-	            	 
-	            	 if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
-	            	 {
-	            		 for (final Integer enemyFly: enemiesEligible) 
-		            	 {
-	            			 enemiesInFlight++;
-	            			 enemies.get(enemyFly).setOnGrid(false);
-	            			 
-	            			 enemies.get(enemyFly).advanceAction();
-	            			 enemies.get(enemyFly).setCircle(enemies.get(enemyFly).getX()+150,enemies.get(enemyFly).getY(),false,6);
-	            			 
-		            	 }
-	            	 }
-	            	 
-	            	 else
-	            		for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
-	            		{
-	            			enemiesInFlight++;
-	            			enemies.get(enemiesEligible.get(i)).setOnGrid(false);
-	            			enemies.get(enemiesEligible.get(i)).advanceAction();
-	            			enemies.get(enemiesEligible.get(i)).setCircle(enemies.get(enemiesEligible.get(i)).getX()+150,
-	            												enemies.get(enemiesEligible.get(i)).getY(),false,6);
-	            		}
-            	}
+                {
+                     ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
+                     for (final FlyingEnemy enemy: enemies) 
+                     {
+                         if(enemy.isOnGrid())   
+                         {
+                             enemiesEligible.add(enemies.indexOf(enemy));
+                         }
+                     }
+                     
+                     Collections.shuffle(enemiesEligible);
+                     
+                     if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
+                     {
+                         for (final Integer enemyFly: enemiesEligible) 
+                         {
+                             enemiesInFlight++;
+                             enemies.get(enemyFly).setOnGrid(false);
+                             
+                             enemies.get(enemyFly).advanceAction();
+                             enemies.get(enemyFly).setCircle(enemies.get(enemyFly).getX()+150,enemies.get(enemyFly).getY(),false,6);
+                             
+                         }
+                     }
+                     
+                     else
+                        for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
+                        {
+                            enemiesInFlight++;
+                            enemies.get(enemiesEligible.get(i)).setOnGrid(false);
+                            enemies.get(enemiesEligible.get(i)).advanceAction();
+                            enemies.get(enemiesEligible.get(i)).setCircle(enemies.get(enemiesEligible.get(i)).getX()+150,
+                                                                enemies.get(enemiesEligible.get(i)).getY(),false,6);
+                        }
+                }
             
             for (final FlyingEnemy enemy: enemies) {
-            	
-            	
+                
+                
                 // Returns colliding bullet if enemy gets blown up
                 final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
-                		, grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
+                        , grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
                 
                 if (collidingBullet != null) {
                     enemiesToRemove.add(enemy);
@@ -326,7 +325,7 @@ private void removeMenuText()
                     
                     // keeps label from flickering
                     SwingUtilities.invokeLater(() -> {
-                    	scoreText.setText("Score: " + this.score);});
+                        scoreText.setText("Score: " + this.score);});
                     
                     
                     SOUND_MANAGER.enemyExplosion.play();
@@ -339,7 +338,7 @@ private void removeMenuText()
                 enemies.remove(enemy);
                 
                 if(grid.isBreathing()&&!enemy.isOnGrid())
-                	enemiesInFlight--;
+                    enemiesInFlight--;
             }
 
             // Enemy Explosions
@@ -408,7 +407,7 @@ private void removeMenuText()
                     
                     // keeps label from flickering
                     SwingUtilities.invokeLater(() -> {
-                    	livesText.setText("Lives: " + this.lives);});
+                        livesText.setText("Lives: " + this.lives);});
                     
                     roundNum++;
                     roundsText.setText("Round " + roundNum + "/3");
@@ -438,10 +437,10 @@ private void removeMenuText()
         this.add(overText);
         
         try
-		{
-			Thread.sleep(1500);
-		}
-		catch( final InterruptedException ex ){}
+        {
+            Thread.sleep(1500);
+        }
+        catch( final InterruptedException ex ){}
         
         scoreText.setVisible(false);
         overText.setVisible(false);
@@ -482,27 +481,27 @@ private void removeMenuText()
     @Override
     public void paintComponent( final Graphics page )
     {
-    	this.setDoubleBuffered(true);
+        this.setDoubleBuffered(true);
         super.paintComponent(page);
         background.draw(page);
         
         // draws main menu
         if(onMenu)
         {
-        	page.setColor(Color.DARK_GRAY);
-        	
-        	for(int i =1; i <=numOfMenus; i++)
-        	{
-        		if(tempChoice ==i)
-            	{
-    		        page.setColor(Color.red);
-    		        page.fillRect(450, 350+i*100, 150, 50);
-    		        page.setColor(Color.DARK_GRAY);
-            	}
-        		else page.fillRect(450, 350+i*100, 150, 50);
-        	}
-        	
-	        
+            page.setColor(Color.DARK_GRAY);
+            
+            for(int i =1; i <=numOfMenus; i++)
+            {
+                if(tempChoice ==i)
+                {
+                    page.setColor(Color.red);
+                    page.fillRect(450, 350+i*100, 150, 50);
+                    page.setColor(Color.DARK_GRAY);
+                }
+                else page.fillRect(450, 350+i*100, 150, 50);
+            }
+            
+            
         }
         
         
@@ -528,85 +527,85 @@ private void removeMenuText()
 
     //tells the program what to do when keys are pressed
     public void keyPressed( final KeyEvent event )
-	{
-		if( event.getKeyCode() == KeyEvent.VK_ENTER )
-		{
-			EnterDown = true;
-			
-		}
-		if( event.getKeyCode() == KeyEvent.VK_UP )
-		{
-			upArrowDown = true;
-			pressCounted = false;
-		}
-		if( event.getKeyCode() == KeyEvent.VK_DOWN )
-		{
-			downArrowDown = true;
-			pressCounted = false;
-		}
-		if( event.getKeyCode() == KeyEvent.VK_RIGHT )
-		{
-			rightArrowDown = true;
-		}
-		else if( event.getKeyCode() == KeyEvent.VK_LEFT )
-		{
-			leftArrowDown = true;
-		}
-		
-		else if(event.getKeyCode() == KeyEvent.VK_SPACE && playerBullets.size() < MAX_PLAYER_BULLETS)
-		{
-			playerBullets.add(new Projectile("Images//rocket.gif", player.getX(), player.getY()));
-			SOUND_MANAGER.playerShot.play();
-		}
-	}
+    {
+        if( event.getKeyCode() == KeyEvent.VK_ENTER )
+        {
+            EnterDown = true;
+            
+        }
+        if( event.getKeyCode() == KeyEvent.VK_UP )
+        {
+            upArrowDown = true;
+            pressCounted = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_DOWN )
+        {
+            downArrowDown = true;
+            pressCounted = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_RIGHT )
+        {
+            rightArrowDown = true;
+        }
+        else if( event.getKeyCode() == KeyEvent.VK_LEFT )
+        {
+            leftArrowDown = true;
+        }
+        
+        else if(event.getKeyCode() == KeyEvent.VK_SPACE && playerBullets.size() < MAX_PLAYER_BULLETS)
+        {
+            playerBullets.add(new Projectile("Images//rocket.gif", player.getX(), player.getY()));
+            SOUND_MANAGER.playerShot.play();
+        }
+    }
 
-	//not used but must be present
-	public void keyReleased( final KeyEvent event )
-	{
-		if( event.getKeyCode() == KeyEvent.VK_ENTER )
-		{
-			EnterDown = false;
-		}
-		if( event.getKeyCode() == KeyEvent.VK_UP )
-		{
-			upArrowDown = false;
-		}
-		if( event.getKeyCode() == KeyEvent.VK_DOWN )
-		{
-			downArrowDown = false;
-		}
-		if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-			rightArrowDown = false;
-		} else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-			leftArrowDown = false;
-		}
-	}
+    //not used but must be present
+    public void keyReleased( final KeyEvent event )
+    {
+        if( event.getKeyCode() == KeyEvent.VK_ENTER )
+        {
+            EnterDown = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_UP )
+        {
+            upArrowDown = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_DOWN )
+        {
+            downArrowDown = false;
+        }
+        if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+            rightArrowDown = false;
+        } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+            leftArrowDown = false;
+        }
+    }
 
-	public void reset()
-	{
-	
-			
-			grid.reset();
-			enemiesInFlight = 0;
-			
-			
-			for(int i = 0; i <4; i++)
+    public void reset()
+    {
+    
+            
+            grid.reset();
+            enemiesInFlight = 0;
+            
+            
+            for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
-                		0,3+i)); // row and column numb
-			for(int i = 0; i <4; i++)
+                        0,3+i)); // row and column numb
+            for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
-                		3,3+i)); // row and column numb
-			
-			for(int i = 0; i <10; i++)
-				enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
-						1,i)); // row and column numb
+                        3,3+i)); // row and column numb
+            
+            for(int i = 0; i <10; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
+                        1,i)); // row and column numb
              
-			for(int i = 0; i <10; i++)
-				enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
-						2,i)); // row and column numb
-		
-		
-	}
+            for(int i = 0; i <10; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
+                        2,i)); // row and column numb
+        
+        
+    }
 
     public void actionPerformed(final ActionEvent event) {}
 
