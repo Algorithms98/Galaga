@@ -38,7 +38,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean over = true;
     private boolean onMenu = true;
     private int enemiesInFlight = 0;
-    private int enemiesInFlightMax = 5;
+    private int enemiesInFlightMax = 3;
 
     private final int MAX_ENEMY_BULLETS = 1;
     private final int MAX_PLAYER_BULLETS = 200;
@@ -588,6 +588,8 @@ private void removeMenuText()
 			
 			grid.reset();
 			enemiesInFlight = 0;
+			
+			
 			for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
                 		0,3+i)); // row and column numb
