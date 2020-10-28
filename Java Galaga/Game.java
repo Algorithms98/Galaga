@@ -208,7 +208,7 @@ private void removeMenuText()
 	        this.add(levelText);
 	
 	        overText.setForeground(Color.WHITE);//Game Over
-	        overText.setBounds(maxWidth - 400, 50,maxHeight - 300, 240);
+	        overText.setBounds(maxWidth/2-150,maxHeight/2-175,maxHeight - 300, 240);
 	        overText.setForeground(Color.RED);
 	
 	        livesText.setBounds(10, 5, 850, 20);//Lives:
@@ -243,6 +243,7 @@ private void removeMenuText()
         while( !over )
         {
         	grid.update();
+        	
             // Player
             if (leftArrowDown) {
                 player.moveLeft();
@@ -255,6 +256,7 @@ private void removeMenuText()
             int turnToShoot = (int) (Math.random() * enemies.size());
             ArrayList<FlyingEnemy> enemiesToRemove = new ArrayList<FlyingEnemy>();
             
+            // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
             boolean tempCheck = true;
             for (final FlyingEnemy enemy: enemies)
             {
@@ -263,16 +265,14 @@ private void removeMenuText()
             		tempCheck = false;
             	}
             }
+            if(tempCheck)
+            		grid.setToBreathe();
+            
             
             for (final FlyingEnemy enemy: enemies) {
-            	
-            	// in charge of keeping the grid between the grid left and right bounds
-            	
-            	if(!breathing&&tempCheck&&enemy.getX()==enemy.getInitialXGrid())
-            		breathing = true;
-            	
+
                 // Returns colliding bullet if enemy gets blown up
-                final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, breathing, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
+                final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
                 		, grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
                 
                 if (collidingBullet != null) {
@@ -539,22 +539,23 @@ private void removeMenuText()
 	public void reset()
 	{
 	
-			breathing = false;
-		
-			for(int i = 0; i <8; i++)
+			
+			grid.reset();
+			
+			for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
-                		0,i)); // row and column num
-			for(int i = 0; i <8; i++)
+                		0,3+i)); // row and column numb
+			for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
-                		3,i)); // row and column num
+                		3,3+i)); // row and column numb
 			
 			for(int i = 0; i <10; i++)
 				enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
-						1,i)); // row and column num
+						1,i)); // row and column numb
              
 			for(int i = 0; i <10; i++)
 				enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
-						2,i)); // row and column num
+						2,i)); // row and column numb
 		
 		
 	}

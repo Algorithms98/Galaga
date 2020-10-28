@@ -16,29 +16,26 @@ public class FlyingEnemy extends Enemy{
 	private int currentCenterY;
 	private int currentCenterX;
 	private int initialXGrid;
+	private int gridCol;
+	private int gridRow;
+	private int futureX;
+	private int futureY;
+	private int currentTurnStepsTaken;
+	
 	private double angle = 270;
 	private double angleDelta;
 	private double initialXLinear;
-	
 	private double initialYLinear;
 	private double linearSteps;
 	private double linearDeltaX;
 	private double linearDeltaY;
 	private double currentTurnSteps;
 	private double currentTargetAngle;
-	private float drawAngle = 270;	
-	private Player player;
-	private int currentTurnStepsTaken;
 	private double currentTurnDeltaAngle;
+	private float drawAngle = 270;	
+
 	private boolean onGrid = false;
-	private boolean gridMovingRight = true;
-	
-	private int gridCol;
-	private int gridRow;
-	private int futureX;
-	private int futureY;
-	
-	
+	private Player player;
 	
 	
 	
@@ -67,7 +64,7 @@ public class FlyingEnemy extends Enemy{
 		
 	}
 	
-	public Projectile update(boolean turnToShoot, boolean enCanShoot, boolean breathing,int xGrid,int yGrid, ArrayList<Projectile> playerBullets, Game game, enemyGrid grid)
+	public Projectile update(boolean turnToShoot, boolean enCanShoot, int xGrid,int yGrid, ArrayList<Projectile> playerBullets, Game game, enemyGrid grid)
 	{
 		for (Projectile bullet: playerBullets)
 		{
@@ -270,7 +267,7 @@ public class FlyingEnemy extends Enemy{
 			
 			break;
 			
-		// general fly down screen
+		// general fly down screen until death 
 		case 6:				
 			moveAroundSetCircle();
 			if(angle ==90)
@@ -292,7 +289,7 @@ public class FlyingEnemy extends Enemy{
 			}
 			if(y<100 && 0 <y)
 			{
-				actionState =1;
+				actionState =6;
 				setCircle(x,y+50,true,2);
 			}
 			break;

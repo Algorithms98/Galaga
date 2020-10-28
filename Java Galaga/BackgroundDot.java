@@ -13,8 +13,7 @@ public class BackgroundDot {
 		this.x = x;
 		this.y = y;
 		
-		int min = 0;
-		int max = 255;
+		
 		
 		int R = rand.nextInt(256);
 		int G = rand.nextInt(256);
