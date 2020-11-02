@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Random;
+
 public class FlyingEnemy extends Enemy{
 	
 	private Random random = new Random();
@@ -389,6 +390,7 @@ public class FlyingEnemy extends Enemy{
 		}
 	}
 
+  @Override
 	public void draw( Graphics page )
 	{
 		//used to rotate the rendering of the image, does not effect coordinates as it rotates in place from center

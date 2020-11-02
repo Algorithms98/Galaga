@@ -1,11 +1,8 @@
 import java.awt.*;//must be imported to use Graphics and Color
 import javax.swing.*;
 
-public class Explosion
+public class Explosion extends DrawableObject
 {
-	private int x;                  // x position
-	private int y;                  // y position
-	private Image image;
 	private int lifetime;
 
 	public Explosion(Image img, int xLoc, int yLoc )
@@ -21,7 +18,8 @@ public class Explosion
 		this(new ImageIcon(path).getImage(), xLoc, yLoc);
 	}
 	
-	
+  
+  @Override
 	public void draw(Graphics page)
 	{
 		page.drawImage(image, x - 15, y - 10, null);

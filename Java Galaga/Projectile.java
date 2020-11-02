@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class Projectile
+public class Projectile extends DrawableObject
 {
 	// x and y location
 	private int x; 

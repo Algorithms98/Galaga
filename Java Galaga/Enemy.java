@@ -3,15 +3,12 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-public class Enemy
+public class Enemy extends DrawableObject
 {
-    protected int x;                  // x position
-    protected int y;                  // y position
     private int vx;                   // x velocity
     private int vy;
     private int numMoves;
     private int maxMoves;
-    protected Image image;
 
     public Enemy(Image img, int xLoc, int yLoc )
     {
@@ -64,18 +61,9 @@ public class Enemy
         numMoves++;
     }
 
+    @Override
     public void draw( Graphics page )
     {
         page.drawImage(image, x - 5, y, null);
-    }
-
-    public int getX()
-    {
-        return this.x;
-    }
-
-    public int getY()
-    {
-        return this.y;
     }
 }

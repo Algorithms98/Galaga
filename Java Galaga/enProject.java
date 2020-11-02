@@ -3,13 +3,10 @@ import java.util.Random;
 
 import javax.swing.*;
 
-public class enProject
+public class enProject extends DrawableObject
 {
-	private int x; // x and y location
-	private int y;
 	private int xDelta;
 	
-	private Image image;
 	private Random rand;
 
 	public enProject(Image img, int xLoc, int yLoc, int playerX )
@@ -51,6 +48,7 @@ public class enProject
 		return false;
 	}
 
+  @Override
 	public void draw(Graphics page)
 	{
 		
