@@ -24,7 +24,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int menuChoice;
     private int tempChoice;
     private int gridLeftBound = 100;
-    private int gridRightBound = 800;
+    private int gridRightBound = 900;
     
     private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound);
     
@@ -40,8 +40,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int enemiesInFlight = 0;
     private int enemiesInFlightMax = 3;
 
-    private final int MAX_ENEMY_BULLETS = 1;
-    private final int MAX_PLAYER_BULLETS = 200;
+    private final int MAX_ENEMY_BULLETS = 0;
+    private final int MAX_PLAYER_BULLETS = 50;
     private final int numOfMenus = 4;
     
     JLabel title = new JLabel("Inspire AI ");
@@ -259,6 +259,7 @@ private void removeMenuText()
             // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
             if(!grid.isBreathing())
             {
+<<<<<<< Upstream, based on origin/master
                 boolean tempCheck = true;
                 for (final FlyingEnemy enemy: enemies)
                 {
@@ -269,9 +270,22 @@ private void removeMenuText()
                 }
                 if(tempCheck)
                         grid.setToBreathe();
+=======
+	            boolean allEnemiesOnGrid = true;
+	            for (final FlyingEnemy enemy: enemies)
+	            {
+	            	if(!enemy.isOnGrid())
+	            	{
+	            		allEnemiesOnGrid = false;
+	            	}
+	            }
+	            if(allEnemiesOnGrid)
+	            		grid.setToBreathe();
+>>>>>>> 0debdad flying enemy mostly down
             }
             
             
+<<<<<<< Upstream, based on origin/master
             if(grid.isBreathing())      
             if(enemiesInFlight <enemiesInFlightMax)
                 {
@@ -309,6 +323,41 @@ private void removeMenuText()
                                                                 enemies.get(enemiesEligible.get(i)).getY(),false,6);
                         }
                 }
+=======
+            if(grid.isSetToBreathe())  	
+            if(enemiesInFlight < enemiesInFlightMax)
+            	{
+	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
+	            	 for (final FlyingEnemy enemy: enemies) 
+	            	 {
+	            		 if(enemy.isOnGrid())	
+	            		 {
+	            			 enemiesEligible.add(enemies.indexOf(enemy));
+	            		 }
+	            	 }
+	            	 
+	            	 Collections.shuffle(enemiesEligible);
+	            	 
+	            	 if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
+	            	 {
+	            		 for (final Integer enemyFly: enemiesEligible) 
+		            	 {
+	            			 enemiesInFlight++;
+	            			 enemies.get(enemyFly).advanceAction();
+	            			 
+	            			 
+		            	 }
+	            	 }
+	            	 
+	            	 else
+	            		for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
+	            		{
+	            			enemiesInFlight++;
+	            			enemies.get(enemiesEligible.get(i)).advanceAction();
+	            			
+	            		}
+            	}
+>>>>>>> 0debdad flying enemy mostly down
             
             for (final FlyingEnemy enemy: enemies) {
                 
@@ -337,8 +386,13 @@ private void removeMenuText()
             {
                 enemies.remove(enemy);
                 
+<<<<<<< Upstream, based on origin/master
                 if(grid.isBreathing()&&!enemy.isOnGrid())
                     enemiesInFlight--;
+=======
+                if(grid.isSetToBreathe()&&!enemy.isOnGrid())
+                	enemiesInFlight--;
+>>>>>>> 0debdad flying enemy mostly down
             }
 
             // Enemy Explosions
@@ -468,14 +522,17 @@ private void removeMenuText()
     }
 
     public void enemyShoot(final int x, final int y) {
-        enemyBullets.add(new enProject("images//alienRocket.gif", x, y));
+        enemyBullets.add(new enProject("images//alienRocket.gif", x, y, player.getX()));
         SOUND_MANAGER.enemyShot.play();
     }
 
     public void gameOver() {
         over = true;
     }
-
+    public boolean gridIsBreathing()
+    {
+    	return grid.isSetToBreathe();
+    }
     //Precondition: executed when repaint() or paintImmediately is called
     //Postcondition: the screen has been updated with current player location
     @Override
@@ -594,12 +651,21 @@ private void removeMenuText()
                         0,3+i)); // row and column numb
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
+<<<<<<< Upstream, based on origin/master
                         3,3+i)); // row and column numb
             
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
                         1,i)); // row and column numb
+=======
+                		3,3+i)); // row and column numb
+			
+			for(int i = 0; i <10; i++)
+				enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(100*i), 800 , 1, player, //spawn location
+						1,i)); // row and column numb
+>>>>>>> 0debdad flying enemy mostly down
              
+<<<<<<< Upstream, based on origin/master
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
                         2,i)); // row and column numb
@@ -607,6 +673,18 @@ private void removeMenuText()
         
     }
 
+=======
+			for(int i = 0; i <10; i++)
+				enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(100*i), 800 , 2, player, //spawn location
+						2,i)); // row and column numb
+		
+		
+	}
+public void minusOneFlying()
+{
+	enemiesInFlight--;
+}
+>>>>>>> 0debdad flying enemy mostly down
     public void actionPerformed(final ActionEvent event) {}
 
     public void keyTyped( final KeyEvent event ) {}

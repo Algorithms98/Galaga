@@ -9,7 +9,7 @@ public class FlyingEnemy extends Enemy{
 	private Random random = new Random();
 	private int spawnLocation = 0; // which side of the screen was this enemy spawned at, 1 = bottom left, 2 - bottom right, 3 = top left, 4 = top right 
 	private int actionState = 0;
-	private int radius = 0;
+	private double radius = 0;
 	private int linearStepsTaken=0;
 	private int gridDestinationX = 100 + random.nextInt(800);
 	private int gridDestinationY = 100 + random.nextInt(300);
@@ -21,6 +21,9 @@ public class FlyingEnemy extends Enemy{
 	private int futureX;
 	private int futureY;
 	private int currentTurnStepsTaken;
+	private int case9YTarget = 495;
+	int flyingDownXTarget;
+	double flyingDownTargetAngle;
 	
 	private double angle = 270;
 	private double angleDelta;
@@ -34,6 +37,11 @@ public class FlyingEnemy extends Enemy{
 	private double currentTurnDeltaAngle;
 	private float drawAngle = 270;	
 
+	
+	private double circleHelpX;
+	private double circleHelpY;
+	double previousX;
+	double previousY;
 	private boolean onGrid = false;
 	private Player player;
 	
@@ -66,6 +74,9 @@ public class FlyingEnemy extends Enemy{
 	
 	public Projectile update(boolean turnToShoot, boolean enCanShoot, int xGrid,int yGrid, ArrayList<Projectile> playerBullets, Game game, enemyGrid grid)
 	{
+		drawAngle=drawAngle%360;
+		if(drawAngle <0)
+			drawAngle = 360-Math.abs(drawAngle);
 		for (Projectile bullet: playerBullets)
 		{
 			if (bullet.isInside(this)) {
@@ -73,16 +84,27 @@ public class FlyingEnemy extends Enemy{
 			}
 		}
 		
-		if(actionState==2)
+		if(actionState==2||actionState==12)
 		{
-			futureX =grid.calcXCordInFrames(gridRow, gridCol, 35);
-			futureY = grid.getYCord(gridRow, gridCol);
+			if(actionState==2)
+			{
+				futureX =grid.calcXCordInFrames(gridRow, gridCol, 35);
+				futureY = grid.getYCord(gridRow, gridCol);
+			}
+			else
+			{
+				futureX = grid.calcXCordInFrames(gridRow, gridCol, 60);
+				futureY = grid.getYCord(gridRow, gridCol);
+			}
 		}
 		
 		move();
 		
 		gridDestinationX = xGrid;
 		gridDestinationY = yGrid;
+		
+		if(game.gridIsBreathing() && actionState == 30)
+			game.minusOneFlying();
 		
 		if (turnToShoot && enCanShoot) {
 			game.enemyShoot(x + 10, y);
@@ -119,12 +141,12 @@ public class FlyingEnemy extends Enemy{
 							   drawAngle = 0;
 						   }
 			   if(spawnLocation == 1|| spawnLocation ==2)
-				if(x>=0 && x <=1000)
+				if(x>=0 && x <=800)
 				{
 					if(x<100)
 					setCircle(x,y-150,false,2);
 					else 
-						setCircle(x,y-250,true,2);
+						setCircle(x,y-200,true,2);
 					
 					
 					actionState ++;
@@ -159,12 +181,11 @@ public class FlyingEnemy extends Enemy{
 					if(angle==0||angle ==180)
 					{
 						actionState++;
-						x++;
-						y-=2;
+	
 						if(spawnLocation ==1)
 							setCircle(x-120, y, false,8);
-						if(spawnLocation ==2)
-							setCircle(x+120, y, true,8);
+						if(spawnLocation == 2)
+							setCircle(x+100, y, true,8);
 							
 					}
 				}
@@ -179,12 +200,12 @@ public class FlyingEnemy extends Enemy{
 					{
 						   if (spawnLocation == 3)
 						   {
-							   setCircle(x+150,y,false,6);
+							   setCircle(x+150,y+50,false,6);
 						   }
 						   else
 							   if (spawnLocation == 4)
 							   {
-								   setCircle(x-150,y,true,6);
+								   setCircle(x-150,y+50,true,6);
 							   }
 						actionState++;
 					}
@@ -194,18 +215,16 @@ public class FlyingEnemy extends Enemy{
 			
 		// fly in a circle at some y before heading toward position on grid
 		case 2: 			
-				
 				moveAroundSetCircle();
-				if(angle==0||angle==180)
+				
+				if((drawAngle>177 && drawAngle<184))
 				{
 					actionState++;
+					
 					//predict grid location, the grid is moving so we must anticipate where the grid position will be in 
 					//x amount of frames it takes to complete the linear movement(grid moves +-1 each frame)
 					
-					// Create a "local" right and left boundary based on row and column of enemy on grid
 					int framesToComplete = 35;
-					
-					
 					setLinearTarget(futureX,futureY,framesToComplete);
 				}
 				
@@ -221,13 +240,8 @@ public class FlyingEnemy extends Enemy{
 				
 				else 
 					{
-						
 						actionState++;
-						setTurnTargetAngle(180,10);
-						onGrid = true;
-						
-						
-						
+						setTurnTargetAngle(180,18);
 					}
 			break;
 			
@@ -249,40 +263,103 @@ public class FlyingEnemy extends Enemy{
 					
 				}
 			break;
-			
 		// waiting for fly down, moves with grid if not all waves spawn,  breathing if all enemies have spawned
 		case 5: 		
 			
 			// keeps enemies on the grid while they are idle
-			
+			onGrid = true;
 				x=gridDestinationX;
 				y=gridDestinationY;
-			
-		
 				
-				
-				
-				
-			
-			
 			break;
 			
-		// general fly down screen until death 
-		case 6:				
+		// transition from onGrid to flying down, used by game 	
+		case 6:
+			
+			onGrid = false;
+			if(gridCol < 5)
+				setCircle(x-90,y,false,6);
+				else
+					setCircle(x+90,y,true,6);
+			
+			actionState++;
+			break;
+			
+		// getting off of the grid in a circle path, counterclockwise or clockwise depending on what side of screen
+		case 7:				
 			
 			moveAroundSetCircle();
-			if(angle ==90)
-				setCircle(x,y+35,false,2);
+			if((int)drawAngle == 0||(int)drawAngle == 360)
+			{
+				actionState++;
+				if( gridCol<5)
+					setCircle(x+80,y,false,6);
+					else
+						setCircle(x-80,y,true,6);
+
+			}
+			break;
+			
+			
+			// setup for next case angle smoothing, should be used before wanting to use case 9
+		case 8:
+			flyingDownXTarget =0;
+			if(x<=500)
+				flyingDownXTarget = random.nextInt(350)+500;
+			else
+				flyingDownXTarget = random.nextInt(450)+50;
+			actionState++;
+			break;
+			
+			//moving along the bottom left quadrant of a circle until its the enemies draw degree is near what the draw degree would be for the up coming linear motion
+			// done so angle is handled smoothly
+		case 9:
+			moveAroundSetCircle();
+			
+			
+			// angle we hope to get off the circle at so the transition from circular movement to linear motion is smooth
+			flyingDownTargetAngle = (int)(270 + (float) Math.toDegrees(Math.atan2(case9YTarget-y,flyingDownXTarget-x)));
+			flyingDownTargetAngle = flyingDownTargetAngle%360;
+			if(Math.abs(drawAngle-flyingDownTargetAngle)<4||Math.abs(drawAngle-flyingDownTargetAngle)<4)
+			{
+				actionState++;
+				
+				setLinearTarget(flyingDownXTarget,case9YTarget,45);
+				
+					setLinearTarget(flyingDownXTarget,case9YTarget,45);
+			}
+			break;
+			
+			//flying toward x and y fly target in linear motion, 
+		case 10:
+			if(moveTowardLinearTarget())
+				;
+			else
+			{
+				actionState++;
+				if(flyingDownXTarget <500)		
+				setCircle(x+100,y+250,true,2);
+				else
+					setCircle(x-100,y+250,true,2);
+			}
+			
+			break;
+		// near the player Y, TODO add a chance for the enemy to do a circular motion near the bottom
+		case 11:
+			moveAroundSetCircle();
 			if(y>900) 
 				{
+					if(random.nextInt(7)==4)
+						actionState=12;
+					else
 					actionState++;
 				}
 			break;
 			
-		// near the player Y
-		case 7: 			
+		// reset to back of screen, TODO should choose to either go back to grid or continuing flying down
+		case 12: 			
 			
-			y++;
+			y+=5;
 			if(y>1030)
 			{
 				y= (-30);
@@ -290,10 +367,25 @@ public class FlyingEnemy extends Enemy{
 			}
 			if(y<100 && 0 <y)
 			{
-				actionState =6;
-				setCircle(x,y+50,true,2);
+				actionState =30;
+				setLinearTarget(futureX,futureY,60);
+				
 			}
 			break;
+			
+			
+			// transition case to mark when a previously flying enemy has settled back onto the grid
+			// keeps the game's count of enemiesInFlight accurate
+		case 30: 					
+			
+					
+					actionState=3;
+					break;
+					
+					
+					
+				
+	
 		}
 	}
 
@@ -309,18 +401,28 @@ public class FlyingEnemy extends Enemy{
 	    g2d.setTransform(a);
 	    //Draw our image like normal
 	    g2d.drawImage(image, x, y, null);
-	    
+	   
 	    a = AffineTransform.getRotateInstance(0, 0, 0);
-	    g2d.setTransform(a);
+	    g2d.setTransform(a); 
+	    
 		//page.drawImage(image, x - 5, y, null);
 	 
 	}
 	
 	private void moveAroundSetCircle()
 	{
-		x = (int) (currentCenterX + Math.cos(Math.toRadians(angle))*radius);
-		y = (int) (currentCenterY + Math.sin(Math.toRadians(angle))*radius);
-		
+			
+			
+			previousX = currentCenterX + Math.cos(Math.toRadians(angle))*radius;
+			previousY = currentCenterY + Math.sin(Math.toRadians(angle))*radius;
+			 
+			angle+= angleDelta;
+			drawAngle += angleDelta;
+			
+			//keeps track of the total movements done while going in a circular movement, needed as x and y are integers, this keeps alot of info intact
+			circleHelpX+=(currentCenterX + Math.cos(Math.toRadians(angle))*radius)-previousX;
+			circleHelpY+=(currentCenterY + Math.sin(Math.toRadians(angle))*radius)-previousY;
+			
 			if(angle >360)
 			{
 				angle = 0+angle%360;
@@ -330,14 +432,20 @@ public class FlyingEnemy extends Enemy{
 			{
 				angle = 360 - Math.abs(angle);
 			}
+			x=(int)circleHelpX;
+			y=(int)circleHelpY;
 			
-			angle+= angleDelta;
-			drawAngle += angleDelta;
+			
+			
+			
 	}
 	// supports only a center that has a difference of only one component (centerX must = X || centerY must == y)
 	public void setCircle(int centerX, int centerY, boolean clockwise,int speed)
 	{
-		
+		previousX=0;
+		previousY=0;
+		circleHelpX=x;
+		circleHelpY=y;
 		if(clockwise)
 		{
 			angleDelta = speed;
@@ -345,49 +453,194 @@ public class FlyingEnemy extends Enemy{
 
 		this.currentCenterX = centerX;
 		this.currentCenterY = centerY;
-		if(centerX==x)
+		radius = Math.sqrt(Math.pow((centerY-y),2)+Math.pow((centerX-x),2));
+		
+		if(centerX == x)
 		{
-			radius = Math.abs(centerY-y);
-			angle = Math.toDegrees(Math.asin((double)((y - centerY)/radius))); // calculate the degree corresponding to our location on the circular path
-			if(centerY > y)
+			if(centerY<y)
 			{
-				if(clockwise)
-				drawAngle = 270;
+				if(drawAngle==270)
+				{
+					clockwise=false;
+					angle = 90;
+				}
 				else
-					drawAngle = 90;
-			}
-			else 
-			{
-				if(clockwise)
-					drawAngle = 90;
+					if(drawAngle==90)
+					{
+						clockwise=true;
+						angle =90;
+					}
 					else
-						drawAngle = 270;
+					{
+						System.out.println("setCircle used incorrently - draw angle is not left or right at bottom of circle");
+					}
 			}
+			else
+				if(centerY>y)
+				{
+					if(drawAngle==270)
+					{
+						clockwise=true;
+						angle = 270;
+					}
+					else
+						if(drawAngle==90)
+						{
+							clockwise=false;
+							angle =270;
+						}
+						else
+						{
+							System.out.println("setCircle used incorrently - draw angle is not left or right at top of circle");
+						}
+				}
+				else
+				{
+					System.out.println("setCircle used incorrently - cannot set center to current position");
+				}
 		}
 		else 
+			if(centerY==y)
 			{
-			
-				radius = Math.abs(centerX-x);
-				angle = Math.toDegrees(Math.acos((double)((x - centerX)/radius)));// calculate the degree corresponding to our location on the circular path
-				
-				if(centerX > x)
+				if(centerX<x)
 				{
-					if(clockwise)
-					drawAngle = 180;
+					if(drawAngle==180)
+					{
+						clockwise=false;
+						angle = 0;
+					}
 					else
-						drawAngle = 0;
-				}
-				else 
-				{
-					if(clockwise)
-						drawAngle = 0;
+						if(drawAngle==0||drawAngle==360)
+						{
+							clockwise=true;
+							angle =0;
+						}
 						else
-							drawAngle = 180;
+						{
+							System.out.println("setCircle used incorrently - draw angle is not up or down at the right of circle");
+							
+						}
 				}
+				else
+					if(centerX>x)
+					{
+						if(drawAngle==180)
+						{
+							clockwise=true;
+							angle = 180;
+						}
+						else
+							if(drawAngle==0||drawAngle==360)
+							{
+								clockwise=false;
+								angle =180;
+							}
+							else
+							{
+								System.out.println("setCircle used incorrently - draw angle is not up or down at the left of circle");
+							}
+					}
+					else
+					{
+						System.out.println("setCircle used incorrently - cannot set center to current position");
+					}
 			}
 		
+				else
+					// cases in which neither X or Y are equal to their centers
+					// bottom right and top right
+					if(centerX < x)
+					{
+						// initial position of object is bottom right from center of circle
+						if(centerY < y)
+						{
+							if(drawAngle >=0 && drawAngle<=90)
+							{
+								angle = drawAngle; // calculate the degree corresponding to our location on the circular path
+								clockwise = true;
+							}
+							else
+								if(drawAngle<=270 && drawAngle>=180)
+							{
+								angle = drawAngle-180;
+								clockwise = false;
+							}
+								else
+								{
+									System.out.println("incompatible starting draw angle for starting location on circle - bottom right");
+								}
+						}
+						// initial position of object is top right from center of circle
+						else
+						{
+							if(drawAngle >=270 && drawAngle<=360)
+							{
+								angle = drawAngle; // calculate the degree corresponding to our location on the circular path
+								clockwise = true;
+							}
+							else
+								if(drawAngle<=180 && drawAngle>=90)
+							{
+								angle = drawAngle+180;
+								clockwise = false;
+							}
+								else
+								{
+									System.out.println("incompatible starting draw angle for starting location on circle - top right");
+								}
+						}
+						
+						
+					
+					}
 		
+					// bottom left and top left
+					else 
+						if(centerY < y)
+						{
+						
+								if(drawAngle >=90 && drawAngle<=180)
+								{
+									angle = drawAngle; // calculate the degree corresponding to our location on the circular path
+									clockwise = true;
+								}
+								else
+									if(drawAngle<=359 && drawAngle>=270)
+								{
+									angle = drawAngle-180;
+									clockwise = false;
+								}
+									else
+									{
+										System.out.println("incompatible starting draw angle for starting location on circle - bottom left");
+									}
+						}
+							// initial position of object is top left from center of circle
+							else
+							{
+								if(drawAngle >=180 && drawAngle<=270)
+								{
+									angle = drawAngle; // calculate the degree corresponding to our location on the circular path
+									clockwise = true;
+								}
+								else
+									if(drawAngle<=90 && drawAngle>=0)
+								{
+									angle = drawAngle+180;
+									clockwise = false;
+								}
+									else
+									{
+										System.out.println("incompatible starting draw angle for starting location on circle - top left");
+									}
+							}
+		if(clockwise)
+		{
+			angleDelta = speed;
+		} else angleDelta = - speed;
 		
+		previousX = currentCenterX + Math.cos(Math.toRadians(angle))*radius;
+		previousY = currentCenterY + Math.sin(Math.toRadians(angle))*radius;
 	}
 	
 	// sets the target to move in a straight line toward, steps are the number of frames it will take to complete, less steps = faster movement;
@@ -482,6 +735,6 @@ public class FlyingEnemy extends Enemy{
 	}
 	public void advanceAction()
 	{
-		actionState++;
+		actionState=6;
 	}
 }

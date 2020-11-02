@@ -3,8 +3,10 @@ import javax.swing.*;
 
 public class Projectile
 {
-	private int x; // x and y location
+	// x and y location
+	private int x; 
 	private int y;
+	
 	private Image image;
 
 	public Projectile(Image img, int xLoc, int yLoc )

@@ -45,7 +45,7 @@ public class Player
 
 	public void moveRight() //moves player right
 	{
-		x += 5;
+		x += 8;
 		if (x>Main.WIDTH - 90) {
 			x = Main.WIDTH - 90;
 		}
@@ -53,7 +53,7 @@ public class Player
 
 	public void moveLeft() // moves player left
 	{
-		x -= 5;
+		x -= 8;
 		if (x<0) {
 			x = 0;
 		}
@@ -61,6 +61,7 @@ public class Player
 
 	public void draw( Graphics page ) // draws player paddle
 	{
+		
 		page.drawImage(image, x, y - 60, null);
 	}
 
