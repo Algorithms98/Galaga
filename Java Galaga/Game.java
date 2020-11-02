@@ -194,7 +194,7 @@ private void removeMenuText()
 
     public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 670 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 850 );//450, 750
 
         if(!initialized)
         {
@@ -259,7 +259,7 @@ private void removeMenuText()
             // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
             if(!grid.isBreathing())
             {
-<<<<<<< Upstream, based on origin/master
+
                 boolean tempCheck = true;
                 for (final FlyingEnemy enemy: enemies)
                 {
@@ -270,7 +270,7 @@ private void removeMenuText()
                 }
                 if(tempCheck)
                         grid.setToBreathe();
-=======
+
 	            boolean allEnemiesOnGrid = true;
 	            for (final FlyingEnemy enemy: enemies)
 	            {
@@ -281,11 +281,7 @@ private void removeMenuText()
 	            }
 	            if(allEnemiesOnGrid)
 	            		grid.setToBreathe();
->>>>>>> 0debdad flying enemy mostly down
             }
-            
-            
-<<<<<<< Upstream, based on origin/master
             if(grid.isBreathing())      
             if(enemiesInFlight <enemiesInFlightMax)
                 {
@@ -323,7 +319,7 @@ private void removeMenuText()
                                                                 enemies.get(enemiesEligible.get(i)).getY(),false,6);
                         }
                 }
-=======
+
             if(grid.isSetToBreathe())  	
             if(enemiesInFlight < enemiesInFlightMax)
             	{
@@ -357,9 +353,10 @@ private void removeMenuText()
 	            			
 	            		}
             	}
->>>>>>> 0debdad flying enemy mostly down
+
             
-            for (final FlyingEnemy enemy: enemies) {
+            for (final FlyingEnemy enemy: enemies) 
+            {
                 
                 
                 // Returns colliding bullet if enemy gets blown up
@@ -386,13 +383,12 @@ private void removeMenuText()
             {
                 enemies.remove(enemy);
                 
-<<<<<<< Upstream, based on origin/master
+
                 if(grid.isBreathing()&&!enemy.isOnGrid())
                     enemiesInFlight--;
-=======
-                if(grid.isSetToBreathe()&&!enemy.isOnGrid())
-                	enemiesInFlight--;
->>>>>>> 0debdad flying enemy mostly down
+
+                
+
             }
 
             // Enemy Explosions
@@ -504,6 +500,7 @@ private void removeMenuText()
         
         onMenu =true;
         addMenuText();
+        
     }
 
     public void hitPlayer()
@@ -649,42 +646,28 @@ private void removeMenuText()
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
                         0,3+i)); // row and column numb
+            
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
-<<<<<<< Upstream, based on origin/master
                         3,3+i)); // row and column numb
             
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
                         1,i)); // row and column numb
-=======
-                		3,3+i)); // row and column numb
-			
-			for(int i = 0; i <10; i++)
-				enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(100*i), 800 , 1, player, //spawn location
-						1,i)); // row and column numb
->>>>>>> 0debdad flying enemy mostly down
-             
-<<<<<<< Upstream, based on origin/master
+
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
                         2,i)); // row and column numb
         
         
-    }
-
-=======
-			for(int i = 0; i <10; i++)
-				enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(100*i), 800 , 2, player, //spawn location
-						2,i)); // row and column numb
-		
+ 
 		
 	}
 public void minusOneFlying()
 {
 	enemiesInFlight--;
 }
->>>>>>> 0debdad flying enemy mostly down
+
     public void actionPerformed(final ActionEvent event) {}
 
     public void keyTyped( final KeyEvent event ) {}
