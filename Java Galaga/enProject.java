@@ -66,13 +66,11 @@ public class enProject
 
 	public boolean isInsideP(Player p)
 	{
-		if(y <= p.getY()-20 && y >= p.getY() - 60)
+		Rectangle r1 = new Rectangle(x,y+2,8,25);
+		Rectangle r2 = new Rectangle(p.getX()+2,p.getY()+2,58,30);
+		if(r1.intersects(r2))
 		{
-			for(int i=0; i<9;i++)
-			if(x+i <= p.getX() + 58 && x+i >= p.getX()+2)
-			{
-				return true;
-			}
+		    return true;
 		}
 		return false;
 	}

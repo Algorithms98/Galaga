@@ -74,7 +74,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         tempChoice = 1;
         roundNum = 1;
         
-        lives = 3;
+        lives = 50;
         
         sleep = 20;
         maxWidth = width;
@@ -126,7 +126,7 @@ void menu() {
                     menuChoice=0;
                     removeMenuText();
                     
-                    lives = 3;
+                    lives = 50;
                     score = 0;
                     
                     
@@ -194,7 +194,7 @@ private void removeMenuText()
 
     public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 850 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 800 );//450, 750
 
         if(!initialized)
         {
@@ -557,25 +557,27 @@ private void removeMenuText()
             
             
         }
-        
-        
-        for (final Projectile playerBullet: playerBullets)
+        else
         {
-            playerBullet.draw(page);
-        }
-        for (final enProject enemyBullet: enemyBullets)
-        {
-            enemyBullet.draw(page);
-        }
-        if (!over)
-            player.draw(page);
-        for (final Enemy enemy: enemies) {
-            enemy.draw(page);
-        }
         
-        for (Explosion enemyExplosion: enemyExplosions)
-        {
-            enemyExplosion.draw(page);
+	        for (final Projectile playerBullet: playerBullets)
+	        {
+	            playerBullet.draw(page);
+	        }
+	        for (final enProject enemyBullet: enemyBullets)
+	        {
+	            enemyBullet.draw(page);
+	        }
+	        if (!over)
+	            player.draw(page);
+	        for (final Enemy enemy: enemies) {
+	            enemy.draw(page);
+	        }
+	        
+	        for (Explosion enemyExplosion: enemyExplosions)
+	        {
+	            enemyExplosion.draw(page);
+	        }
         }
     }
 

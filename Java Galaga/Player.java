@@ -62,7 +62,7 @@ public class Player
 	public void draw( Graphics page ) // draws player paddle
 	{
 		
-		page.drawImage(image, x, y - 60, null);
+		page.drawImage(image, x, y, null);
 	}
 
 	public int getX() // returns x value
