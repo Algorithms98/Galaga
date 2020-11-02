@@ -40,7 +40,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int enemiesInFlight = 0;
     private int enemiesInFlightMax = 3;
 
-    private final int MAX_ENEMY_BULLETS = 0;
+    private final int MAX_ENEMY_BULLETS = 3;
     private final int MAX_PLAYER_BULLETS = 50;
     private final int numOfMenus = 4;
     
@@ -546,13 +546,13 @@ private void removeMenuText()
             
             for(int i =1; i <=numOfMenus; i++)
             {
-                if(tempChoice ==i)
+                if(tempChoice == i )
                 {
                     page.setColor(Color.red);
-                    page.fillRect(450, 350+i*100, 150, 50);
+                    page.fillRect(450, (maxHeight/2)-200+i*100, 150, 50);
                     page.setColor(Color.DARK_GRAY);
                 }
-                else page.fillRect(450, 350+i*100, 150, 50);
+                else page.fillRect(450, (maxHeight/2)-200+i*100, 150, 50);
             }
             
             
