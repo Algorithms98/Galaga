@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=enemyGrid
+comment1.params=distanceBetweenPoints\ leftBound\ rightBound
+comment1.target=enemyGrid(int,\ int,\ int)
+comment2.params=
+comment2.target=void\ update()
+comment3.params=row\ col
+comment3.target=int\ getXCord(int,\ int)
+comment4.params=row\ col
+comment4.target=int\ getYCord(int,\ int)
+comment5.params=
+comment5.target=void\ setToBreathe()
+comment6.params=row\ col\ numOfFrames
+comment6.target=int\ calcXCordInFrames(int,\ int,\ int)
+comment7.params=
+comment7.target=void\ reset()
+comment8.params=
+comment8.target=boolean\ isBreathing()
+numComments=9

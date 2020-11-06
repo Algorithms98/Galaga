@@ -1,288 +1,548 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
 {
-	private static final long serialVersionUID = -4999101245149671618L;
-	private Player player;
-	private Enemy[][] enemy;
-	private Projectile bullet;
-	private enProject enBullet;
-	private Sound pShot;
-	private Sound eShot;
-	private Sound loseLife;
-	private int score;
-	private int lives;
-	private int roundNum;
-	private int sleep;
-	private boolean canShoot;
-	private Sound pExplosion;
-	private Sound eExplosion;
-	private Background background;
-	private Explosion eExplosionImg;
-	private Explosion pExplosionImg;
-	private boolean leftArrowDown = false;
-	private boolean rightArrowDown = false;
-
-	// constructor - sets the initial conditions for this Game object
-	public Game(int width, int height) {
-		// make a panel with dimensions width by height with a black background
-		this.setLayout(null);// Don't change
-		this.setBackground(Color.BLACK);
-		this.setPreferredSize(new Dimension(width, height));// Don't change
-
-		enemy = new Enemy[5][7];
-		bullet = new Projectile("Images//rocket.gif", 1000, 0);
-		enBullet = new enProject("Images//alienRocket.gif", 490, 50);
-		pShot = new Sound("Sounds//pShot.wav");
-		eShot = new Sound("Sounds//eShot.wav");
-		loseLife = new Sound("Sounds//loseLife.wav");
-		pExplosion = new Sound("Sounds//pExplosion.wav");
-		eExplosion = new Sound("Sounds//eExplosion.wav");
-		eExplosionImg = new Explosion("Images//eExplosion.gif", 100, 20);
-		eExplosionImg = new Explosion("Images//pExplosion.gif", 10000, 20);
-		score = 0;
-		lives = 3;
-		roundNum = 1;
-		sleep = 20;
-		canShoot = true;
-
-        background = new Background();
-
-        //initialize the instance variables
-        player = new Player("images//pShip.gif", 450, 650 );//450, 750
-        for(int r = 0; r < enemy.length; r++)
-        {
-            for(int c = 0; c < enemy[0].length; c++)
-            {
-                if(r == 0)
-                    enemy[r][c] = new Enemy("Images//eShip3.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else if(r > 0 && r < 3)
-                    enemy[r][c] = new Enemy("Images//eShip2.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else
-                     enemy[r][c] = new Enemy("Images//eShip.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-            }
-        }
-
-        this.addKeyListener(this);//allows the program to respond to key presses - Don't change
-
-        this.setFocusable(true);//I'll tell you later - Don't change
-
-    }
+    private static final long serialVersionUID = -4999101245149671618L;
+    private static final SoundManager SOUND_MANAGER = new SoundManager();
+    private final Background background;
+    private Player player;
+    private final ArrayList<FlyingEnemy> enemies;
+    private final ArrayList<enProject> enemyBullets;
+    private final ArrayList<Projectile> playerBullets;
+    private final ArrayList<Explosion> enemyExplosions;
     
+    private int score;
+    private int lives;
+    private int roundNum;
+    private int sleep;
+    private int maxWidth;
+    private int maxHeight;
+    private int menuChoice;
+    private int tempChoice;
+    private int gridLeftBound = 100;
+    private int gridRightBound = 800;
+    
+    private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound);
+    
+    private boolean initialized = false;
+    private boolean leftArrowDown = false;
+    private boolean rightArrowDown = false;
+    private boolean EnterDown = false;
+    private boolean upArrowDown = false;
+    private boolean downArrowDown = false;
+    private boolean pressCounted = false;
+    private boolean over = true;
+    private boolean onMenu = true;
+    private int enemiesInFlight = 0;
+    private int enemiesInFlightMax = 3;
+
+    private final int MAX_ENEMY_BULLETS = 1;
+    private final int MAX_PLAYER_BULLETS = 200;
+    private final int numOfMenus = 4;
+    
+    JLabel title = new JLabel("Inspire AI ");
+    JLabel game1 = new JLabel("Player Game");
+    JLabel game2 = new JLabel("Player vs Ai ");
+    JLabel options = new JLabel("Options ");
+    JLabel quit = new JLabel("Quit ");
+    
+
+    JLabel livesText = new JLabel("Lives: " + this.lives);
+    JLabel overText = new JLabel("GAME OVER");
+    JLabel scoreText = new JLabel("Score: " + this.score);
+    JLabel roundsText = new JLabel("Round: " + roundNum);
+    JLabel levelText = new JLabel("Round " + roundNum + " passed.");
+
+    // constructor - sets the initial conditions for this Game object
+    public Game(final int width, final int height) {
+        this.setLayout(null);// Don't change
+        this.setBackground(Color.BLACK);
+        this.setPreferredSize(new Dimension(width, height));
+
+        enemies = new ArrayList<FlyingEnemy>();
+        playerBullets = new ArrayList<Projectile>();
+        enemyBullets = new ArrayList<enProject>();
+        enemyExplosions = new ArrayList<Explosion>();
+        background = new Background(this);
+        
+        score = 0;
+        menuChoice = 0;
+        tempChoice = 1;
+        roundNum = 1;
+        
+        lives = 3;
+        
+        sleep = 20;
+        maxWidth = width;
+        maxHeight = height;
+        
+
+      this.addMouseMotionListener(this);
+      this.addKeyListener(this);//allows the program to respond to key presses - Don't change
+      this.setFocusable(true);//I'll tell you later - Don't change
+    }
+
+void menu() {
+    
+    addMenuText();
+
+        while(menuChoice !=4)
+        {
+            try
+            {
+                Thread.sleep( sleep);
+            }
+            catch( final InterruptedException ex ){}
+
+            
+            if(upArrowDown && !pressCounted)
+            {
+                tempChoice--;
+                pressCounted = true;
+                if(tempChoice < 1 ) tempChoice = 1;
+            }
+            if(downArrowDown && !pressCounted)
+            {
+                tempChoice++;
+                pressCounted = true;
+                if(tempChoice > numOfMenus ) tempChoice = 4;
+            }
+            
+            
+            
+            
+            if(EnterDown)
+            {
+                menuChoice = tempChoice;
+                
+                switch(menuChoice)
+                {
+                case 1:
+                    onMenu = false;
+                    menuChoice=0;
+                    removeMenuText();
+                    
+                    lives = 3;
+                    score = 0;
+                    
+                    
+                    initialize();
+                    
+                    
+                    break;
+                    
+                case 2:
+                    //startPlayerGame();
+                    menuChoice=0;
+                    break;
+                case 3:
+                    //openOptions();
+                    menuChoice=0;
+                    break;
+                }
+            }this.repaint();//redraw the screen with the updated locations; calls paintComponent below
+        }
+        System.exit(0);
+    }
+
+private void addMenuText() {
+    
+        title.setBounds(maxWidth/2 -167, 50, 500, 300);//title
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Lava", Font.BOLD, 80));
+        title.setVisible(true);
+        this.add(title);
+    
+        game1.setBounds(maxWidth/2 -35, maxHeight/2-102, 200, 50);//Menu1
+        game1.setForeground(Color.WHITE);
+        game1.setFont(new Font("Lava", Font.BOLD, 20));
+        game1.setVisible(true);
+        this.add(game1);
+        
+        game2.setBounds(maxWidth/2 - 35 +3, maxHeight/2-52+50, 200, 50);//Menu2
+        game2.setForeground(Color.WHITE);
+        game2.setFont(new Font("Lava", Font.BOLD, 20));
+        game2.setVisible(true);
+        this.add(game2);
+        
+        options.setBounds(maxWidth/2 -35 +22, maxHeight/2-52+150, 200, 50);//Menu3
+        options.setForeground(Color.WHITE);
+        options.setFont(new Font("Lava", Font.BOLD, 20));
+        options.setVisible(true);
+        this.add(options);
+        
+        quit.setBounds(maxWidth/2 -35 + 38, maxHeight/2-52+250, 200, 50);//Menu4
+        quit.setForeground(Color.WHITE);
+        quit.setFont(new Font("Lava", Font.BOLD, 20));
+        quit.setVisible(true);
+        this.add(quit);
+    
+}
+private void removeMenuText()
+{
+    this.remove(game1);
+    this.remove(game2);
+    this.remove(options);
+    this.remove(quit);
+    this.remove(title);
+    this.revalidate();
+}
+
+    public void initialize()
+    {
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 670 );//450, 750
+
+        if(!initialized)
+        {
+            scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
+            scoreText.setForeground(Color.WHITE);
+            scoreText.setFont(new Font("Lava", Font.BOLD, 20));
+            this.add(scoreText);
+    
+            levelText.setForeground(Color.WHITE);//Round Passed
+            levelText.setFont(new Font("Lava", Font.BOLD, 49));
+            levelText.setBounds(340, 50, 400, 240);
+            this.add(levelText);
+    
+            overText.setForeground(Color.WHITE);//Game Over
+            overText.setBounds(maxWidth/2-150,maxHeight/2-175,maxHeight - 300, 240);
+            overText.setForeground(Color.RED);
+    
+            livesText.setBounds(10, 5, 850, 20);//Lives:
+            livesText.setForeground(Color.WHITE);
+            livesText.setFont(new Font("Lava", Font.BOLD, 20));
+            this.add(livesText);
+    
+            roundsText.setBounds(maxWidth - 100, 5, maxHeight - 50, 20);//Rounds:
+            roundsText.setForeground(Color.WHITE);
+            roundsText.setFont(new Font("Lava", Font.BOLD, 20)); 
+            this.add(roundsText);
+            
+            initialized = true;
+        }
+        
+        livesText.setText("Lives: " + lives);
+        scoreText.setText("Score: " + score);
+        livesText.setVisible(true);
+        overText.setVisible(false);
+        levelText.setVisible(false);
+        scoreText.setVisible(true);
+        roundsText.setVisible(true);
+        reset();
+        playGame();
+    }
+
     //This is the method that runs the game
     public void playGame()
     {
-        JLabel overText = new JLabel("GAME OVER");
-        JLabel scoreText = new JLabel("Score: " + this.score);
-        JLabel livesText = new JLabel("Lives: " + this.lives);
-        JLabel roundsText = new JLabel("Round " + roundNum + "/3");
-        JLabel levelText = new JLabel("Round " + roundNum + " passed.");
-
-        scoreText.setBounds(885, 5, 850, 20);
-        scoreText.setForeground(Color.WHITE);
-        scoreText.setFont(new Font("Lava", Font.BOLD, 20));
-        scoreText.setVisible(true);
-        this.add(scoreText);
-        
-        levelText.setForeground(Color.WHITE);
-        levelText.setVisible(false);
-        levelText.setFont(new Font("Lava", Font.BOLD, 49));
-        levelText.setBounds(340, 50, 400, 240);
-        this.add(levelText);
-
-        overText.setForeground(Color.WHITE);
-        overText.setVisible(false);
-        overText.setBounds(350, 50, 400, 240);
-        overText.setForeground(Color.RED);
-
-        livesText.setBounds(10, 5, 850, 20);
-        livesText.setForeground(Color.WHITE);
-        livesText.setFont(new Font("Lava", Font.BOLD, 20));
-        livesText.setVisible(true);
-        this.add(livesText);
-
-        roundsText.setBounds(450, 5, 850, 20);
-        roundsText.setForeground(Color.WHITE);
-        roundsText.setFont(new Font("Lava", Font.BOLD, 20));
-        roundsText.setVisible(true);
-        this.add(roundsText);
-
-        this.addMouseMotionListener(this);
-
-        boolean allDead = true;;
-
-        boolean enCanShoot = true;;
-
-        boolean over = false;
+        over = false;
         while( !over )
         {
-			if (leftArrowDown) {
-				player.moveLeft();
-			}
-			if (rightArrowDown) {
-				player.moveRight();
-			}
+            grid.update();
+            
+            // Player
+            if (leftArrowDown) {
+                player.moveLeft();
+            }
+            if (rightArrowDown) {
+                player.moveRight();
+            }
 
-            for(int r = 0; r < enemy.length; r++)
+            // Enemies
+            int turnToShoot = (int) (Math.random() * enemies.size());
+            ArrayList<FlyingEnemy> enemiesToRemove = new ArrayList<FlyingEnemy>();
+            
+            // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
+            if(!grid.isBreathing())
             {
-                for(int c = 0; c < enemy[0].length; c++)
+                boolean tempCheck = true;
+                for (final FlyingEnemy enemy: enemies)
                 {
-                    int randRow = (int)(Math.random() * 5);
-                    int randCol = (int)(Math.random() * 7);
-
-                    if(enCanShoot && !enemy[randRow][randCol].isDead())
+                    if(!enemy.isOnGrid())
                     {
-                        enBullet = new enProject("images//alienRocket.gif", enemy[randRow][randCol].getX() + 10, enemy[randRow][randCol].getY());
-                        eShot.play();
-                        enCanShoot = false;
-                    }
-                    if(!enemy[r][c].isDead())
-                    {
-                        enemy[r][c].move();
-                        allDead = false;
-                    }
-                    if(!enemy[r][c].isDead() && enemy[r][c].getY() > 680)
-                        over = true;
-                    if(!enemy[r][c].isDead() && bullet.isInside(enemy[r][c]))
-                    {
-                        enemy[r][c].setIsDead(true);
-                        eExplosionImg = new Explosion("Images//eExplosion.gif", enemy[r][c].getX(), enemy[r][c].getY());
-                        enemy[r][c].setX(10000);
-                        enemy[r][c].setY(0);
-                        bullet.setX(10000);
-                        score += 10;
-                        scoreText.setText("Score: " + this.score);
-                        canShoot = true;
-                        eExplosion.play();
-                    }
-                    if(enBullet.isInsideP(this.player))
-                    {
-                        if(lives == 1)
-                            over = true;
-                        enBullet.setX(10000);
-                        lives--;
-                        livesText.setText("Lives: " + this.lives);
-                        if(lives != 0)
-                            loseLife.play();
-                        else
-                            pExplosion.play();
-                    }
-                    if(enBullet.getY() > 780)
-                    {
-                        enBullet.setX(10000);
-                        enCanShoot = true;
-                        eExplosionImg = new Explosion("Images//eExplosion.gif", 10000, 0);
-                    }
-                    if(this.bullet.getY() <= 2)
-                    {
-                        bullet.setX(10000);
-                        canShoot = true;
+                        tempCheck = false;
                     }
                 }
+                if(tempCheck)
+                        grid.setToBreathe();
             }
-            if(allDead)
+            
+            
+            if(grid.isBreathing())      
+            if(enemiesInFlight <enemiesInFlightMax)
+                {
+                     ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
+                     for (final FlyingEnemy enemy: enemies) 
+                     {
+                         if(enemy.isOnGrid())   
+                         {
+                             enemiesEligible.add(enemies.indexOf(enemy));
+                         }
+                     }
+                     
+                     Collections.shuffle(enemiesEligible);
+                     
+                     if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
+                     {
+                         for (final Integer enemyFly: enemiesEligible) 
+                         {
+                             enemiesInFlight++;
+                             enemies.get(enemyFly).setOnGrid(false);
+                             
+                             enemies.get(enemyFly).advanceAction();
+                             enemies.get(enemyFly).setCircle(enemies.get(enemyFly).getX()+150,enemies.get(enemyFly).getY(),false,6);
+                             
+                         }
+                     }
+                     
+                     else
+                        for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
+                        {
+                            enemiesInFlight++;
+                            enemies.get(enemiesEligible.get(i)).setOnGrid(false);
+                            enemies.get(enemiesEligible.get(i)).advanceAction();
+                            enemies.get(enemiesEligible.get(i)).setCircle(enemies.get(enemiesEligible.get(i)).getX()+150,
+                                                                enemies.get(enemiesEligible.get(i)).getY(),false,6);
+                        }
+                }
+            
+            for (final FlyingEnemy enemy: enemies) {
+                
+                
+                // Returns colliding bullet if enemy gets blown up
+                final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
+                        , grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
+                
+                if (collidingBullet != null) {
+                    enemiesToRemove.add(enemy);
+                    enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
+                    playerBullets.remove(collidingBullet);
+                    score += 10;
+                    
+                    // keeps label from flickering
+                    SwingUtilities.invokeLater(() -> {
+                        scoreText.setText("Score: " + this.score);});
+                    
+                    
+                    SOUND_MANAGER.enemyExplosion.play();
+                }
+                turnToShoot--;
+            }
+
+            for (final FlyingEnemy enemy: enemiesToRemove)
+            {
+                enemies.remove(enemy);
+                
+                if(grid.isBreathing()&&!enemy.isOnGrid())
+                    enemiesInFlight--;
+            }
+
+            // Enemy Explosions
+            ArrayList<Explosion> enemyExplosionsToRemove = new ArrayList<Explosion>();
+            for (Explosion enemyExplosion: enemyExplosions)
+            {
+                if (enemyExplosion.update()) {
+                    enemyExplosionsToRemove.add(enemyExplosion);
+                }
+            }
+
+            for (Explosion enemyExplosion: enemyExplosionsToRemove)
+            {
+                enemyExplosions.remove(enemyExplosion);
+            }
+
+            // Enemy Bullets
+            final ArrayList<enProject> enemyBulletsToRemove = new ArrayList<enProject>();
+            for (enProject enBullet: enemyBullets)
+            {
+                if (enBullet.update(player, this))
+                {
+                    enemyBulletsToRemove.add(enBullet);
+                }
+            }
+
+            for (final enProject enBullet: enemyBulletsToRemove)
+            {
+                enemyBullets.remove(enBullet);
+            }
+
+            // Player Bullets
+            final ArrayList<Projectile> playerBulletsToRemove = new ArrayList<Projectile>();
+            for (final Projectile playerBullet: playerBullets)
+            {
+                if (playerBullet.update()) {
+                    playerBulletsToRemove.add(playerBullet);
+                }
+            }
+            for (final Projectile playerBullet: playerBulletsToRemove)
+            {
+                playerBullets.remove(playerBullet);
+            } 
+
+            // Next Level
+            if(enemies.size() == 0)
             {
                 if(roundNum == 3)
                 {
                     overText = new JLabel("You won!");
-                    overText.setBounds(400, 50, 400, 240);
+                    overText.setBounds(maxWidth - 400, 50,maxHeight - 300, 240);
                     overText.setForeground(Color.GREEN);
                 }
                 if(roundNum < 3)
                 {
-                    eExplosionImg = new Explosion("Images//eExplosion.gif", 10000, 0);
                     levelText.setText("Round " + roundNum + " passed.");
                     levelText.setVisible(true);
                     try
                     {Thread.sleep(1000);}
-                    catch(InterruptedException ex){}
+                    catch(final InterruptedException ex){}
+
                     levelText.setVisible(false);
                     reset();
+
                     lives++;
-                    livesText.setText("Lives: " + this.lives);                    
+                    
+                    // keeps label from flickering
+                    SwingUtilities.invokeLater(() -> {
+                        livesText.setText("Lives: " + this.lives);});
+                    
                     roundNum++;
                     roundsText.setText("Round " + roundNum + "/3");
+                    player.updateSprite(lives);
                 }
                 else
                     over = true;
             }
+
             try
             {
                 Thread.sleep( sleep );
             }
-            catch( InterruptedException ex ){}
-            if(lives > 2)
-            {
-                player = new Player("images//pShip.gif", player.getX(), player.getY());
-            }
-            else if(lives == 2)
-            {
-                player = new Player("images//pShip2.gif", player.getX(), player.getY());
-            }
-            else if(lives == 1)
-            {
-                player = new Player("images//pShip3.gif", player.getX(), player.getY());
-            }
-            enBullet.move();
-            this.repaint();//redraw the screen with the updated locations; calls paintComponent below
-            //this.add(background);
-            bullet.move();
-            allDead = true;
-        }
+            catch( final InterruptedException ex ){}
 
-        for(int r = 0; r < enemy.length; r++)
-            for(int c = 0; c < enemy[0].length; c++)
-                enemy[r][c].setX(10000);
-                
-        player.setX(10000);
-        enBullet.setX(10000);
-        eExplosionImg.setX(10000);
-        bullet.setX(10000);
-        this.add(overText);
-        overText.setFont(new Font("Lava", Font.BOLD, 50));
+            this.repaint();//redraw the screen with the updated locations; calls paintComponent below
+        }
+        
+        enemies.clear();
+        playerBullets.clear();
+        playerBullets.clear();
+        enemyBullets.clear();
+        enemyExplosions.clear();
         overText.setVisible(true);
+        overText.setFont(new Font("Lava", Font.BOLD, 50));
+        
+        this.add(overText);
+        
+        try
+        {
+            Thread.sleep(1500);
+        }
+        catch( final InterruptedException ex ){}
+        
+        scoreText.setVisible(false);
+        overText.setVisible(false);
+        roundsText.setVisible(false);
+        livesText.setVisible(false);
+        this.revalidate();
+        
+        onMenu =true;
+        addMenuText();
+    }
+
+    public void hitPlayer()
+    {
+        if (lives == 1)
+            gameOver();
+        lives--;
+        livesText.setText("Lives: " + this.lives);
+        
+        this.updateUI();
+        player.updateSprite(lives);
+        if (lives != 0)
+            SOUND_MANAGER.loseLife.play();
+        else
+            SOUND_MANAGER.playerExplosion.play();
+    }
+
+    public void enemyShoot(final int x, final int y) {
+        enemyBullets.add(new enProject("images//alienRocket.gif", x, y));
+        SOUND_MANAGER.enemyShot.play();
+    }
+
+    public void gameOver() {
+        over = true;
     }
 
     //Precondition: executed when repaint() or paintImmediately is called
-	//Postcondition: the screen has been updated with current player location
-	@Override
-    public void paintComponent( Graphics page )
+    //Postcondition: the screen has been updated with current player location
+    @Override
+    public void paintComponent( final Graphics page )
     {
-        super.paintComponent( page );//I'll tell you later.
-        player.draw( page );
-        page.drawImage(bullet.getImage(), bullet.getX() + 43, bullet.getY() - 10, null);
-        page.drawImage(enBullet.getImage(), enBullet.getX(), enBullet.getY() + 10, null);
-        page.drawImage(player.getImage(), player.getX(), player.getY() - 60, null);
-        page.drawImage(eExplosionImg.getImage(), eExplosionImg.getX() - 15, eExplosionImg.getY() - 10, null);
-        for(int r = 0; r < enemy.length; r++)
+        this.setDoubleBuffered(true);
+        super.paintComponent(page);
+        background.draw(page);
+        
+        // draws main menu
+        if(onMenu)
         {
-            for(int c = 0; c < enemy[0].length; c++)
+            page.setColor(Color.DARK_GRAY);
+            
+            for(int i =1; i <=numOfMenus; i++)
             {
-                page.drawImage(enemy[r][c].getImage(), enemy[r][c].getX() - 5, enemy[r][c].getY(), null);
+                if(tempChoice ==i)
+                {
+                    page.setColor(Color.red);
+                    page.fillRect(450, 350+i*100, 150, 50);
+                    page.setColor(Color.DARK_GRAY);
+                }
+                else page.fillRect(450, 350+i*100, 150, 50);
             }
+            
+            
         }
-        bullet.draw(page);
-        enBullet.draw(page);
-        for(Enemy[] e: enemy)
-            for(Enemy en: e)
-                en.draw( page );//calls the draw method in the Square class
-    }
-
-    //not used but must be present
-    public void keyReleased( KeyEvent event )
-    {
-		if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-			rightArrowDown = false;
-		} else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-			leftArrowDown = false;
-		}
+        
+        
+        for (final Projectile playerBullet: playerBullets)
+        {
+            playerBullet.draw(page);
+        }
+        for (final enProject enemyBullet: enemyBullets)
+        {
+            enemyBullet.draw(page);
+        }
+        if (!over)
+            player.draw(page);
+        for (final Enemy enemy: enemies) {
+            enemy.draw(page);
+        }
+        
+        for (Explosion enemyExplosion: enemyExplosions)
+        {
+            enemyExplosion.draw(page);
+        }
     }
 
     //tells the program what to do when keys are pressed
-    public void keyPressed( KeyEvent event )
+    public void keyPressed( final KeyEvent event )
     {
+        if( event.getKeyCode() == KeyEvent.VK_ENTER )
+        {
+            EnterDown = true;
+            
+        }
+        if( event.getKeyCode() == KeyEvent.VK_UP )
+        {
+            upArrowDown = true;
+            pressCounted = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_DOWN )
+        {
+            downArrowDown = true;
+            pressCounted = false;
+        }
         if( event.getKeyCode() == KeyEvent.VK_RIGHT )
         {
             rightArrowDown = true;
@@ -291,53 +551,67 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         {
             leftArrowDown = true;
         }
-        else if(event.getKeyCode() == KeyEvent.VK_SPACE && canShoot)
+        
+        else if(event.getKeyCode() == KeyEvent.VK_SPACE && playerBullets.size() < MAX_PLAYER_BULLETS)
         {
-            bullet = new Projectile("Images//rocket.gif", player.getX(), player.getY());
-            pShot.play();
-            canShoot = false;
+            playerBullets.add(new Projectile("Images//rocket.gif", player.getX(), player.getY()));
+            SOUND_MANAGER.playerShot.play();
         }
     }
 
-    public void mouseMoved(MouseEvent event)
+    //not used but must be present
+    public void keyReleased( final KeyEvent event )
     {
-        int mouseX = event.getX();
-        if(mouseX <= Main.WIDTH - 90) // mouse movement
+        if( event.getKeyCode() == KeyEvent.VK_ENTER )
         {
-            //player.movePlayer(mouseX);
+            EnterDown = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_UP )
+        {
+            upArrowDown = false;
+        }
+        if( event.getKeyCode() == KeyEvent.VK_DOWN )
+        {
+            downArrowDown = false;
+        }
+        if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+            rightArrowDown = false;
+        } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+            leftArrowDown = false;
         }
     }
 
     public void reset()
     {
-        for(int r = 0; r < enemy.length; r++)
-        {
-            for(int c = 0; c < enemy[0].length; c++)
-            {
-                if(r == 0)
-                    enemy[r][c] = new Enemy("Images//eShip3.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else if(r > 0 && r < 3)
-                    enemy[r][c] = new Enemy("Images//eShip2.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-                else
-                     enemy[r][c] = new Enemy("Images//eShip.gif", (c + 1) * 100 + 70, (r + 1) * 100 - 70);
-            }
-        }
-        sleep -= 5;
+    
+            
+            grid.reset();
+            enemiesInFlight = 0;
+            
+            
+            for(int i = 0; i <4; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
+                        0,3+i)); // row and column numb
+            for(int i = 0; i <4; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
+                        3,3+i)); // row and column numb
+            
+            for(int i = 0; i <10; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
+                        1,i)); // row and column numb
+             
+            for(int i = 0; i <10; i++)
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
+                        2,i)); // row and column numb
+        
+        
     }
 
-    public void actionPerformed(ActionEvent event)
-    {
+    public void actionPerformed(final ActionEvent event) {}
 
-    }
+    public void keyTyped( final KeyEvent event ) {}
 
-    //not used but must be present
-    public void keyTyped( KeyEvent event )
-    {
+    public void mouseMoved(final MouseEvent event) {}
 
-    }
-
-    public void mouseDragged(MouseEvent event)
-    {
-
-    }
+public void mouseDragged(final MouseEvent event) {}
 }

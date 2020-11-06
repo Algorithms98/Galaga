@@ -1,9 +1,11 @@
 import javax.swing.*;
+
 public class Main
 {
+
     public static final int WIDTH = 1000;
-    public static final int HEIGHT = 800;
-    
+    public static final int HEIGHT = 876;
+
     public static void main(String[] args)
     {
         //create a JFrame (window) that will be visible on screen
@@ -14,6 +16,6 @@ public class Main
         frame.getContentPane().add(game); //add game to the frame so it will be on the screen
         frame.pack();
         frame.setVisible(true);
-        game.playGame();//call the playGame() method to intitiate the game
+        game.menu();//call the playGame() method to intitiate the game
     }
 }

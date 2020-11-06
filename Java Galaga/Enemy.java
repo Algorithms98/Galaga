@@ -1,16 +1,17 @@
 import java.awt.*;//must be imported to use Graphics and Color
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 public class Enemy
 {
-    private int x;                  // x position
-    private int y;                  // y position
-    private int vx;                 // x velocity
-    private int vy;    
-    private int numMoves;   
+    protected int x;                  // x position
+    protected int y;                  // y position
+    private int vx;                   // x velocity
+    private int vy;
+    private int numMoves;
     private int maxMoves;
-    private boolean isDead;
-    private Image image;
+    protected Image image;
 
     public Enemy(Image img, int xLoc, int yLoc )
     {
@@ -20,10 +21,9 @@ public class Enemy
         vy = 20;
         numMoves = 0;
         maxMoves = 150;
-        isDead = false;
         image = img;
     }
-    
+
     public Enemy(String path, int xLoc, int yLoc)
     {
         this(new ImageIcon(path).getImage(), xLoc, yLoc);
@@ -31,7 +31,24 @@ public class Enemy
         vy = 20;
         numMoves = 0;
         maxMoves = 150;
-        isDead = false;
+    }
+
+    public Projectile update(boolean turnToShoot, boolean enCanShoot, boolean gridMovingRight, ArrayList<Projectile> playerBullets, Game game)
+    {
+        for (Projectile bullet: playerBullets)
+        {
+            if (bullet.isInside(this)) {
+                return bullet;
+            }
+        }
+        move();
+        if (turnToShoot && enCanShoot) {
+            game.enemyShoot(x + 10, y);
+        }
+
+        //if (y > 680)
+            //game.gameOver();
+        return null;
     }
 
     public void move()
@@ -49,47 +66,16 @@ public class Enemy
 
     public void draw( Graphics page )
     {
-        page.setColor( new Color( 255, 255, 255 ) ); //color defined using rgb values (0-255 each)
-        //page.fillRect( x, y, 55, 55 ); //change the last two numbers and see what happens
+        page.drawImage(image, x - 5, y, null);
     }
-    
-    public void setIsDead(boolean set)
-    {
-        isDead = set;
-    }
-    
-    public boolean isDead()
-    {
-        return isDead;
-    }
-    
-    public int getY()
-    {
-        return this.y;
-    }
-    
+
     public int getX()
     {
         return this.x;
     }
-    
-    public void setX(int val)
+
+    public int getY()
     {
-        x = val;
-    }
-    
-    public void setY(int val)
-    {
-        y = val;
-    }
-    
-    public static boolean isAllDead(Enemy[][] enemy)
-    {
-        return false;
-    }
-    
-    public Image getImage()
-    {
-        return image;
+        return this.y;
     }
 }
