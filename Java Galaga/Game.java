@@ -24,7 +24,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int menuChoice;
     private int tempChoice;
     private int gridLeftBound = 100;
-    private int gridRightBound = 800;
+    private int gridRightBound = 900;
     
     private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound);
     
@@ -40,8 +40,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int enemiesInFlight = 0;
     private int enemiesInFlightMax = 3;
 
-    private final int MAX_ENEMY_BULLETS = 1;
-    private final int MAX_PLAYER_BULLETS = 200;
+    private final int MAX_ENEMY_BULLETS = 3;
+    private final int MAX_PLAYER_BULLETS = 50;
     private final int numOfMenus = 4;
     
     JLabel title = new JLabel("Inspire AI ");
@@ -74,7 +74,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         tempChoice = 1;
         roundNum = 1;
         
-        lives = 3;
+        lives = 50;
         
         sleep = 20;
         maxWidth = width;
@@ -126,7 +126,7 @@ void menu() {
                     menuChoice=0;
                     removeMenuText();
                     
-                    lives = 3;
+                    lives = 50;
                     score = 0;
                     
                     
@@ -194,7 +194,7 @@ private void removeMenuText()
 
     public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 670 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 800 );//450, 750
 
         if(!initialized)
         {
@@ -259,6 +259,7 @@ private void removeMenuText()
             // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
             if(!grid.isBreathing())
             {
+
                 boolean tempCheck = true;
                 for (final FlyingEnemy enemy: enemies)
                 {
@@ -269,9 +270,18 @@ private void removeMenuText()
                 }
                 if(tempCheck)
                         grid.setToBreathe();
+
+	            boolean allEnemiesOnGrid = true;
+	            for (final FlyingEnemy enemy: enemies)
+	            {
+	            	if(!enemy.isOnGrid())
+	            	{
+	            		allEnemiesOnGrid = false;
+	            	}
+	            }
+	            if(allEnemiesOnGrid)
+	            		grid.setToBreathe();
             }
-            
-            
             if(grid.isBreathing())      
             if(enemiesInFlight <enemiesInFlightMax)
                 {
@@ -309,8 +319,44 @@ private void removeMenuText()
                                                                 enemies.get(enemiesEligible.get(i)).getY(),false,6);
                         }
                 }
+
+            if(grid.isSetToBreathe())  	
+            if(enemiesInFlight < enemiesInFlightMax)
+            	{
+	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
+	            	 for (final FlyingEnemy enemy: enemies) 
+	            	 {
+	            		 if(enemy.isOnGrid())	
+	            		 {
+	            			 enemiesEligible.add(enemies.indexOf(enemy));
+	            		 }
+	            	 }
+	            	 
+	            	 Collections.shuffle(enemiesEligible);
+	            	 
+	            	 if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
+	            	 {
+	            		 for (final Integer enemyFly: enemiesEligible) 
+		            	 {
+	            			 enemiesInFlight++;
+	            			 enemies.get(enemyFly).advanceAction();
+	            			 
+	            			 
+		            	 }
+	            	 }
+	            	 
+	            	 else
+	            		for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
+	            		{
+	            			enemiesInFlight++;
+	            			enemies.get(enemiesEligible.get(i)).advanceAction();
+	            			
+	            		}
+            	}
+
             
-            for (final FlyingEnemy enemy: enemies) {
+            for (final FlyingEnemy enemy: enemies) 
+            {
                 
                 
                 // Returns colliding bullet if enemy gets blown up
@@ -337,8 +383,12 @@ private void removeMenuText()
             {
                 enemies.remove(enemy);
                 
+
                 if(grid.isBreathing()&&!enemy.isOnGrid())
                     enemiesInFlight--;
+
+                
+
             }
 
             // Enemy Explosions
@@ -450,6 +500,7 @@ private void removeMenuText()
         
         onMenu =true;
         addMenuText();
+        
     }
 
     public void hitPlayer()
@@ -468,14 +519,17 @@ private void removeMenuText()
     }
 
     public void enemyShoot(final int x, final int y) {
-        enemyBullets.add(new enProject("images//alienRocket.gif", x, y));
+        enemyBullets.add(new enProject("images//alienRocket.gif", x, y, player.getX()));
         SOUND_MANAGER.enemyShot.play();
     }
 
     public void gameOver() {
         over = true;
     }
-
+    public boolean gridIsBreathing()
+    {
+    	return grid.isSetToBreathe();
+    }
     //Precondition: executed when repaint() or paintImmediately is called
     //Postcondition: the screen has been updated with current player location
     @Override
@@ -492,36 +546,38 @@ private void removeMenuText()
             
             for(int i =1; i <=numOfMenus; i++)
             {
-                if(tempChoice ==i)
+                if(tempChoice == i )
                 {
                     page.setColor(Color.red);
-                    page.fillRect(450, 350+i*100, 150, 50);
+                    page.fillRect(450, (maxHeight/2)-200+i*100, 150, 50);
                     page.setColor(Color.DARK_GRAY);
                 }
-                else page.fillRect(450, 350+i*100, 150, 50);
+                else page.fillRect(450, (maxHeight/2)-200+i*100, 150, 50);
             }
             
             
         }
-        
-        
-        for (final Projectile playerBullet: playerBullets)
+        else
         {
-            playerBullet.draw(page);
-        }
-        for (final enProject enemyBullet: enemyBullets)
-        {
-            enemyBullet.draw(page);
-        }
-        if (!over)
-            player.draw(page);
-        for (final Enemy enemy: enemies) {
-            enemy.draw(page);
-        }
         
-        for (Explosion enemyExplosion: enemyExplosions)
-        {
-            enemyExplosion.draw(page);
+	        for (final Projectile playerBullet: playerBullets)
+	        {
+	            playerBullet.draw(page);
+	        }
+	        for (final enProject enemyBullet: enemyBullets)
+	        {
+	            enemyBullet.draw(page);
+	        }
+	        if (!over)
+	            player.draw(page);
+	        for (final Enemy enemy: enemies) {
+	            enemy.draw(page);
+	        }
+	        
+	        for (Explosion enemyExplosion: enemyExplosions)
+	        {
+	            enemyExplosion.draw(page);
+	        }
         }
     }
 
@@ -592,6 +648,7 @@ private void removeMenuText()
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
                         0,3+i)); // row and column numb
+            
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
                         3,3+i)); // row and column numb
@@ -599,13 +656,19 @@ private void removeMenuText()
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
                         1,i)); // row and column numb
-             
+
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
                         2,i)); // row and column numb
         
         
-    }
+ 
+		
+	}
+public void minusOneFlying()
+{
+	enemiesInFlight--;
+}
 
     public void actionPerformed(final ActionEvent event) {}
 

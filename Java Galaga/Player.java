@@ -3,11 +3,8 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.*;
 
-public class Player
+public class Player extends DrawableObject
 {
-	private int x; // x and y location
-	private int y;
-	private Image image;
 	private Image healthy;
 	private Image dmg1;
 	private Image dmg2;
@@ -45,7 +42,7 @@ public class Player
 
 	public void moveRight() //moves player right
 	{
-		x += 5;
+		x += 8;
 		if (x>Main.WIDTH - 90) {
 			x = Main.WIDTH - 90;
 		}
@@ -53,25 +50,15 @@ public class Player
 
 	public void moveLeft() // moves player left
 	{
-		x -= 5;
+		x -= 8;
 		if (x<0) {
 			x = 0;
 		}
 	}
 
+  @Override
 	public void draw( Graphics page ) // draws player paddle
 	{
 		page.drawImage(image, x, y - 60, null);
 	}
-
-	public int getX() // returns x value
-	{
-		return this.x;
-	}
-
-	public int getY() // returns y value
-	{
-		return this.y;
-	}
-	
 }
