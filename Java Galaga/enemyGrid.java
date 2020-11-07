@@ -13,10 +13,10 @@ private double breatheMaxSteps = 180;
 private int breatheCurrentStep = 1;
 
 // how far the grid will "breathe"
-private int breatheSpread = 22;
+private int breatheSpread = 35;
 
 //how far the grid will breathe in they direction compared to the x values
-private double ySpreadRatio = 1.28;
+private double ySpreadRatio = 1.6;
 
 private boolean movingRight = true;
 private boolean shouldStartBreathing = false;
@@ -25,7 +25,7 @@ private boolean breathingDown = true;
 private Random random;
 
 private double breatheDelta;
-
+private double breathYDelta;
 public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound)
 {
 	random = new Random();
@@ -36,7 +36,8 @@ public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound)
 	enemiesX = new double[4][10];
 	enemiesY = new double[4][10];
 	
-	int seed = random.nextInt(500);
+	int seed = random.nextInt(rightBound-50)+leftBound;
+	
 	 for (int row = 0; row < enemiesX.length; row++) {
 		    for (int col = 0; col < enemiesX[row].length; col++) {
 		    	enemiesX[row][col] = seed+100+(distanceBetweenPoints*col);
@@ -45,9 +46,11 @@ public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound)
 	 
 	 for (int row = 0; row < enemiesY.length; row++) {
 		    for (int col = 0; col < enemiesY[row].length; col++) {
-		    	enemiesY[row][col] = 50+(100*row);
+		    	enemiesY[row][col] = 50+(50*row);
 		    }
 		 }
+	 
+	 breathYDelta = breatheSpread / ySpreadRatio / breatheMaxSteps;
 }
 
 
@@ -78,13 +81,15 @@ public void update()
 					    	}
 					    }
 					 }
+				 
 			 for (int row = 0; row < enemiesY.length; row++) {
 				    for (int col = 0; col < enemiesY[row].length; col++) {
-				    	breatheDelta =(breatheSpread/ySpreadRatio*(row +1))/breatheMaxSteps;
+				    	breatheDelta = (breatheSpread/ySpreadRatio*(row +1))/breatheMaxSteps;
 				    	enemiesY[row][col] += breatheDelta;
 				    }
 				 }
 			}
+			
 			else
 			{
 				for (int row = 0; row < enemiesX.length; row++) {
@@ -197,7 +202,7 @@ public int calcXCordInFrames(int row, int col, int numOfFrames)
 			if(breatheMaxSteps-breatheCurrentStep>numOfFrames)
 			{
 				// since were not expecting a shift, use the original formula of breathing to predict where we will be in numOfFrames
-				if(col<4)
+				if(col<5)
 				return (int) (enemiesX[row][col] - (numOfFrames)*(breatheSpread * Math.abs(col-5)/breatheMaxSteps));
 				else 
 					return (int) (enemiesX[row][col] + (numOfFrames)*(breatheSpread * Math.abs(col-5)/breatheMaxSteps));
@@ -207,7 +212,7 @@ public int calcXCordInFrames(int row, int col, int numOfFrames)
 			// then going in the opposite direction by (numOfFrames-(breatheMaxSteps-breatheCurrentStep)) which is how many frames we have left after doing the first breathing direction
 			else
 			{
-				if(col<4)
+				if(col<5)
 				return (int) (enemiesX[row][col] +(-(breatheMaxSteps-breatheCurrentStep)*(breatheSpread * Math.abs(col-5)/breatheMaxSteps) 
 						+(numOfFrames-(breatheMaxSteps-breatheCurrentStep))*(breatheSpread * Math.abs(col-5)/breatheMaxSteps)));
 				else 
@@ -222,8 +227,8 @@ public int calcXCordInFrames(int row, int col, int numOfFrames)
 			// checks if the grid doesn't switch breathing directions in the amount of frames specified
 			if(breatheCurrentStep>=numOfFrames)
 			{
-				// since were not expecting a shift, use the original formula of breathign to predict where we will be in numOfFrames
-				if(col<4)
+				// since were not expecting a shift, use the original formula of breathing to predict where we will be in numOfFrames
+				if(col<5)
 				return (int) (enemiesX[row][col] + (numOfFrames)*(breatheSpread * Math.abs(col-5)/breatheMaxSteps));
 				else 
 					return (int) (enemiesX[row][col] - (numOfFrames)*(breatheSpread * Math.abs(col-5)/breatheMaxSteps));
@@ -243,17 +248,47 @@ public int calcXCordInFrames(int row, int col, int numOfFrames)
 		}
 	}
 }
+
+
 public int calcYCordInFrames(int row, int col, int numOfFrames)
 {
-	return 0;
+	if(isBreathing())
+	{
+		if(breathingDown)
+		{
+			if(breatheMaxSteps-breatheCurrentStep>=numOfFrames)
+			{
+				return (int) (enemiesY[row][col] + (numOfFrames * (breathYDelta*(row +1))));
+			}
+			else
+			{
+				return (int) (enemiesY[row][col] + (((breatheMaxSteps-breatheCurrentStep)*(breathYDelta*(row +1)) - 
+						(numOfFrames-(breatheMaxSteps-breatheCurrentStep)) * (breathYDelta*(row + 1)))));
+			}
+		}
+		else
+		{
+			if(breatheCurrentStep>=numOfFrames)
+			{
+				return (int) (enemiesY[row][col] - (numOfFrames*(breathYDelta*(row +1))));
+			}
+			else 
+				return (int) (enemiesY[row][col] + (-(breathYDelta*(row +1) * breatheCurrentStep) + 
+						(numOfFrames-breatheCurrentStep)* (breathYDelta*(row +1))));
+		}
+	}
+	else
+		//when the grid isn't breathing
+		return getYCord(row,col);
 }
 public void reset()
 {
+	movingRight = random.nextBoolean();
 	shouldStartBreathing = false;
 	breatheForRestOfRound = false;
 	breathingDown = true;
 	breatheCurrentStep = 1;
-	int seed = random.nextInt(600);
+	int seed = random.nextInt(500);
 	 for (int row = 0; row < enemiesX.length; row++) {
 		    for (int col = 0; col < enemiesX[row].length; col++) {
 		    	enemiesX[row][col] = seed+100+(distanceBetweenPoints*col);
@@ -262,7 +297,7 @@ public void reset()
 	 
 	 for (int row = 0; row < enemiesY.length; row++) {
 		    for (int col = 0; col < enemiesY[row].length; col++) {
-		    	enemiesY[row][col] = 50+(100*row);
+		    	enemiesY[row][col] = 50+(70*row);
 		    }
 		 }
 }
@@ -275,6 +310,10 @@ public boolean isBreathing()
 public boolean isSetToBreathe()
 {
 	return shouldStartBreathing;
+}
+public boolean isBreathingDown()
+{
+	return breathingDown;
 }
 
 }

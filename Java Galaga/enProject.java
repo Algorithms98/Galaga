@@ -52,7 +52,7 @@ public class enProject extends DrawableObject
 	public void draw(Graphics page)
 	{
 		
-		page.drawImage(image, x, y + 10, null);
+		page.drawImage(image, x, y, null);
 	}
 
 	public void move()
@@ -64,8 +64,8 @@ public class enProject extends DrawableObject
 
 	public boolean isInsideP(Player p)
 	{
-		Rectangle r1 = new Rectangle(x,y+2,8,25);
-		Rectangle r2 = new Rectangle(p.getX()+2,p.getY()+2,58,30);
+		Rectangle r1 = new Rectangle(x,y+8,8,16);
+		Rectangle r2 = new Rectangle(p.getX()+4,p.getY()+4,56,30);
 		if(r1.intersects(r2))
 		{
 		    return true;

@@ -24,7 +24,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int menuChoice;
     private int tempChoice;
     private int gridLeftBound = 100;
-    private int gridRightBound = 900;
+    private int gridRightBound = 876-100;
     
     private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound);
     
@@ -41,7 +41,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int enemiesInFlightMax = 3;
 
     private final int MAX_ENEMY_BULLETS = 3;
-    private final int MAX_PLAYER_BULLETS = 50;
+    private final int MAX_PLAYER_BULLETS = 2;
     private final int numOfMenus = 4;
     
     JLabel title = new JLabel("Inspire AI ");
@@ -73,9 +73,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         menuChoice = 0;
         tempChoice = 1;
         roundNum = 1;
-        
-        lives = 50;
-        
+
         sleep = 20;
         maxWidth = width;
         maxHeight = height;
@@ -126,7 +124,7 @@ void menu() {
                     menuChoice=0;
                     removeMenuText();
                     
-                    lives = 50;
+                    lives = 500000;
                     score = 0;
                     
                     
@@ -194,7 +192,7 @@ private void removeMenuText()
 
     public void initialize()
     {
-        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 800 );//450, 750
+        player = new Player("Images/pShip.gif", "Images/pShip2.gif", "Images/pShip3.gif", 150, 760 );//450, 750
 
         if(!initialized)
         {
@@ -549,10 +547,10 @@ private void removeMenuText()
                 if(tempChoice == i )
                 {
                     page.setColor(Color.red);
-                    page.fillRect(450, (maxHeight/2)-200+i*100, 150, 50);
+                    page.fillRect(390, (maxHeight/2)-200+i*100, 150, 50);
                     page.setColor(Color.DARK_GRAY);
                 }
-                else page.fillRect(450, (maxHeight/2)-200+i*100, 150, 50);
+                else page.fillRect(390, (maxHeight/2)-200+i*100, 150, 50);
             }
             
             
@@ -564,8 +562,11 @@ private void removeMenuText()
 	        {
 	            playerBullet.draw(page);
 	        }
-	        for (final enProject enemyBullet: enemyBullets)
+	        
+	        ArrayList<enProject> enemyBulletsDraw = new ArrayList<enProject>(enemyBullets); 
+	        for (final enProject enemyBullet: enemyBulletsDraw)
 	        {
+	        	if(enemyBullet != null)
 	            enemyBullet.draw(page);
 	        }
 	        if (!over)
@@ -635,6 +636,10 @@ private void removeMenuText()
         } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
             leftArrowDown = false;
         }
+        if(event.getKeyCode() == KeyEvent.VK_C)
+        {
+        	reset();
+        }
     }
 
     public void reset()
@@ -646,29 +651,30 @@ private void removeMenuText()
             
             
             for(int i = 0; i <4; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", 600, -200-(60*i), 3, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip2.gif", 487, -200-(60*i), 3, player, //spawn location
                         0,3+i)); // row and column numb
             
             for(int i = 0; i <4; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", 400, -200-(60*i), 4, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip2.gif", 387, -200-(60*i), 4, player, //spawn location
                         3,3+i)); // row and column numb
             
             for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(60*i), 800 , 1, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip3.gif", -1000-(90*i), 725 , 1, player, //spawn location
                         1,i)); // row and column numb
 
             for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", 2050+(60*i), 800 , 2, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 1876+(90*i), 725  , 2, player, //spawn location
                         2,i)); // row and column numb
         
         
  
 		
 	}
-public void minusOneFlying()
-{
-	enemiesInFlight--;
-}
+    
+	public void minusOneFlying()
+	{
+		enemiesInFlight--;
+	}
 
     public void actionPerformed(final ActionEvent event) {}
 
@@ -676,5 +682,6 @@ public void minusOneFlying()
 
     public void mouseMoved(final MouseEvent event) {}
 
-public void mouseDragged(final MouseEvent event) {}
+    public void mouseDragged(final MouseEvent event) {}
+
 }

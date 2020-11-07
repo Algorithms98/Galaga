@@ -23,10 +23,13 @@ public class FlyingEnemy extends Enemy{
 	private int futureY;
 	private int currentTurnStepsTaken;
 	private int case9YTarget = 495;
+	int helperIniX;
+	int helperIniY;
 	int flyingDownXTarget;
 	double flyingDownTargetAngle;
 	
 	private double angle = 270;
+	private double angleTrack;
 	private double angleDelta;
 	private double initialXLinear;
 	private double initialYLinear;
@@ -85,21 +88,22 @@ public class FlyingEnemy extends Enemy{
 			}
 		}
 		
-		if(actionState==2||actionState==12)
+		// used when trying to get on grid
+		if(actionState==2||actionState==13)
 		{
 			if(actionState==2)
 			{
 				futureX =grid.calcXCordInFrames(gridRow, gridCol, 35);
-				futureY = grid.getYCord(gridRow, gridCol);
+				futureY = grid.calcYCordInFrames(gridRow, gridCol,35);
 			}
 			else
 			{
 				futureX = grid.calcXCordInFrames(gridRow, gridCol, 60);
-				futureY = grid.getYCord(gridRow, gridCol);
+				futureY = grid.calcYCordInFrames(gridRow, gridCol,60);
 			}
 		}
 		
-		move();
+		move(grid);
 		
 		gridDestinationX = xGrid;
 		gridDestinationY = yGrid;
@@ -113,7 +117,7 @@ public class FlyingEnemy extends Enemy{
 		return null;
 	}
 	
-	public void move()
+	public void move(enemyGrid grid)
 	{
 
 		switch(actionState) {
@@ -142,12 +146,12 @@ public class FlyingEnemy extends Enemy{
 							   drawAngle = 0;
 						   }
 			   if(spawnLocation == 1|| spawnLocation ==2)
-				if(x>=0 && x <=800)
+				if(x>=0 && x <=876)
 				{
-					if(x<100)
-					setCircle(x,y-150,false,2);
+					if(x<400)
+					setCircle(x,y-350,true,2);
 					else 
-						setCircle(x,y-200,true,2);
+						setCircle(x,y-350,false,2);
 					
 					
 					actionState ++;
@@ -159,12 +163,12 @@ public class FlyingEnemy extends Enemy{
 				   {
 					   if (spawnLocation == 3)
 					   {
-						   setLinearTarget(100,500,90);
+						   setLinearTarget(100,350,90);
 					   }
 					   else
 						   if (spawnLocation == 4)
 						   {
-							   setLinearTarget(900,500,90);
+							   setLinearTarget(750,350,90);
 						   }
 					   actionState ++;
 				   }
@@ -184,9 +188,9 @@ public class FlyingEnemy extends Enemy{
 						actionState++;
 	
 						if(spawnLocation ==1)
-							setCircle(x-120, y, false,8);
+							setCircle(x-85, y, false,8);
 						if(spawnLocation == 2)
-							setCircle(x+100, y, true,8);
+							setCircle(x+85, y, true,8);
 							
 					}
 				}
@@ -201,12 +205,12 @@ public class FlyingEnemy extends Enemy{
 					{
 						   if (spawnLocation == 3)
 						   {
-							   setCircle(x+150,y+50,false,6);
+							   setCircle(x+150,y+10,false,6);
 						   }
 						   else
 							   if (spawnLocation == 4)
 							   {
-								   setCircle(x-150,y+50,true,6);
+								   setCircle(x-150,y+10,true,6);
 							   }
 						actionState++;
 					}
@@ -227,6 +231,7 @@ public class FlyingEnemy extends Enemy{
 					
 					int framesToComplete = 35;
 					setLinearTarget(futureX,futureY,framesToComplete);
+				
 				}
 				
 			break;
@@ -241,6 +246,7 @@ public class FlyingEnemy extends Enemy{
 				
 				else 
 					{
+					
 						actionState++;
 						setTurnTargetAngle(180,18);
 					}
@@ -293,7 +299,7 @@ public class FlyingEnemy extends Enemy{
 			if((int)drawAngle == 0||(int)drawAngle == 360)
 			{
 				actionState++;
-				if( gridCol<5)
+				if(gridCol<5)
 					setCircle(x+80,y,false,6);
 					else
 						setCircle(x-80,y,true,6);
@@ -305,10 +311,10 @@ public class FlyingEnemy extends Enemy{
 			// setup for next case angle smoothing, should be used before wanting to use case 9
 		case 8:
 			flyingDownXTarget =0;
-			if(x<=500)
-				flyingDownXTarget = random.nextInt(350)+500;
+			if(gridCol<5)
+				flyingDownXTarget = 438 + random.nextInt(200);
 			else
-				flyingDownXTarget = random.nextInt(450)+50;
+				flyingDownXTarget = 100+ random.nextInt(337);
 			actionState++;
 			break;
 			
@@ -321,6 +327,7 @@ public class FlyingEnemy extends Enemy{
 			// angle we hope to get off the circle at so the transition from circular movement to linear motion is smooth
 			flyingDownTargetAngle = (int)(270 + (float) Math.toDegrees(Math.atan2(case9YTarget-y,flyingDownXTarget-x)));
 			flyingDownTargetAngle = flyingDownTargetAngle%360;
+			
 			if(Math.abs(drawAngle-flyingDownTargetAngle)<4||Math.abs(drawAngle-flyingDownTargetAngle)<4)
 			{
 				actionState++;
@@ -338,7 +345,7 @@ public class FlyingEnemy extends Enemy{
 			else
 			{
 				actionState++;
-				if(flyingDownXTarget <500)		
+				if(flyingDownXTarget <=437)		
 				setCircle(x+100,y+250,true,2);
 				else
 					setCircle(x-100,y+250,true,2);
@@ -348,17 +355,36 @@ public class FlyingEnemy extends Enemy{
 		// near the player Y, TODO add a chance for the enemy to do a circular motion near the bottom
 		case 11:
 			moveAroundSetCircle();
-			if(y>900) 
+			if(y>760) 
 				{
-					if(random.nextInt(7)==4)
-						actionState=12;
+					if(random.nextInt(3)==2)
+					{
+						actionState=40;
+						angleTrack = angle;
+						if(flyingDownXTarget <=437)	
+						setCircle(x+75,y-50,true,4);
+						else
+							setCircle(x-75,y-50,true,4);
+							
+					}
 					else
 					actionState++;
 				}
 			break;
 			
-		// reset to back of screen, TODO should choose to either go back to grid or continuing flying down
-		case 12: 			
+		//last movements at bottom of screen
+		case 12:
+			moveAroundSetCircle();
+			circleHelpY+=3.78;
+			
+		if(y>879) 
+		{
+			actionState++;
+		}
+			break;
+			
+			// reset to back of screen, TODO should choose to either go back to grid or continuing flying down
+		case 13: 			
 			
 			y+=5;
 			if(y>1030)
@@ -383,7 +409,15 @@ public class FlyingEnemy extends Enemy{
 					actionState=3;
 					break;
 					
-					
+		case 40:
+			moveAroundSetCircle();
+			
+			if( (int) angle >= (int) angleTrack-8 &&( int) angle <= (int) angleTrack)
+			{
+				actionState=12;
+				
+			}
+			break;
 					
 				
 	
@@ -448,6 +482,7 @@ public class FlyingEnemy extends Enemy{
 		previousY=0;
 		circleHelpX=x;
 		circleHelpY=y;
+		normalizeDrawAngle();
 		if(clockwise)
 		{
 			angleDelta = speed;
@@ -569,7 +604,7 @@ public class FlyingEnemy extends Enemy{
 							}
 								else
 								{
-									System.out.println("incompatible starting draw angle for starting location on circle - bottom right");
+									System.out.println("incompatible starting draw angle for starting location on circle - bottom right, DrawAngle: " +drawAngle);
 								}
 						}
 						// initial position of object is top right from center of circle
@@ -588,7 +623,7 @@ public class FlyingEnemy extends Enemy{
 							}
 								else
 								{
-									System.out.println("incompatible starting draw angle for starting location on circle - top right");
+									System.out.println("incompatible starting draw angle for starting location on circle - top right, DrawAngle: " +drawAngle);
 								}
 						}
 						
@@ -607,14 +642,14 @@ public class FlyingEnemy extends Enemy{
 									clockwise = true;
 								}
 								else
-									if(drawAngle<=359 && drawAngle>=270)
+									if(drawAngle<=360 && drawAngle>=270)
 								{
 									angle = drawAngle-180;
 									clockwise = false;
 								}
 									else
 									{
-										System.out.println("incompatible starting draw angle for starting location on circle - bottom left");
+										System.out.println("incompatible starting draw angle for starting location on circle - bottom left, DrawAngle: " +drawAngle);
 									}
 						}
 							// initial position of object is top left from center of circle
@@ -633,7 +668,7 @@ public class FlyingEnemy extends Enemy{
 								}
 									else
 									{
-										System.out.println("incompatible starting draw angle for starting location on circle - top left");
+										System.out.println("incompatible starting draw angle for starting location on circle - top left, DrawAngle: " +drawAngle);
 									}
 							}
 		if(clockwise)
@@ -738,5 +773,11 @@ public class FlyingEnemy extends Enemy{
 	public void advanceAction()
 	{
 		actionState=6;
+	}
+	public void normalizeDrawAngle()
+	{
+		drawAngle = drawAngle %360;
+		if(drawAngle < 0)
+			drawAngle = 360+drawAngle;
 	}
 }
