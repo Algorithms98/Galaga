@@ -23,11 +23,9 @@ public class FlyingEnemy extends Enemy{
 	private int futureY;
 	private int currentTurnStepsTaken;
 	private int case9YTarget = 495;
-	int helperIniX;
-	int helperIniY;
-	int flyingDownXTarget;
-	double flyingDownTargetAngle;
+	private int flyingDownXTarget;
 	
+	private double flyingDownTargetAngle;
 	private double angle = 270;
 	private double angleTrack;
 	private double angleDelta;
@@ -357,7 +355,7 @@ public class FlyingEnemy extends Enemy{
 			moveAroundSetCircle();
 			if(y>760) 
 				{
-					if(random.nextInt(3)==2)
+					if(random.nextInt(5)==2) 
 					{
 						actionState=40;
 						angleTrack = angle;
@@ -375,7 +373,7 @@ public class FlyingEnemy extends Enemy{
 		//last movements at bottom of screen
 		case 12:
 			moveAroundSetCircle();
-			circleHelpY+=3.78;
+			circleHelpY+=3.5;
 			
 		if(y>879) 
 		{
@@ -412,11 +410,23 @@ public class FlyingEnemy extends Enemy{
 		case 40:
 			moveAroundSetCircle();
 			
-			if( (int) angle >= (int) angleTrack-8 &&( int) angle <= (int) angleTrack)
+			if(angleDelta>0)
 			{
-				actionState=12;
-				
+					if( (int) angle >= (int) angleTrack-8 &&( int) angle <= (int) angleTrack)
+				{
+					actionState=12;
+					
+				}
 			}
+			else
+			{
+				if( (int) angle <= (int) angleTrack+8 &&( int) angle >= (int) angleTrack+4)
+				{
+					actionState=12;
+					
+				}
+			}
+			
 			break;
 					
 				
