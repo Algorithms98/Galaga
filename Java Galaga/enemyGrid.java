@@ -2,6 +2,7 @@ import java.util.Random;
 
 public class enemyGrid {
 	
+	private SoundManager SOUND_MANAGER;
 private double[][] enemiesX;
 private double[][] enemiesY;
 private int leftBound;
@@ -26,9 +27,10 @@ private Random random;
 
 private double breatheDelta;
 private double breathYDelta;
-public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound)
+public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound, SoundManager SOUND_MANAGER )
 {
 	random = new Random();
+	this.SOUND_MANAGER = SOUND_MANAGER;
 	this.leftBound = leftBound;
 	this.rightBound = rightBound;
 	this.distanceBetweenPoints = distanceBetweenPoints;
@@ -123,6 +125,7 @@ public void update()
 			if(breatheCurrentStep ==0)
 			{
 				breathingDown = true;
+				SOUND_MANAGER.breathingDown.play();
 			}
 			if(breatheCurrentStep == breatheMaxSteps)
 				breathingDown = false;

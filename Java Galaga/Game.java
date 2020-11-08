@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
 {
@@ -25,8 +26,14 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int tempChoice;
     private int gridLeftBound = 100;
     private int gridRightBound = 876-100;
+    private int enemiesInFlight = 0;
+    private int enemiesInFlightMax = 3;
     
-    private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound);
+    private final int MAX_ENEMY_BULLETS = 3;
+    private final int MAX_PLAYER_BULLETS = 2;
+    private final int numOfMenus = 4;
+    
+    private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound, SOUND_MANAGER);
     
     private boolean initialized = false;
     private boolean leftArrowDown = false;
@@ -37,13 +44,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean pressCounted = false;
     private boolean over = true;
     private boolean onMenu = true;
-    private int enemiesInFlight = 0;
-    private int enemiesInFlightMax = 3;
-
-    private final int MAX_ENEMY_BULLETS = 3;
-    private final int MAX_PLAYER_BULLETS = 2;
-    private final int numOfMenus = 4;
     
+    private Random random = new Random();
     JLabel title = new JLabel("Inspire AI ");
     JLabel game1 = new JLabel("Player Game");
     JLabel game2 = new JLabel("Player vs Ai ");
@@ -299,6 +301,7 @@ private void removeMenuText()
                          for (final Integer enemyFly: enemiesEligible) 
                          {
                              enemiesInFlight++;
+                             SOUND_MANAGER.enemyFlyDown.play();
                              enemies.get(enemyFly).setOnGrid(false);
                              
                              enemies.get(enemyFly).advanceAction();
@@ -311,6 +314,7 @@ private void removeMenuText()
                         for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
                         {
                             enemiesInFlight++;
+                            SOUND_MANAGER.enemyFlyDown.play();
                             enemies.get(enemiesEligible.get(i)).setOnGrid(false);
                             enemies.get(enemiesEligible.get(i)).advanceAction();
                             enemies.get(enemiesEligible.get(i)).setCircle(enemies.get(enemiesEligible.get(i)).getX()+150,
@@ -338,6 +342,7 @@ private void removeMenuText()
 		            	 {
 	            			 enemiesInFlight++;
 	            			 enemies.get(enemyFly).advanceAction();
+	            			 SOUND_MANAGER.enemyFlyDown.play();
 	            			 
 	            			 
 		            	 }
@@ -348,6 +353,7 @@ private void removeMenuText()
 	            		{
 	            			enemiesInFlight++;
 	            			enemies.get(enemiesEligible.get(i)).advanceAction();
+	            			SOUND_MANAGER.enemyFlyDown.play();
 	            			
 	            		}
             	}
@@ -371,8 +377,14 @@ private void removeMenuText()
                     SwingUtilities.invokeLater(() -> {
                         scoreText.setText("Score: " + this.score);});
                     
-                    
-                    SOUND_MANAGER.enemyExplosion.play();
+                    int soundChoice = random.nextInt(2);
+                    if(soundChoice == 0)
+                    	SOUND_MANAGER.enemyExplosion.play();
+                    else
+                    	if(soundChoice == 1)
+                    		SOUND_MANAGER.enemyExplosion2.play();
+                    	else
+                    		SOUND_MANAGER.enemyExplosion3.play();
                 }
                 turnToShoot--;
             }
@@ -459,10 +471,12 @@ private void removeMenuText()
                     
                     roundNum++;
                     roundsText.setText("Round " + roundNum + "/3");
-                    player.updateSprite(lives);
+                    
                 }
                 else
                     over = true;
+                
+                SOUND_MANAGER.breathingDown.stop();
             }
 
             try
@@ -506,10 +520,13 @@ private void removeMenuText()
         if (lives == 1)
             gameOver();
         lives--;
-        livesText.setText("Lives: " + this.lives);
+
+        SwingUtilities.invokeLater(() -> {
+        	livesText.setText("Lives: " + this.lives);});
         
-        this.updateUI();
-        player.updateSprite(lives);
+       
+        
+        
         if (lives != 0)
             SOUND_MANAGER.loseLife.play();
         else
@@ -518,7 +535,7 @@ private void removeMenuText()
 
     public void enemyShoot(final int x, final int y) {
         enemyBullets.add(new enProject("images//alienRocket.gif", x, y, player.getX()));
-        SOUND_MANAGER.enemyShot.play();
+
     }
 
     public void gameOver() {
@@ -571,7 +588,11 @@ private void removeMenuText()
 	        }
 	        if (!over)
 	            player.draw(page);
-	        for (final Enemy enemy: enemies) {
+	        
+	        ArrayList<FlyingEnemy> enemyDraw = new ArrayList<FlyingEnemy>(enemies);
+	        for (final Enemy enemy: enemyDraw) 
+	        {
+	        	if(enemy != null)
 	            enemy.draw(page);
 	        }
 	        
