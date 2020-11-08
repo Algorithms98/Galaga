@@ -93,4 +93,12 @@ public class Sound implements LineListener
         }
  
     }
+	public void setPlayCompleted()
+	{
+		playCompleted = true;
+	}
+	public Clip getClip()
+	{
+		return audioClip;
+	}
 }

@@ -242,8 +242,9 @@ private void removeMenuText()
         over = false;
         while( !over )
         {
-            grid.update();
+        	 
             
+        	 grid.update();
             // Player
             if (leftArrowDown) {
                 player.moveLeft();
