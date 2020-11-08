@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
@@ -30,7 +31,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int enemiesInFlightMax = 3;
     
     private final int MAX_ENEMY_BULLETS = 3;
-    private final int MAX_PLAYER_BULLETS = 2;
+    private final int MAX_PLAYER_BULLETS = 400;
     private final int numOfMenus = 4;
     
     private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound, SOUND_MANAGER);
@@ -44,15 +45,22 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean pressCounted = false;
     private boolean over = true;
     private boolean onMenu = true;
-    
+    private boolean roundOver;
+    private boolean respawning = false;
     private Random random = new Random();
+    
+    private long roundOverTime = System.currentTimeMillis();
+    private long deathTime = System.currentTimeMillis();
+    private long elapsedTime = 0L;
+    private long elapsedDeathTime = 0L;
+	
     JLabel title = new JLabel("Inspire AI ");
     JLabel game1 = new JLabel("Player Game");
     JLabel game2 = new JLabel("Player vs Ai ");
     JLabel options = new JLabel("Options ");
     JLabel quit = new JLabel("Quit ");
     
-
+    JLabel respawnText = new JLabel("REDEPLOYING...");
     JLabel livesText = new JLabel("Lives: " + this.lives);
     JLabel overText = new JLabel("GAME OVER");
     JLabel scoreText = new JLabel("Score: " + this.score);
@@ -127,9 +135,7 @@ void menu() {
                     removeMenuText();
                     
                     lives = 500000;
-                    score = 0;
-                    
-                    
+
                     initialize();
                     
                     
@@ -198,6 +204,13 @@ private void removeMenuText()
 
         if(!initialized)
         {
+        	
+        	
+        	respawnText.setBounds(345, 425, 300, 100);//Score:
+        	respawnText.setForeground(Color.RED);
+        	respawnText.setFont(new Font("Lava", Font.BOLD, 30));
+            this.add(respawnText);
+            
             scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
             scoreText.setForeground(Color.WHITE);
             scoreText.setFont(new Font("Lava", Font.BOLD, 20));
@@ -224,14 +237,19 @@ private void removeMenuText()
             
             initialized = true;
         }
-        
+        score = 0;
+        roundNum = 1;        
         livesText.setText("Lives: " + lives);
         scoreText.setText("Score: " + score);
-        livesText.setVisible(true);
+        roundsText.setText("Round " + roundNum + "/3");
+        
         overText.setVisible(false);
         levelText.setVisible(false);
+        respawnText.setVisible(false);
+        livesText.setVisible(true);
         scoreText.setVisible(true);
         roundsText.setVisible(true);
+        
         reset();
         playGame();
     }
@@ -246,10 +264,10 @@ private void removeMenuText()
             
         	 grid.update();
             // Player
-            if (leftArrowDown) {
+            if (leftArrowDown && !respawning) {
                 player.moveLeft();
             }
-            if (rightArrowDown) {
+            if (rightArrowDown && !respawning) {
                 player.moveRight();
             }
 
@@ -284,7 +302,7 @@ private void removeMenuText()
 	            		grid.setToBreathe();
             }
             if(grid.isBreathing())      
-            if(enemiesInFlight <enemiesInFlightMax)
+            if(enemiesInFlight < enemiesInFlightMax && !respawning)
                 {
                      ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
                      for (final FlyingEnemy enemy: enemies) 
@@ -324,7 +342,7 @@ private void removeMenuText()
                 }
 
             if(grid.isSetToBreathe())  	
-            if(enemiesInFlight < enemiesInFlightMax)
+            if(enemiesInFlight < enemiesInFlightMax && !respawning)
             	{
 	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
 	            	 for (final FlyingEnemy enemy: enemies) 
@@ -445,8 +463,9 @@ private void removeMenuText()
             } 
 
             // Next Level
-            if(enemies.size() == 0)
+            if(enemies.size() == 0 && !roundOver)
             {
+            	roundOver = true;
                 if(roundNum == 3)
                 {
                     overText = new JLabel("You won!");
@@ -457,18 +476,17 @@ private void removeMenuText()
                 {
                     levelText.setText("Round " + roundNum + " passed.");
                     levelText.setVisible(true);
-                    try
-                    {Thread.sleep(1000);}
-                    catch(final InterruptedException ex){}
+                    
+                    	 roundOverTime = System.currentTimeMillis();
+                    	 elapsedTime = 0L;
 
-                    levelText.setVisible(false);
-                    reset();
-
+                 
                     lives++;
                     
                     // keeps label from flickering
                     SwingUtilities.invokeLater(() -> {
                         livesText.setText("Lives: " + this.lives);});
+                    
                     
                     roundNum++;
                     roundsText.setText("Round " + roundNum + "/3");
@@ -486,6 +504,28 @@ private void removeMenuText()
             }
             catch( final InterruptedException ex ){}
 
+            // spawn 7 seconds after dying
+            if(respawning && elapsedDeathTime > 8*1000)
+            {
+            	respawning = false;
+            	player.setX(437);
+            	respawnText.setVisible(false);
+            	
+            }
+            // wait 7 seconds after last enemy is killed to start next round
+            if(roundOver && elapsedTime > 7*1000)
+            {
+	
+            	reset();
+            	roundOver = false;
+            	 levelText.setVisible(false);
+            }
+            
+            if(respawning)
+            elapsedDeathTime = (new Date()).getTime() - deathTime;
+            
+            if(roundOver)
+            elapsedTime = (new Date()).getTime() - roundOverTime;
             this.repaint();//redraw the screen with the updated locations; calls paintComponent below
         }
         
@@ -518,20 +558,30 @@ private void removeMenuText()
 
     public void hitPlayer()
     {
-        if (lives == 1)
-            gameOver();
-        lives--;
-
-        SwingUtilities.invokeLater(() -> {
-        	livesText.setText("Lives: " + this.lives);});
-        
-       
-        
-        
-        if (lives != 0)
-            SOUND_MANAGER.loseLife.play();
-        else
-            SOUND_MANAGER.playerExplosion.play();
+	    if(!respawning)
+	    {
+	        if (lives == 1)
+	            gameOver();
+	        else
+	        {
+		        // add explosion at player location and move player offscreen
+		        enemyExplosions.add(new Explosion("Images//eExplosion.gif", player.getX(), player.getY()));
+		        player.setX(400000);
+		        SOUND_MANAGER.playerExplosion.play();
+		        respawnText.setVisible(true);
+		        
+		        // update life counter
+		        lives--;
+		        SwingUtilities.invokeLater(() -> {
+		        	livesText.setText("Lives: " + this.lives);});
+		        
+		        // keep track of time of death
+		        respawning = true;
+		        deathTime = System.currentTimeMillis();
+		        elapsedDeathTime = 0;
+	        }
+	            
+	    }
     }
 
     public void enemyShoot(final int x, final int y) {
