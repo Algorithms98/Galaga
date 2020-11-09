@@ -281,9 +281,10 @@ private void removeMenuText()
         while( !over )
         {
         	 
-            
+            // moves the grid
         	 grid.update();
-            // Player
+        	 
+            // Player movement handling
             if (leftArrowDown && !respawning) {
                 player.moveLeft();
             }
@@ -295,7 +296,7 @@ private void removeMenuText()
             int turnToShoot = (int) (Math.random() * enemies.size());
             ArrayList<FlyingEnemy> enemiesToRemove = new ArrayList<FlyingEnemy>();
             
-            // checks if all enemies have gone on the grid atleast once so the grid can start "breathing"
+            // checks if all enemies have gone on the grid at least once so the grid can start "breathing"
             if(!grid.isBreathing())
             {
 
@@ -321,6 +322,9 @@ private void removeMenuText()
 	            if(allEnemiesOnGrid)
 	            		grid.setToBreathe();
             }
+            
+            // handles checking when enemies should fly down the screen
+            // enemies should only fly down when all enemies have spawned and landed on the grid
             if(grid.isBreathing())      
             if(enemiesInFlight < enemiesInFlightMax && !respawning)
                 {
@@ -361,43 +365,10 @@ private void removeMenuText()
                         }
                 }
 
-            if(grid.isSetToBreathe())  	
-            if(enemiesInFlight < enemiesInFlightMax && !respawning)
-            	{
-	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
-	            	 for (final FlyingEnemy enemy: enemies) 
-	            	 {
-	            		 if(enemy.isOnGrid())	
-	            		 {
-	            			 enemiesEligible.add(enemies.indexOf(enemy));
-	            		 }
-	            	 }
-	            	 
-	            	 Collections.shuffle(enemiesEligible);
-	            	 
-	            	 if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
-	            	 {
-	            		 for (final Integer enemyFly: enemiesEligible) 
-		            	 {
-	            			 enemiesInFlight++;
-	            			 enemies.get(enemyFly).advanceAction();
-	            			 SOUND_MANAGER.enemyFlyDown.play();
-	            			 
-	            			 
-		            	 }
-	            	 }
-	            	 
-	            	 else
-	            		for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
-	            		{
-	            			enemiesInFlight++;
-	            			enemies.get(enemiesEligible.get(i)).advanceAction();
-	            			SOUND_MANAGER.enemyFlyDown.play();
-	            			
-	            		}
-            	}
+            // handles checking when enemies should fly down the screen
+            // enemies should only fly down when all enemies have spawned and landed on the grid
+           
 
-            
             for (final FlyingEnemy enemy: enemies) 
             {
 
@@ -405,16 +376,19 @@ private void removeMenuText()
                 final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
                         , grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
                 
+                // player bullet has hit an enemy
                 if (collidingBullet != null) {
                     enemiesToRemove.add(enemy);
                     enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
                     playerBullets.remove(collidingBullet);
                     score += 10;
                     
+                    // updates score label
                     // keeps label from flickering
-                    SwingUtilities.invokeLater(() -> {
-                        scoreText.setText("Score: " + this.score);});
+                    SwingUtilities.invokeLater(() -> {scoreText.setText("Score: " + this.score);});
                     
+                    
+                    // plays random sound on enemy death
                     int soundChoice = random.nextInt(2);
                     if(soundChoice == 0)
                     	SOUND_MANAGER.enemyExplosion.play();
@@ -427,26 +401,31 @@ private void removeMenuText()
                 
                 turnToShoot--;
                 
-                Rectangle r1 = new Rectangle(enemy.getX()+2,enemy.getY()+2,enemy.getWidth()-2,enemy.getHeight()-2);
-        		Rectangle r2 = new Rectangle(player.getX()+4,player.getY()+4,56,30);
+                //Collision check between enemy ships and player ship
+                Rectangle r1 = new Rectangle(enemy.getX()+2,enemy.getY()+2,enemy.getWidth()-2,enemy.getHeight()-2); // enemy ship hitbox definition
+        		Rectangle r2 = new Rectangle(player.getX()+4,player.getY()+4,56,30); // player ship hitbox definition
+        		
         		if(r1.intersects(r2))
         		{
+        			//explode the player
         			hitPlayer();
+        			
+        			//set the enemy who collided with player to be removed
         			enemiesToRemove.add(enemy);
+        			
+        			// add explosion at enemy ship location
         			enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
         		}
             }
 
+            //removes enemies
             for (final FlyingEnemy enemy: enemiesToRemove)
-            {
-                enemies.remove(enemy);
-                
-
-                if(grid.isBreathing()&&!enemy.isOnGrid())
+            { 
+            	// keep enemiesInFlight accurate by checking if the removed enemy was in flight;
+            	if(grid.isBreathing()&&!enemy.isOnGrid())
                     enemiesInFlight--;
-
-                
-
+            	
+                enemies.remove(enemy);
             }
 
             // Enemy Explosions
@@ -457,7 +436,8 @@ private void removeMenuText()
                     enemyExplosionsToRemove.add(enemyExplosion);
                 }
             }
-
+            
+            //Explosions being removed
             for (Explosion enemyExplosion: enemyExplosionsToRemove)
             {
                 enemyExplosions.remove(enemyExplosion);
@@ -473,6 +453,7 @@ private void removeMenuText()
                 }
             }
 
+            // removing enemy bullets set to be removed
             for (final enProject enBullet: enemyBulletsToRemove)
             {
                 enemyBullets.remove(enBullet);
@@ -486,6 +467,7 @@ private void removeMenuText()
                     playerBulletsToRemove.add(playerBullet);
                 }
             }
+            // removing player bullets set to be removed
             for (final Projectile playerBullet: playerBulletsToRemove)
             {
                 playerBullets.remove(playerBullet);
@@ -495,6 +477,7 @@ private void removeMenuText()
             if(enemies.size() == 0 && !roundOver)
             {
             	roundOver = true;
+            	
                 if(roundNum == 3)
                 {
                     overText = new JLabel("You won!");
@@ -517,8 +500,8 @@ private void removeMenuText()
                     lives++;
                     
                     // keeps label from flickering
-                    SwingUtilities.invokeLater(() -> {
-                        livesText.setText("Lives: " + this.lives);});
+                    // Updates lives label
+                    SwingUtilities.invokeLater(() -> {livesText.setText("Lives: " + this.lives);});
                     
                     
                     roundNum++;
@@ -530,7 +513,8 @@ private void removeMenuText()
                 
                 SOUND_MANAGER.breathingDown.stop();
             }
-
+            
+            // how often the game refreshes itself (FPS) 
             try
             {
                 Thread.sleep( sleep );
@@ -554,23 +538,27 @@ private void removeMenuText()
             	 levelText.setVisible(false);
             }
             
+            //wait 7 seconds before returning to main menu after last life is lost
             if(gameWillEnd && elapsedGameOverTime > 7*1000)
             {
             	over = true;
             }
             
+            // keeps track of time for various timers if relevant booleans true
             if(gameWillEnd)
             	elapsedGameOverTime = (new Date()).getTime() - gameOverTime;
             
             if(respawning)
-            elapsedDeathTime = (new Date()).getTime() - deathTime;
+            	elapsedDeathTime = (new Date()).getTime() - deathTime;
             
             if(roundOver)
-            elapsedRoundTime = (new Date()).getTime() - roundOverTime;
+            	elapsedRoundTime = (new Date()).getTime() - roundOverTime;
             
             
             this.repaint();//redraw the screen with the updated locations; calls paintComponent below
         }
+        
+        // current game has ended
         noLivesText.setVisible(false);
         
         enemies.clear();
@@ -602,24 +590,25 @@ private void removeMenuText()
         addMenuText();
         
     }
-
+    
+    // Used when an enemy ship or enemy bullet connects with the player ship
     public void hitPlayer()
     {
 	    if(!respawning)
 	    {
 	        
 	        
-		        // add explosion at player location and move player offscreen
+		        // add explosion at player location and move player off-screen
 		        enemyExplosions.add(new Explosion("Images//eExplosion.gif", player.getX(), player.getY()));
 		        player.setX(400000);
 		        SOUND_MANAGER.playerExplosion.play();
 		        
 		        // update life counter
-		         lives--;
-			        SwingUtilities.invokeLater(() -> {
-			        	livesText.setText("Lives: " + this.lives);});
+		        lives--;
+			    SwingUtilities.invokeLater(() -> { livesText.setText("Lives: " + this.lives);});
+			    respawning = true;
 			        
-			        respawning = true;
+			    // starts game over procedures
 		        if (! (lives == 0))
 		        {
 			        respawnText.setVisible(true);
@@ -631,7 +620,8 @@ private void removeMenuText()
 			        deathTime = System.currentTimeMillis();
 			        elapsedDeathTime = 0;
 		        }
-		        else gameOver();
+		        else 
+		        	gameOver();
 	        
 	            
 	    }
@@ -643,23 +633,24 @@ private void removeMenuText()
     }
 
     public void gameOver() {
+    	
+    	// Wait some time before going to main menu
     	gameOverTime = System.currentTimeMillis();
     	elapsedGameOverTime = 0;
     	gameWillEnd = true;
+    	
     	noLivesText.setVisible(true);
         
     }
-    public boolean gridIsBreathing()
-    {
-    	return grid.isSetToBreathe();
-    }
+   
     //Precondition: executed when repaint() or paintImmediately is called
     //Postcondition: the screen has been updated with current player location
     @Override
     public void paintComponent( final Graphics page )
     {
-        this.setDoubleBuffered(true);
         super.paintComponent(page);
+        
+        //draws background stars
         background.draw(page);
         
         // draws main menu
@@ -675,11 +666,14 @@ private void removeMenuText()
                     page.fillRect(390, (maxHeight/2)-200+i*100, 150, 50);
                     page.setColor(Color.DARK_GRAY);
                 }
-                else page.fillRect(390, (maxHeight/2)-200+i*100, 150, 50);
+                else 
+                	page.fillRect(390, (maxHeight/2)-200+i*100, 150, 50);
             }
             
             
         }
+        
+        // Draws all game assets
         else
         {
         
@@ -776,11 +770,9 @@ private void removeMenuText()
 
     public void reset()
     {
-    
-            
+
             grid.reset();
             enemiesInFlight = 0;
-            
             
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip2.gif", 487, -200-(60*i), 3, player, //spawn location
@@ -797,17 +789,18 @@ private void removeMenuText()
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 3876+(90*i), 700  , 2, player, //spawn location
                         2,i)); // row and column numb
-        
-        
- 
-		
+
 	}
     
 	public void minusOneFlying()
 	{
 		enemiesInFlight--;
 	}
-
+	
+	 public boolean gridIsBreathing()
+	{
+	    return grid.isSetToBreathe();
+	}
     public void actionPerformed(final ActionEvent event) {}
 
     public void keyTyped( final KeyEvent event ) {}
