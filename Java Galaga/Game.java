@@ -250,7 +250,7 @@ private void removeMenuText()
         over = false;
         score = 0;
         roundNum = 1;  
-        lives = 1;
+        lives = 5;
         
         livesText.setText("Lives: " + lives);
         scoreText.setText("Score: " + score);
@@ -400,8 +400,7 @@ private void removeMenuText()
             
             for (final FlyingEnemy enemy: enemies) 
             {
-                
-                
+
                 // Returns colliding bullet if enemy gets blown up
                 final Projectile collidingBullet = enemy.update(turnToShoot == 0, enemyBullets.size() < MAX_ENEMY_BULLETS, grid.getXCord(enemy.getGridRow(), enemy.getGridCol())
                         , grid.getYCord(enemy.getGridRow(), enemy.getGridCol()) ,playerBullets, this, grid);
@@ -425,7 +424,17 @@ private void removeMenuText()
                     	else
                     		SOUND_MANAGER.enemyExplosion3.play();
                 }
+                
                 turnToShoot--;
+                
+                Rectangle r1 = new Rectangle(enemy.getX(),enemy.getY()+4,enemy.getWidth(),enemy.getHeight());
+        		Rectangle r2 = new Rectangle(player.getX()+4,player.getY()+4,56,30);
+        		if(r1.intersects(r2))
+        		{
+        			hitPlayer();
+        			enemiesToRemove.add(enemy);
+        			enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
+        		}
             }
 
             for (final FlyingEnemy enemy: enemiesToRemove)
@@ -498,6 +507,10 @@ private void removeMenuText()
                     levelText.setVisible(true);
                     
                     	 roundOverTime = System.currentTimeMillis();
+                    	 if(respawning)
+                    	 {
+                    		 roundOverTime += 3*1000;
+                    	 }
                     	 elapsedRoundTime = 0L;
 
                  
@@ -778,11 +791,11 @@ private void removeMenuText()
                         3,3+i)); // row and column numb
             
             for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip3.gif", -1000-(90*i), 725 , 1, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip3.gif", -1000-(90*i), 700 , 1, player, //spawn location
                         1,i)); // row and column numb
 
             for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", 3876+(90*i), 725  , 2, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip.gif", 3876+(90*i), 700  , 2, player, //spawn location
                         2,i)); // row and column numb
         
         

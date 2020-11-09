@@ -106,10 +106,16 @@ public class FlyingEnemy extends Enemy{
 		gridDestinationX = xGrid;
 		gridDestinationY = yGrid;
 		
+		if(y<550)
+    	{
+    		allowedToShoot = true;
+    	}
+    	else allowedToShoot = false;
+		
 		if(game.gridIsBreathing() && actionState == 30)
 			game.minusOneFlying();
 		
-		if (turnToShoot && enCanShoot) {
+		if (turnToShoot && enCanShoot && allowedToShoot) {
 			game.enemyShoot(x + 10, y);
 		}
 		return null;
