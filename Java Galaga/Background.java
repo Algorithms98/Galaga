@@ -9,7 +9,7 @@ public class Background extends JLabel {
 	final private int numOfDots = 150;
 	final private int width;
 	final private int height;
-	private int fallRate = 3;
+	private int fallRate = 4;
 
 	public Background(Game game) {	
 		width = game.getPreferredSize().width;
