@@ -325,7 +325,7 @@ private void removeMenuText()
             
             // handles checking when enemies should fly down the screen
             // enemies should only fly down when all enemies have spawned and landed on the grid
-            if(grid.isBreathing())      
+            if(grid.isBreathing() ||grid.isSetToBreathe())      
             if(enemiesInFlight < enemiesInFlightMax && !respawning)
                 {
                      ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
@@ -367,7 +367,44 @@ private void removeMenuText()
 
             // handles checking when enemies should fly down the screen
             // enemies should only fly down when all enemies have spawned and landed on the grid
-           
+            // TODO NOT SURE IF THIS IS NEEDED
+            if(grid.isSetToBreathe())  	
+            if(enemiesInFlight < enemiesInFlightMax && !respawning)
+            	{
+            		// find all enemies that are able to fly down the screen(those who are not already in flight)
+	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
+	            	 for (final FlyingEnemy enemy: enemies) 
+	            	 {
+	            		 if(enemy.isOnGrid())	
+	            		 {
+	            			 enemiesEligible.add(enemies.indexOf(enemy));
+	            		 }
+	            	 }
+	            	 
+	            	 //randomize the positions of the eligible enemies
+	            	 Collections.shuffle(enemiesEligible);
+	            	 
+	            	 //send X amount of enemies to fly to reach the maximum # of enemiesInFlight
+	            	 if(enemiesEligible.size()<enemiesInFlightMax-enemiesInFlight)
+	            	 {
+	            		 // if there isn't enough enemies left, just send all
+	            		 for (final Integer enemyFly: enemiesEligible) 
+		            	 {
+	            			 enemiesInFlight++;
+	            			 enemies.get(enemyFly).advanceAction();
+	            			 SOUND_MANAGER.enemyFlyDown.play(); 
+		            	 }
+	            	 }
+	            	 
+	            	 else
+	            		 // there is enough enemies left
+	            		for(int i =0;i< enemiesInFlightMax-enemiesInFlight; i++)
+	            		{
+	            			enemiesInFlight++;
+	            			enemies.get(enemiesEligible.get(i)).advanceAction();
+	            			SOUND_MANAGER.enemyFlyDown.play();	
+	            		}
+            	}
 
             for (final FlyingEnemy enemy: enemies) 
             {
@@ -474,7 +511,7 @@ private void removeMenuText()
             } 
 
             // Next Level
-            if(enemies.size() == 0 && !roundOver)
+            if(enemies.size() == 0 && !roundOver && !respawning)
             {
             	roundOver = true;
             	
@@ -698,8 +735,10 @@ private void removeMenuText()
 	            enemy.draw(page);
 	        }
 	        
-	        for (Explosion enemyExplosion: enemyExplosions)
+	        ArrayList<Explosion> enemyExplosionDraw = new ArrayList<Explosion>(enemyExplosions);
+	        for (Explosion enemyExplosion: enemyExplosionDraw)
 	        {
+	        	if(enemyExplosion != null)
 	            enemyExplosion.draw(page);
 	        }
         }

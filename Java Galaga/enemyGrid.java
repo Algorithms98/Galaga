@@ -3,55 +3,60 @@ import java.util.Random;
 public class enemyGrid {
 	
 	private SoundManager SOUND_MANAGER;
-private double[][] enemiesX;
-private double[][] enemiesY;
-private int leftBound;
-private int rightBound;
-private int distanceBetweenPoints;
-
-// frames it will take to complete one down breathing motion or one up breathing motion
-private double breatheMaxSteps = 180;
-private int breatheCurrentStep = 1;
-
-// how far the grid will "breathe"
-private int breatheSpread = 35;
-
-//how far the grid will breathe in they direction compared to the x values
-private double ySpreadRatio = 1.6;
-
-private boolean movingRight = true;
-private boolean shouldStartBreathing = false;
-private boolean breatheForRestOfRound = false;
-private boolean breathingDown = true;
-private Random random;
-
-private double breatheDelta;
-private double breathYDelta;
-public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound, SoundManager SOUND_MANAGER )
+	
+	// positions of grid locations
+	private double[][] enemiesX;
+	private double[][] enemiesY;
+	
+	private int leftBound;
+	private int rightBound;
+	private int distanceBetweenPoints;
+	private int breatheCurrentStep = 1;
+	
+	// how far the grid will "breathe"
+	private int breatheSpread = 35;
+	
+	private double breatheDelta;
+	private double breathYDelta;
+	
+	// frames it will take to complete one down breathing motion or one up breathing motion
+	private double breatheMaxSteps = 180;
+	
+	//how far the grid will breathe in they direction compared to the x values
+	private double ySpreadRatio = 1.6;
+	
+	private boolean movingRight = true;
+	private boolean shouldStartBreathing = false;
+	private boolean breatheForRestOfRound = false;
+	private boolean breathingDown = true;
+	private Random random;
+	
+public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound, SoundManager SOUND_MANAGER)
 {
 	random = new Random();
 	this.SOUND_MANAGER = SOUND_MANAGER;
 	this.leftBound = leftBound;
 	this.rightBound = rightBound;
 	this.distanceBetweenPoints = distanceBetweenPoints;
-	
+
 	enemiesX = new double[4][10];
 	enemiesY = new double[4][10];
 	
 	int seed = random.nextInt(rightBound-50)+leftBound;
 	
+	// setting up locations of grid cells
 	 for (int row = 0; row < enemiesX.length; row++) {
 		    for (int col = 0; col < enemiesX[row].length; col++) {
 		    	enemiesX[row][col] = seed+100+(distanceBetweenPoints*col);
 		    }
 		 }
-	 
 	 for (int row = 0; row < enemiesY.length; row++) {
 		    for (int col = 0; col < enemiesY[row].length; col++) {
 		    	enemiesY[row][col] = 50+(50*row);
 		    }
 		 }
 	 
+	 // How much Y will move each breatheStep, used for calculating future positions
 	 breathYDelta = breatheSpread / ySpreadRatio / breatheMaxSteps;
 }
 
@@ -68,7 +73,6 @@ public void update()
 	{
 			if(breathingDown)
 			{
-				
 				 for (int row = 0; row < enemiesX.length; row++) {
 					    for (int col = 0; col < enemiesX[row].length; col++) {
 					    	if(col>4)
