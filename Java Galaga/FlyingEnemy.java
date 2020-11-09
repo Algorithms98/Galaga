@@ -5,14 +5,18 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class FlyingEnemy extends Enemy{
-	
+public class FlyingEnemy extends Enemy
+{
+	private final int case9YTarget = 495;
 	private Random random = new Random();
+	
+	private int gridDestinationX = 100 + random.nextInt(800);
+	private int gridDestinationY = 100 + random.nextInt(300);	
+	private int currentTurnStepsTaken;
+	private int linearStepsTaken = 0;
+	private int flyingDownXTarget;
 	private int spawnLocation = 0; // which side of the screen was this enemy spawned at, 1 = bottom left, 2 - bottom right, 3 = top left, 4 = top right 
 	private int actionState = 0;
-	private int linearStepsTaken = 0;
-	private int gridDestinationX = 100 + random.nextInt(800);
-	private int gridDestinationY = 100 + random.nextInt(300);
 	private int currentCenterY;
 	private int currentCenterX;
 	private int initialXGrid;
@@ -20,35 +24,31 @@ public class FlyingEnemy extends Enemy{
 	private int gridRow;
 	private int futureX;
 	private int futureY;
-	private int currentTurnStepsTaken;
-	private int flyingDownXTarget;
-	private final int case9YTarget = 495;
-	
-	private double radius;
-	private double flyingDownTargetAngle;
+
 	private double angle;
+	private double radius;
+	private double previousX;
+	private double previousY;
 	private double angleTrack;
 	private double angleDelta;
-	private double initialXLinear;
-	private double initialYLinear;
+	private double circleHelpX;
+	private double circleHelpY;
 	private double linearSteps;
 	private double linearDeltaX;
 	private double linearDeltaY;
+	private double initialXLinear;
+	private double initialYLinear;
 	private double currentTurnSteps;
 	private double currentTargetAngle;
 	private double currentTurnDeltaAngle;
-	private double circleHelpX;
-	private double circleHelpY;
-	private double previousX;
-	private double previousY;
+	private double flyingDownTargetAngle;
+
 	private float drawAngle;	
 
-	
-	
 	private boolean onGrid = false;
+	
+	//in case you need to use player location for any enemy behavior
 	private Player player;
-	
-	
 	
 	public FlyingEnemy(Image img, int xLoc, int yLoc, Player player) {
 		super(img, xLoc, yLoc);

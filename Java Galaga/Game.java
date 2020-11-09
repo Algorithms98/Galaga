@@ -12,6 +12,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private static final SoundManager SOUND_MANAGER = new SoundManager();
     private final Background background;
     private Player player;
+    
     private final ArrayList<FlyingEnemy> enemies;
     private final ArrayList<enProject> enemyBullets;
     private final ArrayList<Projectile> playerBullets;
@@ -34,7 +35,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private final int MAX_PLAYER_BULLETS = 400;
     private final int numOfMenus = 4;
     
-    private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound, SOUND_MANAGER);
+   
     
     private boolean initialized = false;
     private boolean leftArrowDown = false;
@@ -48,21 +49,26 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean onMenu = true;
     private boolean roundOver;
     private boolean respawning = false;
-    private Random random = new Random();
+  
     
-    private long roundOverTime = System.currentTimeMillis();
-    private long deathTime = System.currentTimeMillis();
-    private long gameOverTime = System.currentTimeMillis();
+    private long roundOverTime;
+    private long deathTime;
+    private long gameOverTime;
     private long elapsedRoundTime = 0L;
     private long elapsedDeathTime = 0L;
     private long elapsedGameOverTime = 0L;
+    
+    private Random random = new Random();
+	private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound, SOUND_MANAGER);
 	
+	//Menu labels
     JLabel title = new JLabel("Inspire AI ");
     JLabel game1 = new JLabel("Player Game");
     JLabel game2 = new JLabel("Player vs Ai ");
     JLabel options = new JLabel("Options ");
     JLabel quit = new JLabel("Quit ");
     
+    // game labels
     JLabel respawnText = new JLabel("REDEPLOYING...");
     JLabel livesText = new JLabel("Lives: " + this.lives);
     JLabel overText = new JLabel("GAME OVER");
@@ -73,7 +79,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 
     // constructor - sets the initial conditions for this Game object
     public Game(final int width, final int height) {
-        this.setLayout(null);// Don't change
+        this.setLayout(null);	// Don't change
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(width, height));
 
@@ -809,7 +815,6 @@ private void removeMenuText()
 
     public void reset()
     {
-
             grid.reset();
             enemiesInFlight = 0;
             
@@ -828,7 +833,6 @@ private void removeMenuText()
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", 3876+(90*i), 700  , 2, player, //spawn location
                         2,i)); // row and column numb
-
 	}
     
 	public void minusOneFlying()
