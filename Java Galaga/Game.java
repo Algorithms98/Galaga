@@ -427,7 +427,7 @@ private void removeMenuText()
                 
                 turnToShoot--;
                 
-                Rectangle r1 = new Rectangle(enemy.getX(),enemy.getY()+4,enemy.getWidth(),enemy.getHeight());
+                Rectangle r1 = new Rectangle(enemy.getX()+2,enemy.getY()+2,enemy.getWidth()-2,enemy.getHeight()-2);
         		Rectangle r2 = new Rectangle(player.getX()+4,player.getY()+4,56,30);
         		if(r1.intersects(r2))
         		{

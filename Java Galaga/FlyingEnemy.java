@@ -106,7 +106,7 @@ public class FlyingEnemy extends Enemy{
 		gridDestinationX = xGrid;
 		gridDestinationY = yGrid;
 		
-		if(y<550)
+		if(y<500)
     	{
     		allowedToShoot = true;
     	}

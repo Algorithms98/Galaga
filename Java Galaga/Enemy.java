@@ -50,9 +50,7 @@ public class Enemy extends DrawableObject
         if (turnToShoot && enCanShoot && allowedToShoot) {
             game.enemyShoot(x + 10, y);
         }
-
-        //if (y > 680)
-            //game.gameOver();
+        
         return null;
     }
 
