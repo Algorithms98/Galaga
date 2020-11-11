@@ -58,7 +58,6 @@ public class enProject extends DrawableObject
 	public void move()
 	{
 		y+=10;
-		
 		x+= xDelta;
 	}
 

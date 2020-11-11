@@ -107,7 +107,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
 void menu() {
     
     addMenuText();
-
+    
         while(menuChoice !=4)
         {
             try
@@ -193,7 +193,7 @@ private void addMenuText() {
         quit.setFont(new Font("Lava", Font.BOLD, 20));
         quit.setVisible(true);
         this.add(quit);
-    
+        SOUND_MANAGER.menuSound.play();
 }
 private void removeMenuText()
 {
@@ -529,6 +529,7 @@ private void removeMenuText()
                 }
                 if(roundNum < 3)
                 {
+                	grid.reset();
                     levelText.setText("Round " + roundNum + " passed.");
                     levelText.setVisible(true);
                     
@@ -613,7 +614,7 @@ private void removeMenuText()
         overText.setVisible(true);
         overText.setFont(new Font("Lava", Font.BOLD, 50));
         
-        
+        SOUND_MANAGER.stopAll();
         
         try
         {
@@ -827,11 +828,11 @@ private void removeMenuText()
                         3,3+i)); // row and column numb
             
             for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip3.gif", -1000-(90*i), 700 , 1, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(90*i), 700 , 1, player, //spawn location
                         1,i)); // row and column numb
 
             for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", 3876+(90*i), 700  , 2, player, //spawn location
+                enemies.add(new FlyingEnemy("Images//eShip3.gif", 3876+(90*i), 700  , 2, player, //spawn location
                         2,i)); // row and column numb
 	}
     
