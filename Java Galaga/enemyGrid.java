@@ -39,22 +39,10 @@ public enemyGrid(int distanceBetweenPoints, int leftBound, int rightBound, Sound
 	this.rightBound = rightBound;
 	this.distanceBetweenPoints = distanceBetweenPoints;
 
-	enemiesX = new double[4][10];
-	enemiesY = new double[4][10];
+	enemiesX = new double[5][10];
+	enemiesY = new double[5][10];
 	
-	int seed = random.nextInt(rightBound-50)+leftBound;
-	
-	// setting up locations of grid cells
-	 for (int row = 0; row < enemiesX.length; row++) {
-		    for (int col = 0; col < enemiesX[row].length; col++) {
-		    	enemiesX[row][col] = seed+100+(distanceBetweenPoints*col);
-		    }
-		 }
-	 for (int row = 0; row < enemiesY.length; row++) {
-		    for (int col = 0; col < enemiesY[row].length; col++) {
-		    	enemiesY[row][col] = 50+(50*row);
-		    }
-		 }
+
 	 
 	 // How much Y will move each breatheStep, used for calculating future positions
 	 breathYDelta = breatheSpread / ySpreadRatio / breatheMaxSteps;
@@ -295,7 +283,7 @@ public void reset()
 	breatheForRestOfRound = false;
 	breathingDown = true;
 	breatheCurrentStep = 1;
-	int seed = random.nextInt(500);
+	int seed = random.nextInt(400);
 	 for (int row = 0; row < enemiesX.length; row++) {
 		    for (int col = 0; col < enemiesX[row].length; col++) {
 		    	enemiesX[row][col] = seed+100+(distanceBetweenPoints*col);
@@ -304,7 +292,7 @@ public void reset()
 	 
 	 for (int row = 0; row < enemiesY.length; row++) {
 		    for (int col = 0; col < enemiesY[row].length; col++) {
-		    	enemiesY[row][col] = 50+(70*row);
+		    	enemiesY[row][col] = 50+(50*row);
 		    }
 		 }
 }

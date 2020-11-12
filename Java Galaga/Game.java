@@ -677,17 +677,14 @@ private void removeMenuText()
 		        // update life counter
 		        lives--;
 			    SwingUtilities.invokeLater(() -> { livesText.setText("Lives: " + this.lives);});
-			    respawning = true;
-			        
+			    
+			    respawning = true;     
 			    // starts game over procedures
 		        if (! (lives == 0))
 		        {
 			        respawnText.setVisible(true);
 			        
-			       
-			        
 			        // keep track of time of death
-			        
 			        deathTime = System.currentTimeMillis();
 			        elapsedDeathTime = 0;
 		        }
@@ -846,21 +843,7 @@ private void removeMenuText()
             grid.reset();
             enemiesInFlight = 0;
             
-            for(int i = 0; i <4; i++)
-                enemies.add(new FlyingEnemy("Images//eShip2.gif", 487, -200-(60*i), 3, player, //spawn location
-                        0,3+i,true)); // row and column numb
-            
-            for(int i = 0; i <4; i++)
-                enemies.add(new FlyingEnemy("Images//eShip2.gif", 387, -200-(60*i), 4, player, //spawn location
-                        3,3+i,true)); // row and column numb
-            
-            for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(90*i), 700 , 1, player, //spawn location
-                        1,i,false)); // row and column numb
-
-            for(int i = 0; i <10; i++)
-                enemies.add(new FlyingEnemy("Images//eShip3.gif", 3876+(90*i), 700  , 2, player, //spawn location
-                        2,i,false)); // row and column numb
+            flyInType1();
 	}
     
 	public void minusOneFlying()
@@ -871,6 +854,109 @@ private void removeMenuText()
 	 public boolean gridIsBreathing()
 	{
 	    return grid.isSetToBreathe();
+	}
+	
+	// how the enemies spawn in waves and jump on grid
+	// this is round 1 imitation of the original Galaga
+	public void flyInType1()
+	{
+		grid.reset();
+        enemiesInFlight = 0;
+        
+        //bosses
+        for(int i = 0; i <4; i++)
+            enemies.add(new FlyingEnemy("Images//eShip2.gif", -1000-(180*i), 700 , 1, player, //spawn location
+                    0,3+i,true)); // row and column numb
+        
+        
+        //red ships
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", -1090-(180*i), 700 , 1, player, //spawn location 
+                    1+i,3,false)); // row and column numb
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", -1270-(180*i), 700 , 1, player, //spawn location 
+                    1+i,6,false)); // row and column numb
+        
+        
+        
+        // red ships
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 487, -200-(60*i), 3, player, //spawn location 
+                    1,i+4,false)); // row and column numb
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 487, -320-(60*i), 3, player, //spawn location 
+                    2,i+4,false)); // row and column numb
+        
+        // blue ships
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -200-(60*i), 4, player, //spawn location
+                    3,i+4,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -320-(60*i), 4, player, //spawn location 
+                    4,i+4,false)); // row and column numb
+        
+        // red ships
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+2300+(60*i), 700 , 2, player, //spawn location 
+                    1,i+7,false)); // row and column numb
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+2420+(60*i), 700 , 2, player, //spawn location 
+                    2,i+7,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+2540+(60*i), 700 , 2, player, //spawn location 
+                    1,i+1,false)); // row and column numb
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+2660+(60*i), 700 , 2, player, //spawn location 
+                    2,i+1,false)); // row and column numb
+        
+        // blue ships
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -3500-200-(60*i), 4, player, //spawn location
+                    3,i+2,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -3500-320-(60*i), 4, player, //spawn location 
+                    4,i+6,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -3500-420-(60*i), 4, player, //spawn location
+                    3,i+6,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -3500-540-(60*i), 4, player, //spawn location 
+                    4,i+2,false)); // row and column numb
+        
+        // blue ships
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-200-(60*i), 3, player, //spawn location
+                    3,i,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-320-(60*i), 3, player, //spawn location 
+                    4,i+8,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-420-(60*i), 3, player, //spawn location
+                    3,i+8,false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-540-(60*i), 3, player, //spawn location 
+                    4,i,false)); // row and column numb
+	}
+	
+	public void flyInType2()
+	{
+		
+	}
+	public void flyInType3()
+	{
+		
+	}
+	public void flyInType4()
+	{
+		
 	}
     public void actionPerformed(final ActionEvent event) {}
 
