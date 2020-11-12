@@ -5,6 +5,8 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
+
 public class FlyingEnemy extends Enemy
 {
 	private final int case9YTarget = 495;
@@ -46,6 +48,8 @@ public class FlyingEnemy extends Enemy
 	private float drawAngle;	
 
 	private boolean onGrid = false;
+	private boolean isBoss = false;
+	private boolean bossHit = false;
 	
 	//in case you need to use player location for any enemy behavior
 	private Player player;
@@ -60,7 +64,7 @@ public class FlyingEnemy extends Enemy
 		this.player = player;
 	}
 	
-	public FlyingEnemy(String path, int xLoc, int yLoc,int spawnLocation, Player player, int gridRowNum, int gridColumnNum ) {
+	public FlyingEnemy(String path, int xLoc, int yLoc,int spawnLocation, Player player, int gridRowNum, int gridColumnNum , boolean isBoss) {
 		
 		super(path, xLoc, yLoc);
 		
@@ -70,7 +74,7 @@ public class FlyingEnemy extends Enemy
 		this.spawnLocation = spawnLocation;
 		this.gridCol = gridColumnNum;
 		this.gridRow = gridRowNum;
-		
+		this.isBoss = isBoss;
 		
 		
 	}
@@ -790,5 +794,21 @@ public class FlyingEnemy extends Enemy
 		drawAngle = drawAngle %360;
 		if(drawAngle < 0)
 			drawAngle = 360+drawAngle;
+	}
+	public boolean isBoss()
+	{
+		return isBoss;
+	}
+	public void hitBoss()
+	{
+		bossHit=true;
+	}
+	public void changeImage(String path)
+	{
+		image = new ImageIcon(path).getImage();
+	}
+	public boolean isBossHit()
+	{
+		return bossHit;
 	}
 }

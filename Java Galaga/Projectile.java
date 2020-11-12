@@ -28,7 +28,7 @@ public class Projectile extends DrawableObject
 
 	public boolean update()
 	{
-		y -= 10;
+		y -= 20;
 		return y < 0;
 	}
 

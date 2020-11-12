@@ -32,7 +32,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int enemiesInFlightMax = 3;
     
     private final int MAX_ENEMY_BULLETS = 3;
-    private final int MAX_PLAYER_BULLETS = 400;
+    private final int MAX_PLAYER_BULLETS = 2;
     private final int numOfMenus = 4;
     
    
@@ -284,6 +284,7 @@ private void removeMenuText()
     public void playGame()
     {
         over = false;
+        // game loop
         while( !over )
         {
         	 
@@ -421,25 +422,51 @@ private void removeMenuText()
                 
                 // player bullet has hit an enemy
                 if (collidingBullet != null) {
-                    enemiesToRemove.add(enemy);
-                    enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
-                    playerBullets.remove(collidingBullet);
-                    score += 10;
-                    
-                    // updates score label
-                    // keeps label from flickering
-                    SwingUtilities.invokeLater(() -> {scoreText.setText("Score: " + this.score);});
-                    
-                    
-                    // plays random sound on enemy death
-                    int soundChoice = random.nextInt(2);
-                    if(soundChoice == 0)
-                    	SOUND_MANAGER.enemyExplosion.play();
-                    else
-                    	if(soundChoice == 1)
-                    		SOUND_MANAGER.enemyExplosion2.play();
-                    	else
-                    		SOUND_MANAGER.enemyExplosion3.play();
+                	if(!enemy.isBoss())
+                	{
+	                    enemiesToRemove.add(enemy);
+	                    enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
+	                    playerBullets.remove(collidingBullet);
+	                    score += 10;
+	                    
+	                    // updates score label
+	                    // keeps label from flickering
+	                    SwingUtilities.invokeLater(() -> {scoreText.setText("Score: " + this.score);});
+	                    
+	                    
+	                    // plays random sound on enemy death
+	                    int soundChoice = random.nextInt(1);
+	                    if(soundChoice == 0)
+	                    	SOUND_MANAGER.enemyExplosion.play();
+	                    else 	
+	                    		SOUND_MANAGER.enemyExplosion2.play();
+	                    	
+                	}
+                	else
+                	{
+                		if(!enemy.isBossHit())
+                		{
+                			enemy.hitBoss();
+                			SOUND_MANAGER.bossHit.play();
+                			playerBullets.remove(collidingBullet);
+                			enemy.changeImage("Images//eShip2D.gif");
+                		}
+                		else
+                		{
+                			enemiesToRemove.add(enemy);
+		                    enemyExplosions.add(new Explosion("Images//eExplosion.gif", enemy.getX(), enemy.getY()));
+		                    playerBullets.remove(collidingBullet);
+		                    score += 10;
+		                    
+		                    // updates score label
+		                    // keeps label from flickering
+		                    SwingUtilities.invokeLater(() -> {scoreText.setText("Score: " + this.score);});
+		                    
+		                    
+		                    
+		                    SOUND_MANAGER.enemyExplosion3.play();
+                		}
+                	}
                 }
                 
                 turnToShoot--;
@@ -821,19 +848,19 @@ private void removeMenuText()
             
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip2.gif", 487, -200-(60*i), 3, player, //spawn location
-                        0,3+i)); // row and column numb
+                        0,3+i,true)); // row and column numb
             
             for(int i = 0; i <4; i++)
                 enemies.add(new FlyingEnemy("Images//eShip2.gif", 387, -200-(60*i), 4, player, //spawn location
-                        3,3+i)); // row and column numb
+                        3,3+i,true)); // row and column numb
             
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip.gif", -1000-(90*i), 700 , 1, player, //spawn location
-                        1,i)); // row and column numb
+                        1,i,false)); // row and column numb
 
             for(int i = 0; i <10; i++)
                 enemies.add(new FlyingEnemy("Images//eShip3.gif", 3876+(90*i), 700  , 2, player, //spawn location
-                        2,i)); // row and column numb
+                        2,i,false)); // row and column numb
 	}
     
 	public void minusOneFlying()
