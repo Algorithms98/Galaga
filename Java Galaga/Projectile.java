@@ -24,7 +24,7 @@ public class Projectile extends DrawableObject
 	public void draw(Graphics page)
 	{
 		page.drawImage(image, x , y, null);
-		page.drawRect(x+1,y,9,30);
+		
 	}
 
 	public boolean update()

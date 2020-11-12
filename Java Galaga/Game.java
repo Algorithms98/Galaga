@@ -809,7 +809,7 @@ private void removeMenuText()
         {
         	if(!respawning)
         	{
-	            playerBullets.add(new Projectile("Images//rocket.gif", player.getX(), player.getY()));
+	            playerBullets.add(new Projectile("Images//rocket.gif", player.getX() + player.getWidth()/2, player.getY()));
 	            SOUND_MANAGER.playerShot.play();
         	}
         }
