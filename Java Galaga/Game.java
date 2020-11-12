@@ -805,7 +805,7 @@ private void removeMenuText()
             leftArrowDown = true;
         }
         
-        else if(event.getKeyCode() == KeyEvent.VK_SPACE && playerBullets.size() < MAX_PLAYER_BULLETS)
+        else if(event.getKeyCode() == KeyEvent.VK_SPACE && playerBullets.size() < MAX_PLAYER_BULLETS &&!over)
         {
         	if(!respawning)
         	{
