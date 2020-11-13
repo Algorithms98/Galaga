@@ -94,7 +94,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         tempChoice = 1;
         roundNum = 1;
 
-        sleep = 0;
+        sleep = 20;
         maxWidth = width;
         maxHeight = height;
         
