@@ -373,10 +373,10 @@ public class FlyingEnemy extends Enemy
 			
 			break;
 			
-		// near the player Y, TODO add a chance for the enemy to do a circular motion near the bottom
+		// near the player Y, bottom of screen 
 		case 11:
 				moveAroundSetCircle();
-				if(y>760) 
+				if(y>763) 
 					{
 						if(random.nextInt(5)==2) 
 						{
@@ -627,7 +627,7 @@ public class FlyingEnemy extends Enemy
 							}
 								else
 								{
-									System.out.println("incompatible starting draw angle for starting location on circle - bottom right, DrawAngle: " +drawAngle);
+									System.out.println("incompatible starting draw angle for starting location on circle - bottom right, DrawAngle: " +drawAngle +" ActionStaate: "+actionState);
 								}
 						}
 						// initial position of object is top right from center of circle

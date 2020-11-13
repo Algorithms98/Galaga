@@ -94,7 +94,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         tempChoice = 1;
         roundNum = 1;
 
-        sleep = 20;
+        sleep = 0;
         maxWidth = width;
         maxHeight = height;
         
@@ -665,7 +665,7 @@ private void removeMenuText()
     // Used when an enemy ship or enemy bullet connects with the player ship
     public void hitPlayer()
     {
-	    if(!respawning)
+	    if(false)
 	    {
 	        
 	        
@@ -863,13 +863,12 @@ private void removeMenuText()
 		grid.reset();
         enemiesInFlight = 0;
         
-        //bosses
+        //bosses, bottom left
         for(int i = 0; i <4; i++)
             enemies.add(new FlyingEnemy("Images//eShip2.gif", -1000-(180*i), 700 , 1, player, //spawn location
                     0,3+i,true)); // row and column numb
         
-        
-        //red ships
+        //red ships, bottom left
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip.gif", -1090-(180*i), 700 , 1, player, //spawn location 
                     1+i,3,false)); // row and column numb
@@ -878,8 +877,7 @@ private void removeMenuText()
                     1+i,6,false)); // row and column numb
         
         
-        
-        // red ships
+        // red ships, top left
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip.gif", 487, -200-(60*i), 3, player, //spawn location 
                     1,i+4,false)); // row and column numb
@@ -887,7 +885,7 @@ private void removeMenuText()
             enemies.add(new FlyingEnemy("Images//eShip.gif", 487, -320-(60*i), 3, player, //spawn location 
                     2,i+4,false)); // row and column numb
         
-        // blue ships
+        // blue ships, top right
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -200-(60*i), 4, player, //spawn location
                     3,i+4,false)); // row and column numb
@@ -896,7 +894,7 @@ private void removeMenuText()
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -320-(60*i), 4, player, //spawn location 
                     4,i+4,false)); // row and column numb
         
-        // red ships
+        // red ships, bottom right
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+2300+(60*i), 700 , 2, player, //spawn location 
                     1,i+7,false)); // row and column numb
@@ -911,7 +909,7 @@ private void removeMenuText()
             enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+2660+(60*i), 700 , 2, player, //spawn location 
                     2,i+1,false)); // row and column numb
         
-        // blue ships
+        // blue ships, top right
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -3500-200-(60*i), 4, player, //spawn location
                     3,i+2,false)); // row and column numb
@@ -928,7 +926,7 @@ private void removeMenuText()
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -3500-540-(60*i), 4, player, //spawn location 
                     4,i+2,false)); // row and column numb
         
-        // blue ships
+        // blue ships, top left
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-200-(60*i), 3, player, //spawn location
                     3,i,false)); // row and column numb
