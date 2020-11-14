@@ -79,7 +79,8 @@ public class FlyingEnemy extends Enemy
 		
 	}
 	
-	public Projectile update(boolean turnToShoot, boolean enCanShoot, int xGrid,int yGrid, ArrayList<Projectile> playerBullets, Game game, enemyGrid grid)
+	public Projectile update(boolean turnToShoot, boolean enCanShoot, int xGrid,int yGrid, ArrayList<Projectile> playerBullets, Game game, 
+        enemyGrid grid)
 	{
 		normalizeDrawAngle(); 
 		

@@ -3,12 +3,6 @@ import javax.swing.*;
 
 public class Projectile extends DrawableObject
 {
-	// x and y location
-	private int x; 
-	private int y;
-	
-	private Image image;
-
 	public Projectile(Image img, int xLoc, int yLoc )
 	{
 		x = xLoc;
@@ -21,6 +15,7 @@ public class Projectile extends DrawableObject
 		this(new ImageIcon(path).getImage(), xLoc, yLoc);
 	}
 
+  @Override
 	public void draw(Graphics page)
 	{
 		page.drawImage(image, x , y, null);
