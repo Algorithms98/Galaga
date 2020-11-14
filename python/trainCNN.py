@@ -19,7 +19,7 @@ print(f"{len(true_outputs)} inputs found!")
 
 print("Loading images...")
 failures = []
-for i in pbar(range(len(true_outputs))):
+for i in range(len(true_outputs)):
   true_outputs[i] = true_outputs[i].split(",")
   succeeded = True
   try:
