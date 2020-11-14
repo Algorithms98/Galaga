@@ -51,12 +51,8 @@ public class enProject extends DrawableObject
   @Override
 	public void draw(Graphics page)
 	{
-<<<<<<< HEAD
 		
 		page.drawImage(image, x, y, null);
-=======
-		page.drawImage(image, x, y + 10, null);
->>>>>>> 0add3565... Merge Conflicts
 	}
 
 	public void move()
