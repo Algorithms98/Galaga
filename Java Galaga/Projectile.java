@@ -3,12 +3,6 @@ import javax.swing.*;
 
 public class Projectile extends DrawableObject
 {
-	// x and y location
-	private int x; 
-	private int y;
-	
-	private Image image;
-
 	public Projectile(Image img, int xLoc, int yLoc )
 	{
 		x = xLoc;
@@ -21,25 +15,26 @@ public class Projectile extends DrawableObject
 		this(new ImageIcon(path).getImage(), xLoc, yLoc);
 	}
 
+  @Override
 	public void draw(Graphics page)
 	{
-		page.drawImage(image, x + 43, y - 10, null);
+		page.drawImage(image, x , y, null);
+		
 	}
 
 	public boolean update()
 	{
-		y -= 10;
+		y -= 20;
 		return y < 0;
 	}
 
 	public boolean isInside(Enemy en)
 	{
-		if(y <= en.getY() + 55 && y >= en.getY())
+		Rectangle r1 = new Rectangle(en.getX()+1,en.getY()+1,en.getWidth()-1,en.getHeight()-1); // enemy ship hitbox definition
+		Rectangle r2 = new Rectangle(x+1,y,9,30); // player ship hitbox definition
+		if(r1.intersects(r2))
 		{
-			if(x <= en.getX() + 5 && x >= en.getX() - 55)
-			{
-				return true;
-			}
+			return true;
 		}
 		return false;
 	}

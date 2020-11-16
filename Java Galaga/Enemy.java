@@ -9,7 +9,10 @@ public class Enemy extends DrawableObject
     private int vy;
     private int numMoves;
     private int maxMoves;
+    private int width;
+    private int height;
 
+    protected boolean allowedToShoot = false;
     public Enemy(Image img, int xLoc, int yLoc )
     {
         x = xLoc;
@@ -19,6 +22,10 @@ public class Enemy extends DrawableObject
         numMoves = 0;
         maxMoves = 150;
         image = img;
+        width = image.getWidth(null);
+        height = image.getHeight(null);
+        
+        
     }
 
     public Enemy(String path, int xLoc, int yLoc)
@@ -32,6 +39,7 @@ public class Enemy extends DrawableObject
 
     public Projectile update(boolean turnToShoot, boolean enCanShoot, boolean gridMovingRight, ArrayList<Projectile> playerBullets, Game game)
     {
+
         for (Projectile bullet: playerBullets)
         {
             if (bullet.isInside(this)) {
@@ -39,12 +47,10 @@ public class Enemy extends DrawableObject
             }
         }
         move();
-        if (turnToShoot && enCanShoot) {
+        if (turnToShoot && enCanShoot && allowedToShoot) {
             game.enemyShoot(x + 10, y);
         }
-
-        //if (y > 680)
-            //game.gameOver();
+        
         return null;
     }
 
@@ -65,5 +71,16 @@ public class Enemy extends DrawableObject
     public void draw( Graphics page )
     {
         page.drawImage(image, x - 5, y, null);
+    }
+    
+    public int getWidth()
+    {
+    	return width;
+    	
+    }
+    
+    public int getHeight()
+    {
+    	return height;
     }
 }

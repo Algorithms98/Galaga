@@ -5,11 +5,11 @@ import javax.swing.*;
 public class Background extends JLabel {
 	private static final long serialVersionUID = 1376221642883404767L;
 	private BackgroundDot[] dots;
-	final private int flickerRate = 4;
+	final private int flickerRate = 6;
 	final private int numOfDots = 150;
 	final private int width;
 	final private int height;
-	private int fallRate = 3;
+	private int fallRate = 5;
 
 	public Background(Game game) {	
 		width = game.getPreferredSize().width;
@@ -20,18 +20,16 @@ public class Background extends JLabel {
 		
 		dots = new BackgroundDot[numOfDots]; //array of our background dots
 		Random rand = new Random(); 
+		
 		for(int i = 0; i <numOfDots; i++)
 		{
-			dots[i] = new BackgroundDot(rand.nextInt(width),rand.nextInt(height)); // put the dots in random locations based on the width and height
-	
-			
+			dots[i] = new BackgroundDot(rand.nextInt(width),rand.nextInt(height)); // put the dots in random locations based on the width and height	
 		}
 	
 	}
 
 	public void draw(Graphics page)
-	{
-		
+	{	
 		// position updating loop
 		for(int i = 0; i <numOfDots; i++)
 		{
@@ -51,6 +49,7 @@ public class Background extends JLabel {
 		{
 			//sets the jFrame color to the current dots color
 			page.setColor(dots[i].getColor());
+			
 			//draws the *star*
 			page.drawRect(dots[i].getX(), dots[i].getY(), 2, 2);
 			
@@ -65,7 +64,6 @@ public class Background extends JLabel {
 				{
 					// causes the alpha to be subtracted from
 					dots[i].setAlphaDir(false);
-		
 				}
 			}
 				else
