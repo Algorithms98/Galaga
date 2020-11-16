@@ -197,10 +197,6 @@ class Game:
         if self.roundNum < 3:
           self.grid.reset()
 
-          self.roundOverTime = time.time() * 1000
-          if self.respawning: self.roundOverTime += 3 * 1000
-          self.elapsedRoundTime = 0
-
           self.lives += 1
           self.roundNum += 1
         else: self.over = True
@@ -209,26 +205,20 @@ class Game:
         self.respawning = False
         self.player.setX(437)
       
-      if self.roundOver and self.elapsedRoundTime > 7*1000:
+      if self.roundOver:
         self.reset()
         self.roundOver = False
       
-      if self.gameWillEnd and self.elapsedGameOverTime > 7*1000:
-        self.over = True
-      
       if self.gameWillEnd:
-        self.elapsedGameOverTime = time.time() - self.gameOverTime
+        self.over = True
       
       if self.respawning:
         self.elapsedDeathTime = time.time() - self.deathTime
-      
-      if self.roundOver:
-        self.elapsedRoundTime = time.time() - self.roundOverTime
-      
+
       # TODO Paint
   
   def hitPlayer(self):
-    print("In hitPlayer method!")
+    self.lives -= 1
   
   def enemyShoot(self, x, y):
     self.enemyBullets.append(EnemyProjectile("../../Java Galaga/Images/alienRocket.gif", x, y, self.player.getX()))
@@ -239,6 +229,7 @@ class Game:
     self.gameWillEnd = True
   
   def reset(self):
+    print("In reset!")
     self.grid.reset()
     self.enemiesInFlight = 0
     self.enemies = []
