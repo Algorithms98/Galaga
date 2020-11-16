@@ -13,7 +13,8 @@ public class Sound
 	// post: plays the sound 
 	public void play()
 	{
-//		clip.play();
+		//clip.setVolume(0.5);
+		clip.play();
 	}
 
 	// pre: none
