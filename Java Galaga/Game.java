@@ -17,6 +17,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private final ArrayList<enProject> enemyBullets;
     private final ArrayList<Projectile> playerBullets;
     private final ArrayList<Explosion> enemyExplosions;
+    private static ArrayList<Integer> leaderboard; 
     
     private int score;
     private int lives;
@@ -689,6 +690,33 @@ private void removeMenuText()
 			        elapsedDeathTime = 0;
 		        }
 		        else 
+
+		        	//Updating the leaderboard with scores before calling GAMEOVER 
+
+		        	if(leaderboard.size() > 1 && leaderboard.size() < 11){
+		        		
+		        		
+		        		ArrayList<Integer> temp = new ArrayList<>(leaderboard); 
+		        		Collections.sort(temp);
+ 
+		        		if(temp.get(0) < score && temp.size() == 10){
+		        			
+		        			temp.set(0, score);
+
+		        		}
+		        		else{
+
+		        			temp.add(score);
+		        		}
+
+		        		Collections.sort(temp);
+		        		leaderboard = temp;
+
+		        	}
+		        	else{
+		        		leaderboard.add(score);
+		        	}
+		        	
 		        	gameOver();
 	        
 	            
