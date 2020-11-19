@@ -44,11 +44,13 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private final int numOfMenus = 5;
     
    
+    private boolean isAIMode = false;
     private boolean isPlayerAIMode = false;
     private boolean initialized = false;
     private boolean leftArrowDown = false;
     private boolean rightArrowDown = false;
     private boolean spaceDown = false;
+    private boolean enterPressed = false;
     private boolean EnterDown = false;
     private boolean upArrowDown = false;
     private boolean downArrowDown = false;
@@ -183,7 +185,8 @@ void menu() {
                     
                     break;
                 case 2:
-                	 onMenu = false;
+                   onMenu = false;
+                   this.isAIMode = true;
                      menuChoice=0;
                      removeMenuText();
                      initialize();
@@ -402,7 +405,10 @@ private void removeMenuText()
         // game loop
         while( !over )
         {
-        	
+
+          System.out.println(enterPressed);
+          if (isAIMode && !enterPressed)
+            continue;
         	 
             // moves the grid
         	 grid.update();
@@ -739,6 +745,8 @@ private void removeMenuText()
             if (!gameWillEnd && !respawning && !roundOver && RECORDING_DATA)
               recordData();
             
+            enterPressed = false;
+
             this.repaint();//redraw the screen with the updated locations; calls paintComponent below
         }
         
@@ -805,7 +813,7 @@ private void removeMenuText()
 			        deathTime = System.currentTimeMillis();
 			        elapsedDeathTime = 0;
 		        }
-		        else 
+		        else  {
 
 		        	//Updating the leaderboard with scores before calling GAMEOVER 
 
@@ -835,7 +843,7 @@ private void removeMenuText()
 		        	
 		        	gameOver();
 	        
-	            
+            }
 	    }
     }
 
@@ -929,6 +937,7 @@ private void removeMenuText()
         }
         if( event.getKeyCode() == KeyEvent.VK_ENTER )
         {
+            enterPressed = true;
             EnterDown = true;
             
         }
