@@ -50,4 +50,11 @@ public class Player extends DrawableObject
 	{
 		page.drawImage(image, x, y, null);
 	}
+
+	public int getX(){
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
 }

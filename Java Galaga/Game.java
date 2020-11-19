@@ -21,6 +21,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private JFrame frame;
     
     private final ArrayList<FlyingEnemy> enemies;
+    private final ArrayList<ChaserEnemy> chasers;
     private final ArrayList<enProject> enemyBullets;
     private final ArrayList<Projectile> playerBullets;
     private final ArrayList<Explosion> enemyExplosions;
@@ -108,6 +109,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         this.setPreferredSize(new Dimension(width, height));
 
         enemies = new ArrayList<FlyingEnemy>();
+        chasers = new ArrayList<ChaserEnemy>();
         playerBullets = new ArrayList<Projectile>();
         enemyBullets = new ArrayList<enProject>();
         enemyExplosions = new ArrayList<Explosion>();
@@ -916,6 +918,13 @@ private void removeMenuText()
 	        {
 	        	if(enemy != null)
 	            enemy.draw(page);
+            }
+            
+            ArrayList<ChaserEnemy> chaserDraw = new ArrayList<ChaserEnemy>(chasers);
+	        for (final Enemy enemy: chaserDraw) 
+	        {
+	        	if(enemy != null)
+	            enemy.draw(page);
 	        }
 	        
 	        ArrayList<Explosion> enemyExplosionDraw = new ArrayList<Explosion>(enemyExplosions);
@@ -1145,6 +1154,8 @@ private void removeMenuText()
         for(int i = 0; i <2; i++)
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-540-(60*i), 3, player, //spawn location 
                     4,i,false)); // row and column numb
+
+        chasers.add(new ChaserEnemy("Images//AltAlienShip.gif", 487, -5000-540, player)); // row and column numb
 	}
 	
 	public void flyInType2()
