@@ -1,12 +1,6 @@
 import java.awt.*;
-<<<<<<< HEAD
 import javax.swing.*; 
 import java.util.ArrayList; 
-=======
-import java.util.ArrayList;
-
-import javax.swing.JLabel;
->>>>>>> b999c81d... Lots of python and Chris' updates
 
 public class Presentation{
   
