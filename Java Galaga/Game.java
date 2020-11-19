@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
+import javax.imageio.ImageIO;
+import java.awt.image.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class Game extends JPanel implements KeyListener, ActionListener, MouseMotionListener
 {
@@ -12,6 +18,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private static final SoundManager SOUND_MANAGER = new SoundManager();
     private final Background background;
     private Player player;
+    private JFrame frame;
     
     private final ArrayList<FlyingEnemy> enemies;
     private final ArrayList<enProject> enemyBullets;
@@ -31,16 +38,17 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private int gridRightBound = 876-100;
     private int enemiesInFlight = 0;
     private int enemiesInFlightMax = 3;
+    private int MAX_ENEMY_BULLETS = 3;
     
-    private final int MAX_ENEMY_BULLETS = 3;
-    private final int MAX_PLAYER_BULLETS = 2;
-    private final int numOfMenus = 4;
+    private final int MAX_PLAYER_BULLETS = 3;
+    private final int numOfMenus = 5;
     
    
-    
+    private boolean isPlayerAIMode = false;
     private boolean initialized = false;
     private boolean leftArrowDown = false;
     private boolean rightArrowDown = false;
+    private boolean spaceDown = false;
     private boolean EnterDown = false;
     private boolean upArrowDown = false;
     private boolean downArrowDown = false;
@@ -51,6 +59,9 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean roundOver;
     private boolean respawning = false;
   
+    private boolean RECORDING_DATA = false;
+    private int frameRecorded = 0;
+    private FileWriter dataLogger;
     
     private long roundOverTime;
     private long deathTime;
@@ -60,12 +71,13 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private long elapsedGameOverTime = 0L;
     
     private Random random = new Random();
-	private enemyGrid grid = new enemyGrid(60,gridLeftBound,gridRightBound, SOUND_MANAGER);
+	private enemyGrid grid = new enemyGrid(60, gridLeftBound, gridRightBound, SOUND_MANAGER);
 	
 	//Menu labels
     JLabel title = new JLabel("Inspire AI ");
     JLabel game1 = new JLabel("Player Game");
-    JLabel game2 = new JLabel("Player vs Ai ");
+    JLabel game2 = new JLabel("Ai Game");
+    JLabel game3 = new JLabel("Player vs Ai ");
     JLabel options = new JLabel("Options ");
     JLabel quit = new JLabel("Quit ");
     
@@ -77,9 +89,18 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     JLabel roundsText = new JLabel("Round: " + roundNum);
     JLabel levelText = new JLabel("Round " + roundNum + " passed.");
     JLabel noLivesText = new JLabel("no lives left, Score animations and what not here");
+    JLabel enemyMaxBullets = new JLabel("Current maximum enemy bullets: " + MAX_ENEMY_BULLETS);
+    
+    // buttons for User vs AI
+    JButton buttonBL = new JButton("Spawn wave - bottom left");
+    JButton buttonBR = new JButton("Spawn wave - bottom right");
+    JButton buttonTL = new JButton("Spawn wave - top left");
+    JButton buttonTR = new JButton("Spawn wave - top right");
+    JButton buttonEnBulletUp = new JButton("^");
+    JButton buttonEnBulletDown = new JButton("↓");
 
     // constructor - sets the initial conditions for this Game object
-    public Game(final int width, final int height) {
+    public Game(final int width, final int height, JFrame frame) {
         this.setLayout(null);	// Don't change
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(width, height));
@@ -103,13 +124,26 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
       this.addMouseMotionListener(this);
       this.addKeyListener(this);//allows the program to respond to key presses - Don't change
       this.setFocusable(true);//I'll tell you later - Don't change
+      
+      buttonBL.addActionListener(this); 
+      buttonBL.setFocusable(false);
+      buttonBR.addActionListener(this); 
+      buttonBR.setFocusable(false);
+      buttonTL.addActionListener(this); 
+      buttonTL.setFocusable(false);
+      buttonTR.addActionListener(this); 
+      buttonTR.setFocusable(false);
+      buttonEnBulletUp.addActionListener(this); 
+      buttonEnBulletUp.setFocusable(false);
+      buttonEnBulletDown.addActionListener(this); 
+      buttonEnBulletDown.setFocusable(false);
     }
 
 void menu() {
     
     addMenuText();
     
-        while(menuChoice !=4)
+        while(menuChoice !=5)
         {
             try
             {
@@ -148,12 +182,25 @@ void menu() {
                     
                     
                     break;
-                    
                 case 2:
-                    //startPlayerGame();
-                    menuChoice=0;
-                    break;
+                	 onMenu = false;
+                     menuChoice=0;
+                     removeMenuText();
+                     initialize();
+                	break;
                 case 3:
+                	onMenu = false;
+                	isPlayerAIMode=true;
+                	grid.setToBreathe();
+                    menuChoice=0;
+                    Container c = this.getTopLevelAncestor();
+                    JFrame f = (JFrame) c;
+                    f.setBounds(0,0,1250,876);
+                    removeMenuText();
+                    initialize();
+                    break;
+                    
+                case 4:
                     //openOptions();
                     menuChoice=0;
                     break;
@@ -162,6 +209,36 @@ void menu() {
         }
         System.exit(0);
     }
+
+    private void recordData() {
+      Container content = this.frame.getContentPane();
+      BufferedImage img = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
+      Graphics2D graphics = img.createGraphics();
+      content.printAll(graphics);
+      graphics.dispose();
+
+      try {
+        ImageIO.write(img, "jpg", new File("../trainingData/images/IMG_" + frameRecorded + ".jpg"));
+        frameRecorded++;
+
+        int oneHotEncodedAction = 0;
+        if (leftArrowDown && !rightArrowDown) {
+          oneHotEncodedAction = 1;
+        } else if (rightArrowDown && !leftArrowDown) {
+          oneHotEncodedAction = 2;
+        }
+        if (spaceDown) {
+          oneHotEncodedAction += 3;
+        }
+        dataLogger.write("" + oneHotEncodedAction);
+        dataLogger.write("\n");
+      } catch (IOException ex) {
+        System.err.println("Couldn't write to test file!");
+      }
+
+      //RECORDING_DATA = false;
+    }
+
 
 private void addMenuText() {
     
@@ -177,29 +254,58 @@ private void addMenuText() {
         game1.setVisible(true);
         this.add(game1);
         
-        game2.setBounds(maxWidth/2 - 35 +3, maxHeight/2-52+50, 200, 50);//Menu2
+        game2.setBounds(maxWidth/2 - 35 +20, maxHeight/2-52+50, 200, 50);//Menu2
         game2.setForeground(Color.WHITE);
         game2.setFont(new Font("Lava", Font.BOLD, 20));
         game2.setVisible(true);
         this.add(game2);
         
-        options.setBounds(maxWidth/2 -35 +22, maxHeight/2-52+150, 200, 50);//Menu3
+        game3.setBounds(maxWidth/2 - 35 +3, maxHeight/2-52+150, 200, 50);//Menu3
+        game3.setForeground(Color.WHITE);
+        game3.setFont(new Font("Lava", Font.BOLD, 20));
+        game3.setVisible(true);
+        this.add(game3);
+        
+        options.setBounds(maxWidth/2 -35 +22, maxHeight/2-52+250, 200, 50);//Menu4
         options.setForeground(Color.WHITE);
         options.setFont(new Font("Lava", Font.BOLD, 20));
         options.setVisible(true);
         this.add(options);
         
-        quit.setBounds(maxWidth/2 -35 + 38, maxHeight/2-52+250, 200, 50);//Menu4
+        quit.setBounds(maxWidth/2 -35 + 38, maxHeight/2-52+350, 200, 50);//Menu5
         quit.setForeground(Color.WHITE);
         quit.setFont(new Font("Lava", Font.BOLD, 20));
         quit.setVisible(true);
         this.add(quit);
+        
+        buttonBL.setBounds(900, 100, 250, 50);
+        this.add(buttonBL);
+        
+        buttonBR.setBounds(900, 200, 250, 50);
+        this.add(buttonBR);
+        
+        buttonTL.setBounds(900, 300, 250, 50);
+        this.add(buttonTL);
+        
+        buttonTR.setBounds(900, 400, 250, 50);
+        this.add(buttonTR);
+        
+        buttonEnBulletUp.setBounds(960, 600, 150, 50);
+        this.add(buttonEnBulletUp);
+        
+        buttonEnBulletDown.setBounds(960, 700, 150, 50);
+        this.add(buttonEnBulletDown);
+        
+      //  button.addActionListener(this); 
+        
+        
         SOUND_MANAGER.menuSound.play();
 }
 private void removeMenuText()
 {
     this.remove(game1);
     this.remove(game2);
+    this.remove(game3);
     this.remove(options);
     this.remove(quit);
     this.remove(title);
@@ -249,6 +355,11 @@ private void removeMenuText()
             noLivesText.setFont(new Font("Lava", Font.BOLD, 20)); 
             this.add(noLivesText);
             
+            enemyMaxBullets.setBounds(900, 620, 500, 100);//final score:
+            enemyMaxBullets.setForeground(Color.WHITE);
+            enemyMaxBullets.setFont(new Font("Lava", Font.BOLD, 16)); 
+            this.add(enemyMaxBullets);
+            
             initialized = true;
         }
         
@@ -258,10 +369,13 @@ private void removeMenuText()
         score = 0;
         roundNum = 1;  
         lives = 5;
-        
+        MAX_ENEMY_BULLETS = 3;
         livesText.setText("Lives: " + lives);
         scoreText.setText("Score: " + score);
-        roundsText.setText("Round " + roundNum + "/3");
+        if(!isPlayerAIMode)
+        	roundsText.setText("Round " + roundNum + "/3");
+        else
+        	roundsText.setText("User director");
         
         overText.setVisible(false);
         levelText.setVisible(false);
@@ -288,6 +402,7 @@ private void removeMenuText()
         // game loop
         while( !over )
         {
+        	
         	 
             // moves the grid
         	 grid.update();
@@ -337,11 +452,12 @@ private void removeMenuText()
             if(enemiesInFlight < enemiesInFlightMax && !respawning)
                 {
                      ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
-                     for (final FlyingEnemy enemy: enemies) 
+                     ArrayList<FlyingEnemy> enemyUpdate = new ArrayList<FlyingEnemy>(enemies);
+                     for (final FlyingEnemy enemy: enemyUpdate) 
                      {
                          if(enemy.isOnGrid())   
                          {
-                             enemiesEligible.add(enemies.indexOf(enemy));
+                             enemiesEligible.add(enemyUpdate.indexOf(enemy));
                          }
                      }
                      
@@ -381,7 +497,8 @@ private void removeMenuText()
             	{
             		// find all enemies that are able to fly down the screen(those who are not already in flight)
 	            	 ArrayList<Integer> enemiesEligible = new ArrayList<Integer>();
-	            	 for (final FlyingEnemy enemy: enemies) 
+	            	 ArrayList<FlyingEnemy> enemyUpdate = new ArrayList<FlyingEnemy>(enemies);
+                     for (final FlyingEnemy enemy: enemyUpdate) 
 	            	 {
 	            		 if(enemy.isOnGrid())	
 	            		 {
@@ -413,8 +530,9 @@ private void removeMenuText()
 	            			SOUND_MANAGER.enemyFlyDown.play();	
 	            		}
             	}
-
-            for (final FlyingEnemy enemy: enemies) 
+            
+            ArrayList<FlyingEnemy> enemyUpdate = new ArrayList<FlyingEnemy>(enemies);
+            for (final FlyingEnemy enemy: enemyUpdate) 
             {
 
                 // Returns colliding bullet if enemy gets blown up
@@ -545,18 +663,12 @@ private void removeMenuText()
             } 
 
             // Next Level
-            if(enemies.size() == 0 && !roundOver && !respawning)
+            if(enemies.size() == 0 && !roundOver && !respawning && !isPlayerAIMode)
             {
             	roundOver = true;
             	
-                if(roundNum == 3)
-                {
-                    overText = new JLabel("You won!");
-                    overText.setBounds(maxWidth - 400, 50,maxHeight - 300, 240);
-                    overText.setForeground(Color.GREEN);
-                }
-                if(roundNum < 3)
-                {
+               
+               
                 	grid.reset();
                     levelText.setText("Round " + roundNum + " passed.");
                     levelText.setVisible(true);
@@ -579,9 +691,7 @@ private void removeMenuText()
                     roundNum++;
                     roundsText.setText("Round " + roundNum + "/3");
                     
-                }
-                else
-                    over = true;
+                
                 
                 SOUND_MANAGER.breathingDown.stop();
             }
@@ -607,7 +717,7 @@ private void removeMenuText()
 	
             	reset();
             	roundOver = false;
-            	 levelText.setVisible(false);
+            	levelText.setVisible(false);
             }
             
             //wait 7 seconds before returning to main menu after last life is lost
@@ -626,6 +736,8 @@ private void removeMenuText()
             if(roundOver)
             	elapsedRoundTime = (new Date()).getTime() - roundOverTime;
             
+            if (!gameWillEnd && !respawning && !roundOver && RECORDING_DATA)
+              recordData();
             
             this.repaint();//redraw the screen with the updated locations; calls paintComponent below
         }
@@ -656,8 +768,12 @@ private void removeMenuText()
         livesText.setVisible(false);
         overText.setVisible(false);
         
-        this.revalidate();
+        Container c = this.getTopLevelAncestor();
+        JFrame f = (JFrame) c;
+        f.setBounds(0,0,876,876);
         
+        this.revalidate();
+        isPlayerAIMode=false;
         onMenu =true;
         addMenuText();
         
@@ -666,7 +782,7 @@ private void removeMenuText()
     // Used when an enemy ship or enemy bullet connects with the player ship
     public void hitPlayer()
     {
-	    if(false)
+	    if(!respawning)
 	    {
 	        
 	        
@@ -806,6 +922,11 @@ private void removeMenuText()
     //tells the program what to do when keys are pressed
     public void keyPressed( final KeyEvent event )
     {
+    	if( event.getKeyCode() == KeyEvent.VK_ESCAPE )
+        {
+            over = true;
+            
+        }
         if( event.getKeyCode() == KeyEvent.VK_ENTER )
         {
             EnterDown = true;
@@ -832,6 +953,7 @@ private void removeMenuText()
         
         else if(event.getKeyCode() == KeyEvent.VK_SPACE && playerBullets.size() < MAX_PLAYER_BULLETS &&!over)
         {
+          spaceDown = true;
         	if(!respawning)
         	{
 	            playerBullets.add(new Projectile("Images//rocket.gif", player.getX() + player.getWidth()/2, player.getY()));
@@ -857,8 +979,12 @@ private void removeMenuText()
         }
         if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
             rightArrowDown = false;
-        } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+        }
+        if (event.getKeyCode() == KeyEvent.VK_LEFT) {
             leftArrowDown = false;
+        }
+        if (event.getKeyCode() == KeyEvent.VK_SPACE) {
+            spaceDown = false;
         }
         if(event.getKeyCode() == KeyEvent.VK_C)
         {
@@ -871,7 +997,47 @@ private void removeMenuText()
             grid.reset();
             enemiesInFlight = 0;
             
-            flyInType1();
+            if(roundNum % 4==0)
+            	MAX_ENEMY_BULLETS++;
+            
+            
+            if(!isPlayerAIMode)
+            {
+	            if(roundNum>4)
+	            {
+	            	int flyInRandom = random.nextInt(4);
+	            	if(flyInRandom==0)
+	            		flyInType1();
+	            	else
+	            		if(flyInRandom==1)
+	            			flyInType1();
+	            		else
+	            			if(flyInRandom==2)
+	            				flyInType1();
+	            			else
+	            				flyInType1();
+	            }
+	            else
+	            {
+	            	if(roundNum==1)
+	            	{
+	            		flyInType1();
+	            	}
+	            	else
+	            		if(roundNum==2)
+	            		{
+	            			flyInType1();
+	            		}
+	            		else
+	                		if(roundNum==3)
+	                		{
+	                			flyInType1();
+	                		}
+	                		else
+	                    		flyInType1();
+	            }
+            }
+            
 	}
     
 	public void minusOneFlying()
@@ -984,7 +1150,105 @@ private void removeMenuText()
 	{
 		
 	}
-    public void actionPerformed(final ActionEvent event) {}
+	public void spawnWaveBottomLeft()
+	{
+		  for(int i = 0; i <4; i++)
+	            enemies.add(new FlyingEnemy("Images//eShip2.gif", -100-(180*i), 700 , 1, player, //spawn location
+	                    true)); // row and column numb
+	        
+	        //red ships, bottom left
+	        for(int i = 0; i <2; i++)
+	            enemies.add(new FlyingEnemy("Images//eShip.gif", -190-(180*i), 700 , 1, player, //spawn location 
+	                    false)); // row and column numb
+	        for(int i = 0; i <2; i++)
+	            enemies.add(new FlyingEnemy("Images//eShip.gif", -370-(180*i), 700 , 1, player, //spawn location 
+	                    false)); // row and column numb
+	}
+	public void spawnWaveBottomRight()
+	{
+		for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+100+(60*i), 700 , 2, player, //spawn location 
+                    false)); // row and column numb
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+220+(60*i), 700 , 2, player, //spawn location 
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+340+(60*i), 700 , 2, player, //spawn location 
+                    false)); // row and column numb
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip.gif", 1000+460+(60*i), 700 , 2, player, //spawn location 
+                    false)); // row and column numb
+	}
+	public void spawnWaveTopLeft()
+	{
+		for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -10-200-(60*i), 4, player, //spawn location
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -10-320-(60*i), 4, player, //spawn location 
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -10-420-(60*i), 4, player, //spawn location
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 387, -10-540-(60*i), 4, player, //spawn location 
+                    false)); // row and column numb
+	}
+	public void spawnWaveTopRight()
+	{
+		
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -10-200-(60*i), 3, player, //spawn location
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -10-320-(60*i), 3, player, //spawn location 
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -10-420-(60*i), 3, player, //spawn location
+                    false)); // row and column numb
+        
+        for(int i = 0; i <2; i++)
+            enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -10-540-(60*i), 3, player, //spawn location 
+                    false)); // row and column numb
+	}
+	public void actionPerformed(ActionEvent e) 
+	{
+		if(e.getSource() == buttonBL)
+        spawnWaveBottomLeft();                
+		if(e.getSource() == buttonBR)
+	        spawnWaveBottomRight();    
+		if(e.getSource() == buttonTL)
+	        spawnWaveTopLeft();    
+		if(e.getSource() == buttonTR)
+	        spawnWaveTopRight();    
+		
+		if(e.getSource() == buttonEnBulletUp)
+		{
+			System.out.print( MAX_ENEMY_BULLETS);
+			MAX_ENEMY_BULLETS++;
+			if(MAX_ENEMY_BULLETS>8)
+				MAX_ENEMY_BULLETS=8;
+			
+			 enemyMaxBullets.setText("Current maximum enemy bullets: " + MAX_ENEMY_BULLETS);
+			
+		}
+		if(e.getSource() == buttonEnBulletDown)	
+		{
+			System.out.print( MAX_ENEMY_BULLETS);
+			MAX_ENEMY_BULLETS--;
+			if(MAX_ENEMY_BULLETS<1)
+				MAX_ENEMY_BULLETS=1;
+			
+			 enemyMaxBullets.setText("Current maximum enemy bullets: " + MAX_ENEMY_BULLETS);
+		}
+		
+	}       
 
     public void keyTyped( final KeyEvent event ) {}
 

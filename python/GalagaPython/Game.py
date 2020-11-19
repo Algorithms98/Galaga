@@ -5,6 +5,8 @@ from FlyingEnemy import FlyingEnemy
 from Projectile import Projectile
 from Rectangle import Rectangle
 
+import numpy as np
+
 import random
 from random import shuffle
 import time
@@ -229,7 +231,6 @@ class Game:
     self.gameWillEnd = True
   
   def reset(self):
-    print("In reset!")
     self.grid.reset()
     self.enemiesInFlight = 0
     self.enemies = []
@@ -238,12 +239,6 @@ class Game:
     self.flyInType1()
     self.over = False
   
-  def reset(self):
-    self.grid.reset()
-    self.enemiesInFlight = 0
-
-    self.flyInType1()
-
   def minusOneFlying(self):
     self.enemiesInFlight -= 1
   
@@ -349,3 +344,38 @@ class Game:
 
     for enemy in self.enemies:
       enemy.draw(screen)
+
+  def getObservation(self):
+    enemyLocations = np.zeros((36, 36), dtype=np.float32)
+    enemyBulletLocations = np.zeros((36, 36), dtype=np.float32)
+    playerBulletLocations = np.zeros((36, 36), dtype=np.float32)
+    playerLocations = np.zeros((36), dtype=np.float32)
+
+    for row in range(36):
+      for col in range(36):
+        thisRect = Rectangle(row*24, col*24, 24, 24)
+
+        for enemy in self.enemies:
+          newRect = Rectangle(enemy.x, enemy.y, enemy.width, enemy.height)
+          if newRect.intersects(thisRect):
+            enemyLocations[row][col] = 1
+            break
+
+        for enemyBullet in self.enemyBullets:
+          newRect = Rectangle(enemyBullet.x, enemyBullet.y, enemyBullet.width, enemyBullet.height)
+          if newRect.intersects(thisRect):
+            enemyBulletLocations[row][col] = 1
+            break
+
+        for playerBullet in self.playerBullets:
+          newRect = Rectangle(playerBullet.x, playerBullet.y, playerBullet.width, playerBullet.height)
+          if newRect.intersects(thisRect):
+            playerBulletLocations[row][col] = 1
+            break
+
+        if row == 0:
+          playerRect = Rectangle(self.player.x, self.player.y, self.player.width, self.player.height)
+          if playerRect.intersects(thisRect):
+            playerLocations[row] = 1
+    
+    return np.concatenate((enemyLocations.flatten(), enemyBulletLocations.flatten(), playerBulletLocations.flatten(), playerLocations.flatten()))

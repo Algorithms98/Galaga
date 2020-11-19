@@ -58,10 +58,6 @@ public class Sound implements LineListener
 	// post: plays the sound 
 	public void play()
 	{
-
-		//clip.setVolume(0.5);
-		//audioClip.play();
-
 			if(playCompleted)
 			{
 				audioClip.setMicrosecondPosition(0);
@@ -69,7 +65,6 @@ public class Sound implements LineListener
 				playCompleted = false;
 			}
 		
-
 	}
 
 	// pre: none

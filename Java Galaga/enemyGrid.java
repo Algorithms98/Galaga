@@ -150,10 +150,14 @@ public void update()
 
 public int getXCord(int row, int col)
 {
+	if(row ==-1 || col ==-1)
+		return -1;
 	return (int) enemiesX[row][col];
 }
 public int getYCord(int row, int col)
 {
+	if(row ==-1 || col ==-1)
+		return -1;
 	return (int) enemiesY[row][col];
 }
 public void setToBreathe()

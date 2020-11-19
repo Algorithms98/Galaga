@@ -1,10 +1,16 @@
 import java.awt.*;
+<<<<<<< HEAD
 import javax.swing.*; 
 import java.util.ArrayList; 
+=======
+import java.util.ArrayList;
+
+import javax.swing.JLabel;
+>>>>>>> b999c81d... Lots of python and Chris' updates
 
 public class Presentation{
   
-  private ArrayList<Drawable> drawables = new ArrayList<>();
+  private ArrayList<DrawableObject> drawables = new ArrayList<>();
   private ArrayList<JLabel> jLabels = new ArrayList<>();
 
   // @Override 
@@ -15,7 +21,7 @@ public class Presentation{
   //   }
   // }
   
-  public void addDrawable(Drawable drawable, int x, int y){
+  public void addDrawable(DrawableObject drawable, int x, int y) {
   //set drawable positions add to it arraylist 
     drawable.setPosition(x,y);
     drawables.add(drawable);
