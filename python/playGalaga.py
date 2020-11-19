@@ -1,7 +1,10 @@
 import torch
 import pyautogui
 import numpy as np
+<<<<<<< HEAD
 from PIL import Image
+=======
+>>>>>>> daa7980d... Demo code
 from CNN import CNN
 
 import keyboard
@@ -57,8 +60,12 @@ if __name__ == "__main__":
       time.sleep(0.01)
       pyautogui.keyUp("space")
 
+<<<<<<< HEAD
     pyautogui.keyDown("enter")
     time.sleep(0.25)
     pyautogui.keyUp("enter")
 
     print(f"Time (seconds): {time.time() - startTime}")
+=======
+    print(f"Time (seconds): {time.time() - startTime}")
+>>>>>>> daa7980d... Demo code

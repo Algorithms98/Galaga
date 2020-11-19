@@ -1,4 +1,5 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -21,11 +22,12 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private JFrame frame;
     
     private final ArrayList<FlyingEnemy> enemies;
-    private final ArrayList<ChaserEnemy> chasers;
+//    private final ArrayList<ChaserEnemy> chasers;
     private final ArrayList<enProject> enemyBullets;
     private final ArrayList<Projectile> playerBullets;
     private final ArrayList<Explosion> enemyExplosions;
-    private static ArrayList<Integer> leaderboard; 
+    private static ArrayList<Integer> leaderboard;
+    private final ArrayList<JLabel> leaderboardLabels;
     
     private int score;
     private int lives;
@@ -61,6 +63,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     private boolean onMenu = true;
     private boolean roundOver;
     private boolean respawning = false;
+
+    private int aiFrames = 0;
   
     private boolean RECORDING_DATA = false;
     private int frameRecorded = 0;
@@ -91,7 +95,7 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
     JLabel scoreText = new JLabel("Score: " + this.score);
     JLabel roundsText = new JLabel("Round: " + roundNum);
     JLabel levelText = new JLabel("Round " + roundNum + " passed.");
-    JLabel noLivesText = new JLabel("no lives left, Score animations and what not here");
+    JLabel noLivesText = new JLabel("");
     JLabel enemyMaxBullets = new JLabel("Current maximum enemy bullets: " + MAX_ENEMY_BULLETS);
     
     // buttons for User vs AI
@@ -109,11 +113,23 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         this.setPreferredSize(new Dimension(width, height));
 
         enemies = new ArrayList<FlyingEnemy>();
-        chasers = new ArrayList<ChaserEnemy>();
+//        chasers = new ArrayList<ChaserEnemy>();
         playerBullets = new ArrayList<Projectile>();
         enemyBullets = new ArrayList<enProject>();
         enemyExplosions = new ArrayList<Explosion>();
         background = new Background(this);
+        leaderboard = new ArrayList<Integer>();
+        leaderboard.add(250);
+        leaderboard.add(280);
+        leaderboard.add(300);
+        leaderboard.add(320);
+        leaderboard.add(350);
+        leaderboard.add(410);
+        leaderboard.add(470);
+        leaderboard.add(520);
+        leaderboard.add(720);
+        leaderboard.add(1120);
+        leaderboardLabels = new ArrayList<>();
         
         score = 0;
         menuChoice = 0;
@@ -123,6 +139,8 @@ public class Game extends JPanel implements KeyListener, ActionListener, MouseMo
         sleep = 20;
         maxWidth = width;
         maxHeight = height;
+
+        this.frame = frame;
         
 
       this.addMouseMotionListener(this);
@@ -226,7 +244,7 @@ void menu() {
         ImageIO.write(img, "jpg", new File("../trainingData/images/IMG_" + frameRecorded + ".jpg"));
         frameRecorded++;
 
-        int oneHotEncodedAction = 0;
+/*        int oneHotEncodedAction = 0;
         if (leftArrowDown && !rightArrowDown) {
           oneHotEncodedAction = 1;
         } else if (rightArrowDown && !leftArrowDown) {
@@ -236,7 +254,7 @@ void menu() {
           oneHotEncodedAction += 3;
         }
         dataLogger.write("" + oneHotEncodedAction);
-        dataLogger.write("\n");
+        dataLogger.write("\n");*/
       } catch (IOException ex) {
         System.err.println("Couldn't write to test file!");
       }
@@ -330,14 +348,14 @@ private void removeMenuText()
         	respawnText.setFont(new Font("Lava", Font.BOLD, 30));
             this.add(respawnText);
             
-            scoreText.setBounds(maxWidth - 300, 5, maxHeight - 50, 20);//Score:
+            scoreText.setBounds(maxWidth - 500, 5, maxHeight - 50, 20);//Score:
             scoreText.setForeground(Color.WHITE);
             scoreText.setFont(new Font("Lava", Font.BOLD, 20));
             this.add(scoreText);
     
             levelText.setForeground(Color.WHITE);//Round Passed
             levelText.setFont(new Font("Lava", Font.BOLD, 49));
-            levelText.setBounds(340, 50, 400, 240);
+            levelText.setBounds(340, 50, 400, 360);
             this.add(levelText);
     
             overText.setForeground(Color.WHITE);//Game Over
@@ -350,7 +368,7 @@ private void removeMenuText()
             livesText.setFont(new Font("Lava", Font.BOLD, 20));
             this.add(livesText);
     
-            roundsText.setBounds(maxWidth - 100, 5, maxHeight - 50, 20);//Rounds:
+            roundsText.setBounds(maxWidth - 200, 5, maxHeight - 50, 20);//Rounds:
             roundsText.setForeground(Color.WHITE);
             roundsText.setFont(new Font("Lava", Font.BOLD, 20)); 
             this.add(roundsText);
@@ -378,7 +396,7 @@ private void removeMenuText()
         livesText.setText("Lives: " + lives);
         scoreText.setText("Score: " + score);
         if(!isPlayerAIMode)
-        	roundsText.setText("Round " + roundNum + "/3");
+        	roundsText.setText("Round " + roundNum);
         else
         	roundsText.setText("User director");
         
@@ -408,10 +426,12 @@ private void removeMenuText()
         while( !over )
         {
 
-          System.out.println(enterPressed);
-          if (isAIMode && !enterPressed)
-            continue;
-        	 
+
+            /*
+          if (isAIMode && enterPressed)
+            aiFrames = 0;
+            */
+
             // moves the grid
         	 grid.update();
         	 
@@ -697,7 +717,7 @@ private void removeMenuText()
                     
                     
                     roundNum++;
-                    roundsText.setText("Round " + roundNum + "/3");
+                    roundsText.setText("Round " + roundNum);
                     
                 
                 
@@ -731,12 +751,22 @@ private void removeMenuText()
             //wait 7 seconds before returning to main menu after last life is lost
             if(gameWillEnd && elapsedGameOverTime > 7*1000)
             {
-            	over = true;
+              over = true;
+              
+              for (JLabel label: leaderboardLabels) {
+                label.setText("");
+                label.setVisible(false);
+                this.remove(label);
+                this.revalidate();
+                this.repaint();
+              }
+
+              leaderboardLabels.clear();
             }
             
             // keeps track of time for various timers if relevant booleans true
             if(gameWillEnd)
-            	elapsedGameOverTime = (new Date()).getTime() - gameOverTime;
+              elapsedGameOverTime = (new Date()).getTime() - gameOverTime;
             
             if(respawning)
             	elapsedDeathTime = (new Date()).getTime() - deathTime;
@@ -744,12 +774,12 @@ private void removeMenuText()
             if(roundOver)
             	elapsedRoundTime = (new Date()).getTime() - roundOverTime;
             
-            if (!gameWillEnd && !respawning && !roundOver && RECORDING_DATA)
-              recordData();
             
             enterPressed = false;
 
             this.repaint();//redraw the screen with the updated locations; calls paintComponent below
+
+            //aiFrames++;
         }
         
         // current game has ended
@@ -841,7 +871,26 @@ private void removeMenuText()
 		        	}
 		        	else{
 		        		leaderboard.add(score);
-		        	}
+              }
+              
+              leaderboardLabels.clear();
+
+              JLabel leaderboardLabel = new JLabel("LEADERBOARD");
+              leaderboardLabel.setBounds(280, 250, 600, 40);
+              leaderboardLabel.setForeground(Color.WHITE);
+              leaderboardLabel.setFont(new Font("Lava", Font.BOLD, 40));
+              this.add(leaderboardLabel);
+              this.leaderboardLabels.add(leaderboardLabel);
+              
+              for (int i=0; i<leaderboard.size(); i++) {
+                int score = leaderboard.get(leaderboard.size()-i-1);
+                JLabel newLabel = new JLabel("" + score);
+                newLabel.setBounds(400, 300 + i*40, 200, 30);
+                newLabel.setForeground(Color.WHITE);
+                newLabel.setFont(new Font("Lava", Font.BOLD, 30));
+                this.add(newLabel);
+                this.leaderboardLabels.add(newLabel);
+              }
 		        	
 		        	gameOver();
 	        
@@ -920,12 +969,14 @@ private void removeMenuText()
 	            enemy.draw(page);
             }
             
+            /*
             ArrayList<ChaserEnemy> chaserDraw = new ArrayList<ChaserEnemy>(chasers);
 	        for (final Enemy enemy: chaserDraw) 
 	        {
 	        	if(enemy != null)
 	            enemy.draw(page);
-	        }
+          }
+          */
 	        
 	        ArrayList<Explosion> enemyExplosionDraw = new ArrayList<Explosion>(enemyExplosions);
 	        for (Explosion enemyExplosion: enemyExplosionDraw)
@@ -1155,7 +1206,7 @@ private void removeMenuText()
             enemies.add(new FlyingEnemy("Images//eShip3.gif", 487, -5000-540-(60*i), 3, player, //spawn location 
                     4,i,false)); // row and column numb
 
-        chasers.add(new ChaserEnemy("Images//AltAlienShip.gif", 487, -5000-540, player)); // row and column numb
+//        chasers.add(new ChaserEnemy("Images//AltAlienShip.gif", 487, -5000-540, player)); // row and column numb
 	}
 	
 	public void flyInType2()
